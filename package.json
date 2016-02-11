@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run standard && _mocha test/unit --bail",
+    "standard": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js"
   },
   "keywords": [
     "adonis",
@@ -16,9 +17,13 @@
   "author": "adonisjs",
   "license": "MIT",
   "devDependencies": {
+    "adonis-fold": "^2.0.1",
     "chai": "^3.5.0",
+    "co-mocha": "^1.1.2",
     "coveralls": "^2.11.6",
     "cz-conventional-changelog": "^1.1.5",
+    "dotenv": "^2.0.0",
+    "got": "^6.1.1",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
     "standard": "^6.0.4"
@@ -27,5 +32,12 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "node-exceptions": "^1.0.1",
+    "nodemailer": "^2.1.0"
+  },
+  "peerDependencies": {
+    "adonis-fold": "^2.0.1"
   }
 }
