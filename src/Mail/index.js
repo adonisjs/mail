@@ -9,6 +9,11 @@
  * file that was distributed with this source code.
 */
 
+/*
+|--------------------------------------------------------------------------
+|                           I AM SINGLETON
+|--------------------------------------------------------------------------
+*/
 const Drivers = require('./drivers')
 const Ioc = require('adonis-fold').Ioc
 const NE = require('node-exceptions')

@@ -11,6 +11,5 @@
 
 module.exports = {
   smtp: require('./SMTP'),
-  ses: require('./SES'),
-  mandrill: require('./Mandrill')
+  ses: require('./SES')
 }
