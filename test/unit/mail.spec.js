@@ -25,6 +25,8 @@ const Config = {
     switch (key) {
       case 'mail.driver':
         return 'smtp'
+      case 'smtp.invalid':
+        return {}
       case 'mail.smtp':
         return {
           host: 'mailtrap.io',
@@ -238,6 +240,41 @@ describe('Smtp driver', function () {
       const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
       const emailBody = JSON.parse(mailTrapResponse.body)[0]
       expect(emailBody.html_body.trim()).to.equal('<img src="cid:paris" />')
+    })
+
+    it('should be able to send runtime config to the send method', function * () {
+      try {
+        yield mail.send('paris', {}, function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Welcome to adonis')
+          message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
+        }, 'smtp.invalid')
+        expect(true).to.equal(false)
+      } catch (e) {
+        expect(e.message).to.match(/ECONNREFUSED/)
+      }
+    })
+
+    it('should not override instance transport when sending runtime configKey', function * () {
+      try {
+        yield mail.send('paris', {}, function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Welcome to adonis')
+          message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
+        }, 'smtp.invalid')
+        expect(true).to.equal(false)
+      } catch (e) {
+        expect(e.message).to.match(/ECONNREFUSED/)
+        const response = yield mail.send('paris', {}, function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Welcome to adonis')
+          message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
+        })
+        expect(response.accepted.length).to.equal(1)
+      }
     })
   })
 })

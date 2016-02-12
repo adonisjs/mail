@@ -8,34 +8,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
 */
+const BaseDriver = require('../BaseDriver')
 
-class SES {
+class SES extends BaseDriver {
 
   constructor (Config) {
-    const nodemailer = require('nodemailer')
-    const sesTransport = require('nodemailer-ses-transport')
-
-    /**
-     * options required by node mailer
-     * transport
-     * @type {Object}
-     */
-    const options = Config.get('mail.ses')
-    this.transport = nodemailer.createTransport(sesTransport(options))
+    super(Config)
+    this.TransportLibrary = require('nodemailer-ses-transport')
+    this.transport = this._createTransport('mail.ses')
   }
 
-  /**
-   * @description this method is called by mail Manager
-   * and it has the final message object to be used
-   * for sending email
-   * @method send
-   * @param  {Object} message
-   * @return {void}
-   * @public
-   */
-  send (message) {
-    return this.transport.sendMail(message)
-  }
 }
 
 module.exports = SES

@@ -8,18 +8,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
 */
+const BaseDriver = require('../BaseDriver')
 
-class Log {
+class Log extends BaseDriver {
 
-  constructor (Helpers) {
-    const nodemailer = require('nodemailer')
-    const Transport = require('./transport')
-    const emailsLogPath = Helpers.storagePath('logs/mail.log')
-    this.transport = nodemailer.createTransport(new Transport(emailsLogPath))
-  }
-
-  send (message) {
-    return this.transport.sendMail(message)
+  constructor (Config) {
+    super(Config)
+    this.TransportLibrary = require('./transport')
+    this.transport = this._createTransport('mail.log')
   }
 
 }

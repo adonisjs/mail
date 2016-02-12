@@ -221,10 +221,12 @@ describe('Mail', function () {
     })
 
     it('should return the driver transport using getTransport method', function () {
-      const Helpers = {
-        storagePath: function () {}
+      const Config = {
+        get: function () {
+          return {toPath: null}
+        }
       }
-      const driver = new LogDriver(Helpers)
+      const driver = new LogDriver(Config)
       const m = new MailManager(view, driver)
       expect(m.getTransport().use).to.be.a('function')
     })
@@ -252,7 +254,6 @@ describe('Mail', function () {
       yield m.raw('view', function () {}, 'mail.other')
       expect(configKey).to.equal('mail.other')
     })
-
   })
 
   context('Sending Fake Email', function () {

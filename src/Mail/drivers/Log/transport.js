@@ -12,8 +12,8 @@ const fs = require('co-fs-extra')
 
 class Transport {
 
-  constructor (toPath) {
-    this.toPath = toPath
+  constructor (options) {
+    this.toPath = options.toPath
     this.name = 'log-driver'
     this.version = '1.0.0'
   }

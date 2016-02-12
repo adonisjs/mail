@@ -19,15 +19,17 @@ const Log = require('../../src/Mail/drivers/Log')
 const Message = require('../../src/Mail/MailManager/message')
 require('co-mocha')
 
-const Helpers = {
-  storagePath: function () {
-    return path.join(__dirname, './storage/logs/mail.eml')
+const Config = {
+  get: function () {
+    return {
+      toPath: path.join(__dirname, './storage/logs/mail.eml')
+    }
   }
 }
 
 describe('Log driver', function () {
   before(function * () {
-    yield fs.ensureFile(Helpers.storagePath())
+    yield fs.ensureFile(Config.get().toPath)
   })
 
   after(function * () {
@@ -41,11 +43,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -68,11 +70,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -91,11 +93,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -115,11 +117,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -140,11 +142,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -165,11 +167,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -188,11 +190,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -212,11 +214,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -236,11 +238,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -260,11 +262,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -284,11 +286,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.html('<h2>Hello world</h2>')
     message.text('Hello world')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -306,11 +308,11 @@ describe('Log driver', function () {
     message.from('virk@bar.com')
     message.subject('Hello world')
     message.attach(path.join(__dirname, './assets/logo_white.svg'))
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -330,11 +332,11 @@ describe('Log driver', function () {
     message.from('virk@bar.com')
     message.subject('Hello world')
     message.attach(path.join(__dirname, './assets/logo_white.svg'), {filename: 'logo.svg'})
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -354,11 +356,11 @@ describe('Log driver', function () {
     message.from('virk@bar.com')
     message.subject('Hello world')
     message.attach(path.join(__dirname, './assets/logo_white.svg'), {contentType: 'image/png'})
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -377,11 +379,11 @@ describe('Log driver', function () {
     message.from('virk@bar.com')
     message.subject('Hello world')
     message.attachData('hello world', 'a.txt')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
@@ -403,11 +405,11 @@ describe('Log driver', function () {
     message.subject('Hello world')
     message.embed(path.join(__dirname, './assets/logo_white.svg'), 'LOGO')
     message.html('<img src="cid:LOGO" />')
-    const log = new Log(Helpers)
+    const log = new Log(Config)
     yield log.send(message.data)
     const mailparser = new MailParser()
 
-    const emailLogs = yield fs.readFile(Helpers.storagePath(), 'utf8')
+    const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
     mailparser.on('end', function (mail_object) {
