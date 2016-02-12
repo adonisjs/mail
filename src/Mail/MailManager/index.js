@@ -85,7 +85,7 @@ class MailManager {
    *
    * @public
    */
-  raw (text, callback, config) {
+  * raw (text, callback, config) {
     /**
      * creating a new message instance to be used for
      * building mail options
