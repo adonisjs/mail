@@ -19,7 +19,7 @@ class SMTP {
      * @type {Object}
      */
     const options = Config.get('mail.smtp')
-    this.transporter = nodemailer.createTransport(options)
+    this.transport = nodemailer.createTransport(options)
   }
 
   /**
@@ -33,7 +33,7 @@ class SMTP {
    * @public
    */
   send (message) {
-    return this.transporter.sendMail(message)
+    return this.transport.sendMail(message)
   }
 
 }

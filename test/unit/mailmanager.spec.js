@@ -11,6 +11,7 @@
 
 /* global it, describe, context */
 const MailManager = require('../../src/Mail/MailManager')
+const LogDriver = require('../../src/Mail/drivers/Log')
 const NE = require('node-exceptions')
 const chai = require('chai')
 const expect = chai.expect
@@ -217,6 +218,15 @@ describe('Mail', function () {
         message.embed('../../package.json', 'packagefile')
         expect(message.data.attachments[0].cid).to.equal('packagefile')
       })
+    })
+
+    it('should return the driver transport using getTransport method', function () {
+      const Helpers = {
+        storagePath: function () {}
+      }
+      const driver = new LogDriver(Helpers)
+      const m = new MailManager(view, driver)
+      expect(m.getTransport().use).to.be.a('function')
     })
   })
 

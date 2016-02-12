@@ -19,6 +19,19 @@ class MailManager {
   }
 
   /**
+   * returns transport for the given instance. Here
+   * drivers are responsible for having transport
+   * object on this instance
+   *
+   * @return {Object}
+   *
+   * @public
+   */
+  getTransport () {
+    return this.driver.transport
+  }
+
+  /**
    * sends email with given data
    *
    * @method send

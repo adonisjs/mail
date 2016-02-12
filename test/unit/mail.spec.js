@@ -145,6 +145,22 @@ describe('Smtp driver', function () {
       expect(Object.keys(mail.driversPool).length).to.equal(2)
       expect(Object.keys(mail.driversPool)).deep.equal(['default', 'custom'])
     })
+
+    it('should return driver transport using getTransport method', function () {
+      const mail = new Mail(View, Config)
+      expect(mail.getTransport().use).to.be.a('function')
+    })
+
+    it('should return driver transport when new driver is retreived', function () {
+      class Dummy {
+        constructor () {
+          this.transport = 'foo'
+        }
+      }
+      Mail.extend('dummy', new Dummy())
+      const mail = new Mail()
+      expect(mail.new('dummy').getTransport()).to.equal('foo')
+    })
   })
 
   context('Sending Mail', function () {

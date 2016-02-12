@@ -105,7 +105,7 @@ class Mail {
      * created instance instead of this class.
      * @type {Array}
      */
-    this.methodsToSpoof = ['send', 'raw']
+    this.methodsToSpoof = ['send', 'raw', 'getTransport']
     this.methodsToSpoof.forEach((method) => {
       const self = this
       this[method] = function () {

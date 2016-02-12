@@ -21,7 +21,7 @@ class SES {
      * @type {Object}
      */
     const options = Config.get('mail.ses')
-    this.transporter = nodemailer.createTransport(sesTransport(options))
+    this.transport = nodemailer.createTransport(sesTransport(options))
   }
 
   /**
@@ -34,7 +34,7 @@ class SES {
    * @public
    */
   send (message) {
-    return this.transporter.sendMail(message)
+    return this.transport.sendMail(message)
   }
 }
 
