@@ -19,15 +19,29 @@ class MailManager {
   }
 
   /**
-   * @description sends email with given data
+   * sends email with given data
+   *
    * @method send
+   *
    * @param  {String}   view
    * @param  {Object}   data
    * @param  {Function} callback
-   * @return {void}
+   * @param  {String} [config]
+   *
+   * @return {Array}
+   *
+   * @example
+   * mail.send('welcome', {}, function (message) {
+   *
+   * })
+   * mail.send('welcome', {}, function (message) {
+   *
+   * }, 'alternate.config')
+   *
+   *
    * @public
    */
-  * send (view, data, callback) {
+  * send (view, data, callback, config) {
     /**
      * compiling view using view provider
      * @type {String}
@@ -47,10 +61,31 @@ class MailManager {
      * finally calling send method on
      * driver to send email
      */
-    return yield this.driver.send(message.data)
+    return yield this.driver.send(message.data, config)
   }
 
-  * raw (text, callback) {
+  /**
+   * sends email using raw text instead of making
+   * view from templates.
+   *
+   * @method raw
+   *
+   * @param  {String}   text
+   * @param  {Function} callback
+   * @param  {String}   config
+   * @return {Array}
+   *
+   * @example
+   * mail.raw('<h2> Hello </h2>', function (message) {
+   *
+   * })
+   * mail.raw('<h2> Hello </h2>', function (message) {
+   *
+   * }, 'alternate.config')
+   *
+   * @public
+   */
+  raw (text, callback, config) {
     /**
      * creating a new message instance to be used for
      * building mail options
@@ -64,7 +99,7 @@ class MailManager {
      * finally calling send method on
      * driver to send email
      */
-    return yield this.driver.send(message.data)
+    return yield this.driver.send(message.data, config)
   }
 
 }
