@@ -21,6 +21,9 @@ class MailProvider extends ServiceProvider {
       return new Mail(View, Config)
     })
     this.app.manager('Adonis/Addons/Mail', Mail)
+    this.app.bind('Adonis/Addons/MailBaseDriver', function () {
+      return require('../src/Mail/drivers/BaseDriver')
+    })
   }
 
 }
