@@ -97,8 +97,27 @@ describe('Smtp driver', function () {
       const mail = new Mail(View, Config)
       yield mail.send('welcome', {}, function () {})
       yield mail.raw('welcome', function () {})
-      expect(Object.keys(mail.connectionPools).length).to.equal(1)
-      expect(Object.keys(mail.connectionPools)).deep.equal(['default'])
+      expect(Object.keys(mail.driversPool).length).to.equal(1)
+      expect(Object.keys(mail.driversPool)).deep.equal(['default'])
+    })
+
+    it('should return the old driver instance if exists', function * () {
+      class Dummy {
+        * send () {
+          return 'send called'
+        }
+      }
+      Mail.extend('dummy', new Dummy())
+      const Config = {
+        get: function () {
+          return 'dummy'
+        }
+      }
+      const mail = new Mail(View, Config)
+      const mailManager = mail.new('default')
+      mailManager.driver.foo = 'bar'
+      const mailManager1 = mail.new('default')
+      expect(mailManager1.driver.foo).to.equal('bar')
     })
 
     it('should create the driver instance if does not exists', function * () {
@@ -123,8 +142,8 @@ describe('Smtp driver', function () {
       const mail = new Mail(View, Config)
       yield mail.send('welcome', {}, function () {})
       yield mail.new('custom').raw('welcome', function () {})
-      expect(Object.keys(mail.connectionPools).length).to.equal(2)
-      expect(Object.keys(mail.connectionPools)).deep.equal(['default', 'custom'])
+      expect(Object.keys(mail.driversPool).length).to.equal(2)
+      expect(Object.keys(mail.driversPool)).deep.equal(['default', 'custom'])
     })
   })
 

@@ -83,11 +83,11 @@ class Mail {
    * @public
    */
   new (driver) {
-    if (!this.connectionPools[driver]) {
+    if (!this.driversPool[driver]) {
       let driverInstance = this._makeDriverInstance(driver)
-      this.connectionPools[driver] = new MailManager(this.view, driverInstance)
+      this.driversPool[driver] = driverInstance
     }
-    return this.connectionPools[driver]
+    return new MailManager(this.view, this.driversPool[driver])
   }
 
   /**
@@ -96,7 +96,7 @@ class Mail {
   constructor (View, Config) {
     this.config = Config
     this.view = View
-    this.connectionPools = {}
+    this.driversPool = {}
 
     /**
      * here we spoof methods on the mail manager, which means
