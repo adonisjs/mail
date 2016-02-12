@@ -69,8 +69,14 @@ class MandrillTransport {
     })
 
     input.on('end', () => {
-      const body = this.options
-      body.raw_message = rawMessage.toString()
+
+      const body = {
+        key: this.options.apiKey,
+        async: this.options.async || false,
+        ip_pool: this.options.pool,
+        send_at: this.options.sent_at,
+        raw_message: rawMessage.toString()
+      }
 
       got.post(this.apiUrl, {body})
       .then((response) => {
