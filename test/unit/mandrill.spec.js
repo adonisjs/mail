@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
 */
 
+/* global it, describe */
 const chai = require('chai')
 const expect = chai.expect
 const path = require('path')
 const Mandrill = require('../../src/Mail/drivers/Mandrill')
 const Messages = require('../../src/Mail/MailManager/message')
-const got = require('got')
 require('dotenv').config({path: path.join(__dirname, '../../.env')})
 
 const Config = {
@@ -25,12 +25,9 @@ const Config = {
   }
 }
 
-const baseUri = 'https://mandrillapp.com/api/1.0/messages/info.json'
-
 require('co-mocha')
 
-describe('Mandrill driver', function() {
-
+describe('Mandrill driver', function () {
   it('should be able to send messages using mandrill', function * () {
     this.timeout(0)
     const message = new Messages()
@@ -59,5 +56,4 @@ describe('Mandrill driver', function() {
     expect(r.accepted).to.be.an('array')
     expect(['sent', 'queued', 'scheduled'].indexOf(r.accepted[0].status)).to.be.at.least(0)
   })
-
 })

@@ -38,7 +38,7 @@ class MandrillTransport {
         if (['sent', 'queued', 'scheduled'].indexOf(message.status) > -1) {
           accepted.push(message)
         } else {
-          rejected.push(result)
+          rejected.push(message)
         }
       })
       messageId = (messages[0] || {})._id

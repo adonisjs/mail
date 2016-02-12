@@ -129,7 +129,7 @@ describe('Smtp driver', function () {
   })
 
   context('Sending Mail', function () {
-    this.timeout(10000)
+    this.timeout(0)
 
     after(function * () {
       yield got.patch(`${mailtrapUri}/clean`, {headers: mailTrapHeaders})
