@@ -11,10 +11,30 @@
 class Mandrill {
 
   constructor (Config) {
+    this.config = Config
+    this.transport = this._createTransport('mail.mandrill')
+  }
+
+  /**
+   * creates a new transport instance with given config
+   * key. It uses config provider to fetch values for
+   * config key.
+   *
+   * @method _createTransport
+   *
+   * @param  {String}         configKey [description]
+   * @return {Object}                   [description]
+   *
+   * @example
+   * Mandrill._createTranport('mail.mandrill')
+   *
+   * @private
+   */
+  _createTransport (configKey) {
     const nodemailer = require('nodemailer')
     const Transport = require('./transport')
-    const options = Config.get('mail.mandrill')
-    this.transport = nodemailer.createTransport(new Transport(options))
+    const options = this.config.get(configKey)
+    return nodemailer.createTransport(new Transport(options))
   }
 
   /**
@@ -23,12 +43,17 @@ class Mandrill {
    * @method send
    *
    * @param  {Object} message
+   * @param  {Object} configKey
    * @return {Promise}
    *
    * @public
    */
-  send (message) {
-    return this.transport.sendMail(message)
+  send (message, configKey) {
+    let transport = this.transport
+    if (configKey) {
+      transport = this._createTransport(configKey)
+    }
+    return transport.sendMail(message)
   }
 
 }

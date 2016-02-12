@@ -18,7 +18,12 @@ const Messages = require('../../src/Mail/MailManager/message')
 require('dotenv').config({path: path.join(__dirname, '../../.env')})
 
 const Config = {
-  get: function () {
+  get: function (key) {
+    if (key === 'mandrill.wrong') {
+      return {
+        apiKey: 'blah'
+      }
+    }
     return {
       apiKey: process.env.MANDRILL_APIKEY
     }
@@ -55,5 +60,42 @@ describe('Mandrill driver', function () {
     expect(r.messageId).to.exist
     expect(r.accepted).to.be.an('array')
     expect(['sent', 'queued', 'scheduled'].indexOf(r.accepted[0].status)).to.be.at.least(0)
+  })
+
+  it('should make use of new configuration when passing extra config key', function * () {
+    this.timeout(0)
+    const message = new Messages()
+    message.to('sent@test.mandrillapp.com')
+    message.from('virk@bar.com')
+    message.subject('mail with attachment')
+    message.attach(path.join(__dirname, './assets/logo_white.svg'))
+    message.html('Hello world')
+    const mandrill = new Mandrill(Config)
+    try {
+      yield mandrill.send(message.data, 'mandrill.wrong')
+      expect(true).to.equal(false)
+    } catch (e) {
+      expect(e.message).to.equal('Invalid API key')
+    }
+  })
+
+  it('should not affect the actual instance transporter when sending different config option with send method', function * () {
+    this.timeout(0)
+    const message = new Messages()
+    message.to('sent@test.mandrillapp.com')
+    message.from('virk@bar.com')
+    message.subject('mail with attachment')
+    message.attach(path.join(__dirname, './assets/logo_white.svg'))
+    message.html('Hello world')
+    const mandrill = new Mandrill(Config)
+    try {
+      yield mandrill.send(message.data, 'mandrill.wrong')
+      expect(true).to.equal(false)
+    } catch (e) {
+      expect(e.message).to.equal('Invalid API key')
+      const r = yield mandrill.send(message.data)
+      expect(r.messageId).to.exist
+      expect(r.accepted).to.be.an('array')
+    }
   })
 })

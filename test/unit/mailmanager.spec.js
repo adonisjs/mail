@@ -228,6 +228,31 @@ describe('Mail', function () {
       const m = new MailManager(view, driver)
       expect(m.getTransport().use).to.be.a('function')
     })
+
+    it('should send config key to the driver using send method', function * () {
+      let configKey = null
+      class Dummy {
+        * send (message, config) {
+          configKey = config
+        }
+      }
+      const m = new MailManager(view, new Dummy())
+      yield m.send('view', {}, function () {}, 'mail.other')
+      expect(configKey).to.equal('mail.other')
+    })
+
+    it('should send config key to the driver using raw method', function * () {
+      let configKey = null
+      class Dummy {
+        * send (message, config) {
+          configKey = config
+        }
+      }
+      const m = new MailManager(view, new Dummy())
+      yield m.raw('view', function () {}, 'mail.other')
+      expect(configKey).to.equal('mail.other')
+    })
+
   })
 
   context('Sending Fake Email', function () {

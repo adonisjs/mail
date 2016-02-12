@@ -83,7 +83,11 @@ class MandrillTransport {
         callback(null, this._parseMessages(body))
       })
       .catch((error) => {
-        callback(error, {})
+        try {
+          callback(JSON.parse(error.response.body), {})
+        } catch (e) {
+          callback(error, {})
+        }
       })
     })
   }
