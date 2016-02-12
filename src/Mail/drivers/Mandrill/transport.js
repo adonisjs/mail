@@ -69,7 +69,6 @@ class MandrillTransport {
     })
 
     input.on('end', () => {
-
       const body = {
         key: this.options.apiKey,
         async: this.options.async || false,

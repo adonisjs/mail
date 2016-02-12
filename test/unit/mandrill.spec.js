@@ -20,7 +20,7 @@ require('dotenv').config({path: path.join(__dirname, '../../.env')})
 const Config = {
   get: function () {
     return {
-      key: process.env.MANDRILL_APIKEY
+      apiKey: process.env.MANDRILL_APIKEY
     }
   }
 }
