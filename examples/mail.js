@@ -13,7 +13,7 @@ module.exports = {
   | has support for 'mandrill', 'smtp', 'ses' and 'log' driver.
   |
   */
-  driver: 'smtp',
+  driver: Env.get('MAIL_DRIVER', 'smtp'),
 
   /*
   |--------------------------------------------------------------------------
@@ -25,16 +25,13 @@ module.exports = {
   */
   smtp: {
     pool: true,
-    // if you define the service, there is no need to define port,host and secure.
-    service: 'gmail',
     port: 2525,
     host: '',
     secure: false,
     auth: {
-      user: '',
-      pass: ''
+      user: Env.get('MAIL_USERNAME'),
+      pass: Env.get('MAIL_PASSWORD')
     },
-    debug: false,
     maxConnections: 5,
     maxMessages: 100,
     rateLimit: 10
@@ -51,7 +48,7 @@ module.exports = {
   |
   */
   mandrill: {
-    apiKey: '',
+    apiKey: Env.get('MANDRILL_APIKEY'),
     async: false,
     ip_pool: 'Main Pool'
   },
@@ -66,9 +63,8 @@ module.exports = {
   |
   */
   ses: {
-    accessKeyId: '',
-    secretAccessKey: '',
-    sessionToken: '',
+    accessKeyId: Env.get('SES_KEY'),
+    secretAccessKey: Env.get('SES_SECRET'),
     region: 'us-east-1',
     rateLimit: 10
   },
