@@ -49,7 +49,7 @@ Ioc.bind('Config', function () {
 })
 
 const View = {
-  render: function * (name) {
+  make: function * (name) {
     return new Promise(function (resolve, reject) {
       fs.readFile(`${path.join(__dirname, './views/' + name + '.html')}`, function (error, contents) {
         if (error) reject(error)

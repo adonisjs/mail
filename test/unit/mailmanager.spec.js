@@ -19,7 +19,7 @@ const path = require('path')
 require('co-mocha')
 
 const view = {
-  render: function * (key) {
+  make: function * (key) {
     switch (key) {
       case 'welcome':
         return '<h2>Welcome to Adonis</h2>'
@@ -399,7 +399,7 @@ describe('Mail', function () {
   context('Sending Fake Email', function () {
     let driverMessage = null
     const messageView = {
-      render: function * (template) {
+      make: function * (template) {
         if (template === 'index') {
           return 'Hello index'
         }
