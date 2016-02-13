@@ -12,10 +12,10 @@
 
 Mail provider has support for several drivers to send email from your adonis app.
 
-1. Mailgun
-2. SMTP
-3. Amazon SES
-4. Mandrill
+1. SMTP
+2. Amazon SES
+3. Mandrill
+4. Log ( for testing emails )
 
 ## Table of Contents
 
@@ -45,7 +45,7 @@ const aliases = {
 }
 ```
 
-[Official Documentation](http://adonisjs.com/docs/installation)
+[Official Documentation](http://adonisjs.com/docs/mail)
 
 ## <a name="contribution-guidelines"></a>Contribution Guidelines
 
