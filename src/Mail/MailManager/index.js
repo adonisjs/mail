@@ -109,15 +109,15 @@ class MailManager {
     const message = new Message()
 
     if (views.htmlView) {
-      const htmlCompiledView = yield this.view.render(views.htmlView, data)
+      const htmlCompiledView = yield this.view.make(views.htmlView, data)
       message.html(htmlCompiledView)
     }
     if (views.textView) {
-      const textCompiledView = yield this.view.render(views.textView, data)
+      const textCompiledView = yield this.view.make(views.textView, data)
       message.text(textCompiledView)
     }
     if (views.watchView) {
-      const watchCompiledView = yield this.view.render(views.watchView, data)
+      const watchCompiledView = yield this.view.make(views.watchView, data)
       message.watchHtml(watchCompiledView)
     }
 
