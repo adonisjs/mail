@@ -15,7 +15,6 @@ const expect = chai.expect
 const path = require('path')
 const Mandrill = require('../../src/Mail/drivers/Mandrill')
 const Messages = require('../../src/Mail/MailManager/message')
-require('dotenv').config({path: path.join(__dirname, '../../.env')})
 
 const Config = {
   get: function (key) {

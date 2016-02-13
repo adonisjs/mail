@@ -16,7 +16,6 @@ const Ioc = require('adonis-fold').Ioc
 const fs = require('fs')
 const path = require('path')
 const got = require('got')
-require('dotenv').config({path: path.join(__dirname, '../../.env')})
 const expect = chai.expect
 require('co-mocha')
 

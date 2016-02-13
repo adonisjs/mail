@@ -12,10 +12,8 @@
 /* global it, describe */
 const chai = require('chai')
 const expect = chai.expect
-const path = require('path')
 const Ses = require('../../src/Mail/drivers/Ses')
 const Message = require('../../src/Mail/MailManager/message')
-require('dotenv').config({path: path.join(__dirname, '../../.env')})
 require('co-mocha')
 
 const Config = {
