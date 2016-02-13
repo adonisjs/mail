@@ -37,6 +37,26 @@ const driver = {
 
 describe('Mail', function () {
   context('MailManager', function () {
+    it('should throw an error when callback is not defined when using send method', function * () {
+      const m = new MailManager(view, driver)
+      try {
+        yield m.send('user')
+        expect(true).to.equal(false)
+      } catch (e) {
+        expect(e.message).to.equal('callback must be function')
+      }
+    })
+
+    it('should throw an error when callback is not defined when using raw method', function * () {
+      const m = new MailManager(view, driver)
+      try {
+        yield m.raw('user')
+        expect(true).to.equal(false)
+      } catch (e) {
+        expect(e.message).to.equal('callback must be function')
+      }
+    })
+
     it('should set from field on mail body', function * () {
       const m = new MailManager(view, driver)
       yield m.send('user', {}, function (message) {

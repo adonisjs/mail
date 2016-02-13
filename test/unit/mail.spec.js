@@ -13,6 +13,7 @@
 const Mail = require('../../src/Mail')
 const chai = require('chai')
 const Ioc = require('adonis-fold').Ioc
+const NE = require('node-exceptions')
 const fs = require('fs')
 const path = require('path')
 const got = require('got')
@@ -64,6 +65,14 @@ describe('Smtp driver', function () {
     it('should not create the driver instance, until one of the mailing methods have been called', function () {
       const mail = new Mail()
       expect(mail instanceof Mail).to.equal(true)
+    })
+
+    it('should throw an error when driver is not found', function () {
+      const mail = new Mail()
+      const fn = function () {
+        return mail.new('foo')
+      }
+      expect(fn).to.throw(NE.DomainException, /Unable to locate foo mail driver/)
     })
 
     it('should be able to extend mail provider', function * () {
