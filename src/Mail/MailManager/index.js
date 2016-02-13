@@ -91,8 +91,7 @@ class MailManager {
    * @public
    */
   * send (view, data, callback, config) {
-
-    if (typeof(callback) !== 'function') {
+    if (typeof (callback) !== 'function') {
       throw new NE.InvalidArgumentException('callback must be function')
     }
 
@@ -155,8 +154,7 @@ class MailManager {
    * @public
    */
   * raw (text, callback, config) {
-
-    if (typeof(callback) !== 'function') {
+    if (typeof (callback) !== 'function') {
       throw new NE.InvalidArgumentException('callback must be function')
     }
 
