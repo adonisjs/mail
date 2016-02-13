@@ -1,5 +1,5 @@
 {
-  "name": "adonis-mail",
+  "name": "adonis-mail-provider",
   "version": "1.0.0",
   "description": "email provider for adonis framework",
   "main": "index.js",
