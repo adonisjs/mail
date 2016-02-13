@@ -19,7 +19,16 @@ const path = require('path')
 require('co-mocha')
 
 const view = {
-  render: function * () {}
+  render: function * (key) {
+    switch (key) {
+      case 'welcome':
+        return '<h2>Welcome to Adonis</h2>'
+      case 'welcome.text':
+        return 'Welcome to Adonis'
+      case 'welcome.watch':
+        return '<h2>Welcome to Adonis</h2>'
+    }
+  }
 }
 
 const driver = {
@@ -220,6 +229,48 @@ describe('Mail', function () {
       })
     })
 
+    it('should set html view when an array with first item is passed', function * () {
+      const m = new MailManager(view, driver)
+      yield m.send(['welcome'], {}, function (message) {
+        expect(message.data.html).to.equal('<h2>Welcome to Adonis</h2>')
+      })
+    })
+
+    it('should set html and text view when an array with two items has been passed', function * () {
+      const m = new MailManager(view, driver)
+      yield m.send(['welcome', 'welcome.text'], {}, function (message) {
+        expect(message.data.html).to.equal('<h2>Welcome to Adonis</h2>')
+        expect(message.data.text).to.equal('Welcome to Adonis')
+      })
+    })
+
+    it('should set html, text and watch view when an array with three items has been passed', function * () {
+      const m = new MailManager(view, driver)
+      yield m.send(['welcome', 'welcome.text', 'welcome.watch'], {}, function (message) {
+        expect(message.data.html).to.equal('<h2>Welcome to Adonis</h2>')
+        expect(message.data.text).to.equal('Welcome to Adonis')
+        expect(message.data.watchHtml).to.equal('<h2>Welcome to Adonis</h2>')
+      })
+    })
+
+    it('should set text view when first item in array is empty', function * () {
+      const m = new MailManager(view, driver)
+      yield m.send(['', 'welcome.text', 'welcome.watch'], {}, function (message) {
+        expect(message.data.html).to.equal(undefined)
+        expect(message.data.text).to.equal('Welcome to Adonis')
+        expect(message.data.watchHtml).to.equal('<h2>Welcome to Adonis</h2>')
+      })
+    })
+
+    it('should set watch view when first two items in array are empty', function * () {
+      const m = new MailManager(view, driver)
+      yield m.send(['', '', 'welcome.watch'], {}, function (message) {
+        expect(message.data.html).to.equal(undefined)
+        expect(message.data.text).to.equal(undefined)
+        expect(message.data.watchHtml).to.equal('<h2>Welcome to Adonis</h2>')
+      })
+    })
+
     it('should return the driver transport using getTransport method', function () {
       const Config = {
         get: function () {
@@ -253,6 +304,75 @@ describe('Mail', function () {
       const m = new MailManager(view, new Dummy())
       yield m.raw('view', function () {}, 'mail.other')
       expect(configKey).to.equal('mail.other')
+    })
+
+    it('should set view as html view when view value is string', function () {
+      const m = new MailManager(view, driver)
+      const views = m._returnViews('welcome')
+      expect(views).to.be.an('object')
+      expect(views.htmlView).to.equal('welcome')
+      expect(views.textView).to.equal(null)
+      expect(views.watchView).to.equal(null)
+    })
+
+    it('should set view as html view an array with single item is passed', function () {
+      const m = new MailManager(view, driver)
+      const views = m._returnViews(['welcome'])
+      expect(views).to.be.an('object')
+      expect(views.htmlView).to.equal('welcome')
+      expect(views.textView).to.equal(null)
+      expect(views.watchView).to.equal(null)
+    })
+
+    it('should set html and text view an array with couple of items have been passed', function () {
+      const m = new MailManager(view, driver)
+      const views = m._returnViews(['welcome', 'welcome.text'])
+      expect(views).to.be.an('object')
+      expect(views.htmlView).to.equal('welcome')
+      expect(views.textView).to.equal('welcome.text')
+      expect(views.watchView).to.equal(null)
+    })
+
+    it('should set html, text and watch view an array with 3 items have been passed', function () {
+      const m = new MailManager(view, driver)
+      const views = m._returnViews(['welcome', 'welcome.text', 'welcome.watch'])
+      expect(views).to.be.an('object')
+      expect(views.htmlView).to.equal('welcome')
+      expect(views.textView).to.equal('welcome.text')
+      expect(views.watchView).to.equal('welcome.watch')
+    })
+
+    it('should thrown an error when an empty array is passed', function () {
+      const m = new MailManager(view, driver)
+      const fn = function () {
+        return m._returnViews([])
+      }
+      expect(fn).to.throw(NE.InvalidArgumentException, /you must set atleast one template/)
+    })
+
+    it('should thrown an error when an empty string is passed', function () {
+      const m = new MailManager(view, driver)
+      const fn = function () {
+        return m._returnViews('')
+      }
+      expect(fn).to.throw(NE.InvalidArgumentException, /you must set atleast one template/)
+    })
+
+    it('should thrown an error when an null is passed', function () {
+      const m = new MailManager(view, driver)
+      const fn = function () {
+        return m._returnViews(null)
+      }
+      expect(fn).to.throw(NE.InvalidArgumentException, /you must set atleast one template/)
+    })
+
+    it('should not thrown an error when an array with text only view is defined', function () {
+      const m = new MailManager(view, driver)
+      const views = m._returnViews(['', 'welcome.text'])
+      expect(views).to.be.an('object')
+      expect(views.htmlView).to.equal(null)
+      expect(views.textView).to.equal('welcome.text')
+      expect(views.watchView).to.equal(null)
     })
   })
 

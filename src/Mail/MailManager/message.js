@@ -47,9 +47,9 @@ class Message {
   /**
    * sets sender field on email
    *
-   * @param  {String} fromEmail [description]
-   * @param  {String} fromName  [description]
-   * @return {String}           [description]
+   * @param  {String} fromEmail
+   * @param  {String} fromName
+   * @return {String}
    *
    * @public
    */
@@ -61,9 +61,9 @@ class Message {
   /**
    * sets reply to field on email
    *
-   * @param  {String} fromEmail [description]
-   * @param  {String} fromName  [description]
-   * @return {String}           [description]
+   * @param  {String} fromEmail
+   * @param  {String} fromName
+   * @return {String}
    *
    * @public
    */
@@ -251,6 +251,18 @@ class Message {
    */
   text (body) {
     this.data.text = body
+    return this
+  }
+
+  /**
+   * sets watch html for the email
+   * @method watchHtml
+   * @param  {String}  body
+   * @return {Object}
+   * @public
+   */
+  watchHtml (body) {
+    this.data.watchHtml = body
     return this
   }
 

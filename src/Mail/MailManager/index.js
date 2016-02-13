@@ -10,6 +10,7 @@
 */
 
 const Message = require('./message')
+const NE = require('node-exceptions')
 
 class MailManager {
 
@@ -31,12 +32,32 @@ class MailManager {
     return this.driver.transport
   }
 
+  _returnViews (view) {
+    let viewsHash = {
+      htmlView: null,
+      textView: null,
+      watchView: null
+    }
+
+    if (typeof (view) === 'string' && view.length > 0) {
+      viewsHash.htmlView = view
+    } else if (view instanceof Array && view.length > 0) {
+      viewsHash.htmlView = view[0] || null
+      viewsHash.textView = view[1] || null
+      viewsHash.watchView = view[2] || null
+    } else {
+      throw new NE.InvalidArgumentException('you must set atleast one template')
+    }
+
+    return viewsHash
+  }
+
   /**
    * sends email with given data
    *
    * @method send
    *
-   * @param  {String}   view
+   * @param  {String|Array}   view
    * @param  {Object}   data
    * @param  {Function} callback
    * @param  {String} [config]
@@ -51,6 +72,10 @@ class MailManager {
    *
    * }, 'alternate.config')
    *
+   * mail.send(['welcome', 'welcome.text', 'welcome.watch'], function (message) {
+   *
+   * })
+   *
    *
    * @public
    */
@@ -59,16 +84,28 @@ class MailManager {
      * compiling view using view provider
      * @type {String}
      */
-    const compiledView = yield this.view.render(view, data)
+    const views = this._returnViews(view)
+    const message = new Message()
+
+    if (views.htmlView) {
+      const htmlCompiledView = yield this.view.render(views.htmlView, data)
+      message.html(htmlCompiledView)
+    }
+    if (views.textView) {
+      const textCompiledView = yield this.view.render(views.textView, data)
+      message.text(textCompiledView)
+    }
+    if (views.watchView) {
+      const watchCompiledView = yield this.view.render(views.watchView, data)
+      message.watchHtml(watchCompiledView)
+    }
 
     /**
      * creating a new message instance to be used for
      * building mail options
      * @type {Message}
      */
-    const message = new Message()
     callback(message)
-    message.html(compiledView)
 
     /**
      * finally calling send method on
@@ -105,8 +142,8 @@ class MailManager {
      * @type {Message}
      */
     const message = new Message()
-    callback(message)
     message.text(text)
+    callback(message)
 
     /**
      * finally calling send method on
