@@ -45,6 +45,8 @@ const aliases = {
 }
 ```
 
+Example configuration file can be downloaded from [examples/mail.js](examples/mail.js), and should be kept inside `config/mail.js`.
+
 [Official Documentation](http://adonisjs.com/docs/mail)
 
 ## <a name="contribution-guidelines"></a>Contribution Guidelines
