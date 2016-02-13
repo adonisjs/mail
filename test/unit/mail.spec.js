@@ -180,7 +180,7 @@ describe('Smtp driver', function () {
       yield got.patch(`${mailtrapUri}/clean`, {headers: mailTrapHeaders})
     })
 
-    it('should be able to send raw email', function * (done) {
+    it('should be able to send raw email', function * () {
       yield mail.raw('Hello world', function (message) {
         message.to('virk@inbox.mailtrap.io')
         message.from('random@bar.com')
@@ -194,7 +194,7 @@ describe('Smtp driver', function () {
       expect(emailBody.to_email).to.equal('virk@inbox.mailtrap.io')
     })
 
-    it('should be able to send attachments with email', function * () {
+    it('should be able to send attachments with email', function * (done) {
       yield mail.raw('Email with attachment', function (message) {
         message.to('virk@inbox.mailtrap.io')
         message.from('random@bar.com')
@@ -214,7 +214,7 @@ describe('Smtp driver', function () {
        */
       setTimeout(function () {
         done()
-      },1000)
+      }, 1000)
     })
 
     it('should be able to send raw data as attachments with email', function * () {
@@ -233,7 +233,7 @@ describe('Smtp driver', function () {
       expect(attachment.content_type).to.equal('text/plain')
     })
 
-    it('should be able to send email using a view', function * () {
+    it('should be able to send email using a view', function * (done) {
       yield mail.send('welcome', {}, function (message) {
         message.to('virk@inbox.mailtrap.io')
         message.from('random@bar.com')
@@ -249,7 +249,7 @@ describe('Smtp driver', function () {
        */
       setTimeout(function () {
         done()
-      },1000)
+      }, 1000)
     })
 
     it('should be able to attach attachments using cid', function * () {
@@ -264,7 +264,7 @@ describe('Smtp driver', function () {
       expect(emailBody.html_body.trim()).to.equal('<img src="cid:paris" />')
     })
 
-    it('should be able to send runtime config to the send method', function * () {
+    it('should be able to send runtime config to the send method', function * (done) {
       try {
         yield mail.send('paris', {}, function (message) {
           message.to('virk@inbox.mailtrap.io')
@@ -282,7 +282,7 @@ describe('Smtp driver', function () {
        */
       setTimeout(function () {
         done()
-      },1000)
+      }, 1000)
     })
 
     it('should not override instance transport when sending runtime configKey', function * () {
