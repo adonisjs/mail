@@ -1,9 +1,10 @@
 {
   "name": "adonis-mail-provider",
   "version": "1.0.0",
-  "description": "email provider for adonis framework",
+  "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "main": "index.js",
   "directories": {
+    "example": "examples",
     "test": "test"
   },
   "scripts": {
@@ -41,5 +42,13 @@
   },
   "peerDependencies": {
     "adonis-fold": "^2.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adonisjs/adonis-mail.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adonisjs/adonis-mail/issues"
+  },
+  "homepage": "https://github.com/adonisjs/adonis-mail#readme"
 }
