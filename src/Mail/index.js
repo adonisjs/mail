@@ -71,18 +71,17 @@ class Mail {
    * returns a new connection for a given driver, if connection
    * was created earlier, it will be returned instead of a
    * new connection.
-   * @method new
    *
    * @param  {String} driver
    * @return {Object}
    *
    * @example
-   * Mail.new('mandrill')
-   * Mail.new('smtp')
+   * Mail.driver('mandrill')
+   * Mail.driver('smtp')
    *
    * @public
    */
-  new (driver) {
+  driver (driver) {
     if (!this.driversPool[driver]) {
       let driverInstance = this._makeDriverInstance(driver)
       this.driversPool[driver] = driverInstance
@@ -109,7 +108,7 @@ class Mail {
     this.methodsToSpoof.forEach((method) => {
       const self = this
       this[method] = function () {
-        const instance = self.new('default')
+        const instance = self.driver('default')
         return instance[method].apply(instance, arguments)
       }
     })

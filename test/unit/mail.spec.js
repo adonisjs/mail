@@ -70,7 +70,7 @@ describe('Smtp driver', function () {
     it('should throw an error when driver is not found', function () {
       const mail = new Mail()
       const fn = function () {
-        return mail.new('foo')
+        return mail.driver('foo')
       }
       expect(fn).to.throw(NE.DomainException, /Unable to locate foo mail driver/)
     })
@@ -124,9 +124,9 @@ describe('Smtp driver', function () {
         }
       }
       const mail = new Mail(View, Config)
-      const mailManager = mail.new('default')
+      const mailManager = mail.driver('default')
       mailManager.driver.foo = 'bar'
-      const mailManager1 = mail.new('default')
+      const mailManager1 = mail.driver('default')
       expect(mailManager1.driver.foo).to.equal('bar')
     })
 
@@ -151,7 +151,7 @@ describe('Smtp driver', function () {
 
       const mail = new Mail(View, Config)
       yield mail.send('welcome', {}, function () {})
-      yield mail.new('custom').raw('welcome', function () {})
+      yield mail.driver('custom').raw('welcome', function () {})
       expect(Object.keys(mail.driversPool).length).to.equal(2)
       expect(Object.keys(mail.driversPool)).deep.equal(['default', 'custom'])
     })
@@ -169,7 +169,7 @@ describe('Smtp driver', function () {
       }
       Mail.extend('dummy', new Dummy())
       const mail = new Mail()
-      expect(mail.new('dummy').getTransport()).to.equal('foo')
+      expect(mail.driver('dummy').getTransport()).to.equal('foo')
     })
   })
 
