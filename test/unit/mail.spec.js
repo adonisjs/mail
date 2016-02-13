@@ -180,7 +180,7 @@ describe('Smtp driver', function () {
       yield got.patch(`${mailtrapUri}/clean`, {headers: mailTrapHeaders})
     })
 
-    it('should be able to send raw email', function * () {
+    it('should be able to send raw email', function * (done) {
       yield mail.raw('Hello world', function (message) {
         message.to('virk@inbox.mailtrap.io')
         message.from('random@bar.com')
@@ -208,6 +208,13 @@ describe('Smtp driver', function () {
       expect(attachment.filename).to.equal('logo_white.svg')
       expect(attachment.attachment_type).to.equal('attachment')
       expect(attachment.content_type).to.equal('image/svg+xml')
+      /**
+       * mailtrap will deny more than 2 emails in a second, so it is
+       * required to add timeout after every 2 emails
+       */
+      setTimeout(function () {
+        done()
+      },1000)
     })
 
     it('should be able to send raw data as attachments with email', function * () {
@@ -236,6 +243,13 @@ describe('Smtp driver', function () {
       const emailBody = JSON.parse(mailTrapResponse.body)[0]
       expect(emailBody.subject).to.equal('Welcome to adonis')
       expect(emailBody.html_body.trim()).to.equal('<h2> Welcome to adonis </h2>')
+      /**
+       * mailtrap will deny more than 2 emails in a second, so it is
+       * required to add timeout after every 2 emails
+       */
+      setTimeout(function () {
+        done()
+      },1000)
     })
 
     it('should be able to attach attachments using cid', function * () {
@@ -262,6 +276,13 @@ describe('Smtp driver', function () {
       } catch (e) {
         expect(e.message).to.match(/ECONNREFUSED/)
       }
+      /**
+       * mailtrap will deny more than 2 emails in a second, so it is
+       * required to add timeout after every 2 emails
+       */
+      setTimeout(function () {
+        done()
+      },1000)
     })
 
     it('should not override instance transport when sending runtime configKey', function * () {
