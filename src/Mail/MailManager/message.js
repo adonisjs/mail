@@ -19,12 +19,13 @@ class Message {
   }
 
   /**
-   * @description formats email via field based upon
+   * formats email via field based upon
    * name and email
-   * @method _formatField
+   *
    * @param {String} viaEmail
    * @param {String} viaName
    * @return {String}
+   *
    * @private
    */
   _formatField (viaEmail, viaName) {
@@ -32,11 +33,16 @@ class Message {
   }
 
   /**
-   * @description set from field on outgoing message
-   * @method from
+   * set from field on outgoing message
+   *
    * @param  {String} fromEmail
-   * @param  {String} fromName
+   * @param  {String} [fromName]
    * @return {Object}
+   *
+   * @example
+   * message.from('email@example.com')
+   * message.from('email@example.com', 'John Doe')
+   *
    * @public
    */
   from (fromEmail, fromName) {
@@ -48,8 +54,12 @@ class Message {
    * sets sender field on email
    *
    * @param  {String} fromEmail
-   * @param  {String} fromName
+   * @param  {String} [fromName]
    * @return {String}
+   *
+   * @example
+   * message.sender('email@example.com')
+   * message.sender('email@example.com', 'John Doe')
    *
    * @public
    */
@@ -62,8 +72,12 @@ class Message {
    * sets reply to field on email
    *
    * @param  {String} fromEmail
-   * @param  {String} fromName
+   * @param  {String} [fromName]
    * @return {String}
+   *
+   * @example
+   * message.replyTo('email@example.com')
+   * message.replyTo('email@example.com', 'John Doe')
    *
    * @public
    */
@@ -73,11 +87,16 @@ class Message {
   }
 
   /**
-   * @description set to field on outgoing message
-   * @method to
+   * set to field on outgoing message
+   *
    * @param  {String} toEmail
-   * @param  {String} toName
+   * @param  {String} [toName]
    * @return {Object}
+   *
+   * @example
+   * message.to('email@example.com')
+   * message.to('email@example.com', 'John Doe')
+   *
    * @public
    */
   to (toEmail, toName) {
@@ -88,11 +107,16 @@ class Message {
   }
 
   /**
-   * @description set cc field on outgoing message
-   * @method cc
+   * set cc field on outgoing message
+   *
    * @param  {String} ccEmail
    * @param  {String} ccName
    * @return {Object}
+   *
+   * @example
+   * message.cc('email@example.com')
+   * message.cc('email@example.com', 'John Doe')
+   *
    * @public
    */
   cc (ccEmail, ccName) {
@@ -103,11 +127,16 @@ class Message {
   }
 
   /**
-   * @description set bcc field on outgoing message
-   * @method bcc
+   * set bcc field on outgoing message
+   *
    * @param  {String} bccEmail
    * @param  {String} bccName
    * @return {Object}
+   *
+   * @example
+   * message.bcc('email@example.com')
+   * message.bcc('email@example.com', 'John Doe')
+   *
    * @public
    */
   bcc (bccEmail, bccName) {
@@ -118,10 +147,14 @@ class Message {
   }
 
   /**
-   * @description sets subject for outgoing email
-   * @method subject
+   * sets subject for outgoing email
+   *
    * @param  {String} message
    * @return {Object}
+   *
+   * @example
+   * message.subject('Welcome to Adonis')
+   *
    * @public
    */
   subject (message) {
@@ -130,11 +163,17 @@ class Message {
   }
 
   /**
-   * @description sets priority level for outgoing
+   * sets priority level for outgoing
    * email
-   * @method priority
+   *
    * @param  {String} level
    * @return {Object}
+   *
+   * @example
+   * message.priority('high')
+   * message.priority('normal')
+   * message.priority('low')
+   *
    * @public
    */
   priority (level) {
@@ -146,12 +185,16 @@ class Message {
   }
 
   /**
-   * @description set header key/value pair for outgoing
+   * set header key/value pair for outgoing
    * email
-   * @method header
+   *
    * @param  {String} key
    * @param  {Mixed} value
    * @return {Object}
+   *
+   * @example
+   * message.header('x-id', 1)
+   *
    * @public
    */
   header (key, value) {
@@ -161,11 +204,15 @@ class Message {
   }
 
   /**
-   * @description sets an array of headers on outgoing
+   * sets an array of headers on outgoing
    * email
-   * @method headers
+   *
    * @param  {Array} arrayOfHeaders
    * @return {Object}
+   *
+   * @example
+   * message.headers([{key: 'x-id', value: 1}])
+   *
    * @public
    */
   headers (arrayOfHeaders) {
@@ -174,11 +221,17 @@ class Message {
   }
 
   /**
-   * @descriptions attaches a file to outgoing email
-   * @method attach
+   * attaches a file to outgoing email
+   *
    * @param  {String} filePath
-   * @param  {Object} options
+   * @param  {Object} [options={}]
    * @return {Object}
+   *
+   * @example
+   * message.attach(__dirname, './assets/image.png')
+   * message.attach(__dirname, './assets/image.png', {filename: 'Logo'})
+   * message.attach(__dirname, './assets/image.png', {filename: 'Logo', contentType: 'image/png'})
+   *
    * @public
    */
   attach (filePath, options) {
@@ -191,13 +244,17 @@ class Message {
   }
 
   /**
-   * @description attach data as an attachment to
+   * attach data as an attachment to
    * outgoing email
-   * @method attachData
+   *
    * @param  {Mixed}   data
    * @param  {String}   filename
-   * @param  {Object}   options
+   * @param  {Object}   [options={}]
    * @return {Object}
+   *
+   * @example
+   * message.attachData('Hello world', 'hello.txt', {contentType: 'text/plain'})
+   *
    * @public
    */
   attachData (data, filename, options) {
@@ -211,13 +268,18 @@ class Message {
   }
 
   /**
-   * @description attaches file with cid to be used
+   * attaches file with cid to be used
    * inside html
-   * @method embed
+   *
    * @param  {String} filePath
    * @param  {String} cid
    * @param  {Object} options
    * @return {Object}
+   *
+   * @example
+   * message.embed(__dirname, './assets/logo.png', 'unique@kreata.ee')
+   * <img src="cid:unique@kreata.ee" />
+   *
    * @public
    */
   embed (filePath, cid, options) {
@@ -231,10 +293,11 @@ class Message {
   }
 
   /**
-   * @description sets email html
-   * @method html
+   * sets email html
+   *
    * @param  {String} body
    * @return {Object}
+   *
    * @public
    */
   html (body) {
@@ -243,10 +306,11 @@ class Message {
   }
 
   /**
-   * @description sets email plain text
-   * @method text
+   * sets email plain text
+   *
    * @param  {String} body
    * @return {Object}
+   *
    * @public
    */
   text (body) {
@@ -256,9 +320,10 @@ class Message {
 
   /**
    * sets watch html for the email
-   * @method watchHtml
+   *
    * @param  {String}  body
    * @return {Object}
+   *
    * @public
    */
   watchHtml (body) {

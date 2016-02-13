@@ -32,6 +32,16 @@ class MailManager {
     return this.driver.transport
   }
 
+  /**
+   * returns viewsPath to be used for setting up different
+   * contents for a given email
+   *
+   * @param  {Array|String}     view
+   * @return {Object}
+   *
+   * @private
+   * @throws {InvalidArgumentException} If view is not defined
+   */
   _returnViews (view) {
     let viewsHash = {
       htmlView: null,
@@ -61,8 +71,9 @@ class MailManager {
    * @param  {Object}   data
    * @param  {Function} callback
    * @param  {String} [config]
-   *
    * @return {Array}
+   *
+   * @throws {InvalidArgumentException} If callback is not define or not a function
    *
    * @example
    * mail.send('welcome', {}, function (message) {
@@ -80,11 +91,22 @@ class MailManager {
    * @public
    */
   * send (view, data, callback, config) {
+
+    if (typeof(callback) !== 'function') {
+      throw new NE.InvalidArgumentException('callback must be function')
+    }
+
     /**
      * compiling view using view provider
      * @type {String}
      */
     const views = this._returnViews(view)
+
+    /**
+     * creating a new message instance to be used for
+     * building mail options
+     * @type {Message}
+     */
     const message = new Message()
 
     if (views.htmlView) {
@@ -100,11 +122,6 @@ class MailManager {
       message.watchHtml(watchCompiledView)
     }
 
-    /**
-     * creating a new message instance to be used for
-     * building mail options
-     * @type {Message}
-     */
     callback(message)
 
     /**
@@ -125,6 +142,8 @@ class MailManager {
    * @param  {String}   config
    * @return {Array}
    *
+   * @throws {InvalidArgumentException} If callback is not define or not a function
+   *
    * @example
    * mail.raw('<h2> Hello </h2>', function (message) {
    *
@@ -136,6 +155,11 @@ class MailManager {
    * @public
    */
   * raw (text, callback, config) {
+
+    if (typeof(callback) !== 'function') {
+      throw new NE.InvalidArgumentException('callback must be function')
+    }
+
     /**
      * creating a new message instance to be used for
      * building mail options
