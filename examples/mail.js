@@ -27,11 +27,11 @@ module.exports = {
     pool: true,
     // if you define the service, there is no need to define port,host and secure.
     service: 'gmail',
-    port: '',
+    port: 2525,
     host: '',
     secure: false,
     auth: {
-      user: ''
+      user: '',
       pass: ''
     },
     debug: false,
