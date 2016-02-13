@@ -38,7 +38,12 @@ class Transport {
       writable.end('\n- EMAIL END -\n\n')
     })
     writable.on('finish', () => {
-      callback(null, true)
+      const mailSchema = {
+        accepted: mail.data.to,
+        rejected: [],
+        messageId: new Date().getTime()
+      }
+      callback(null, mailSchema)
     })
     writable.on('error', (error) => {
       callback(error, null)

@@ -420,4 +420,18 @@ describe('Log driver', function () {
     mailparser.write(email)
     mailparser.end()
   })
+
+  it('should return standard format on email success', function * () {
+    const message = new Message()
+    message.to('virk@foo.com')
+    message.from('virk@bar.com')
+    message.subject('Hello world')
+    message.html('<img src="cid:LOGO" />')
+    const log = new Log(Config)
+    const response = yield log.send(message.data)
+    expect(response).to.be.an('object')
+    expect(response.messageId).to.exist
+    expect(response.accepted).deep.equal(message.data.to)
+    expect(response.rejected).deep.equal([])
+  })
 })
