@@ -10,14 +10,14 @@
 */
 const BaseDriver = require('../BaseDriver')
 
-class Mandrill extends BaseDriver {
+class MailGun extends BaseDriver {
 
   constructor (Config) {
     super(Config)
     this.TransportLibrary = require('./transport')
-    this.transport = this._createTransport('mail.mandrill')
+    this.transport = this._createTransport('mail.mailgun')
   }
 
 }
 
-module.exports = Mandrill
+module.exports = MailGun
