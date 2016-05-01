@@ -18,7 +18,7 @@
   "author": "adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "adonis-fold": "^2.0.1",
+    "adonis-fold": "^3.0.1",
     "chai": "^3.5.0",
     "co-mocha": "^1.1.2",
     "coveralls": "^2.11.6",
@@ -41,7 +41,7 @@
     "nodemailer": "^2.1.0"
   },
   "peerDependencies": {
-    "adonis-fold": "^2.0.1"
+    "adonis-fold": "^3.0.1"
   },
   "repository": {
     "type": "git",
