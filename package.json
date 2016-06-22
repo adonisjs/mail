@@ -27,7 +27,6 @@
     "istanbul": "^0.4.2",
     "mailparser": "^0.5.3",
     "mocha": "^2.4.5",
-    "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemailer-ses-transport": "^1.3.0",
     "standard": "^6.0.4"
   },

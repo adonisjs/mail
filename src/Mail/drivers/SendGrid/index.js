@@ -6,7 +6,7 @@ class SendGrid extends BaseDriver {
 
   constructor (Config) {
     super(Config)
-    this.TransportLibrary = require('nodemailer-sendgrid-transport')
+    this.TransportLibrary = require('./transport')
     this.transport = this._createTransport('mail.sendgrid')
   }
 

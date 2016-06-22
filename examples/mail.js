@@ -62,9 +62,7 @@ module.exports = {
   |
   */
   sendgrid: {
-    auth: {
-      api_key: Env.get('MANDRILL_APIKEY')
-    }
+    apiKey: Env.get('SENDGRID_APIKEY')
   },
 
   /*
