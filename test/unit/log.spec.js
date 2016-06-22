@@ -50,12 +50,12 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.to[0].address).to.equal('virk@foo.com')
-      expect(mail_object.from[0].address).to.equal('virk@bar.com')
-      expect(mail_object.subject).to.equal('Hello world')
-      expect(mail_object.html).to.equal('<h2>Hello world</h2>')
-      expect(mail_object.text).to.equal('Hello world')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.to[0].address).to.equal('virk@foo.com')
+      expect(mailObject.from[0].address).to.equal('virk@bar.com')
+      expect(mailObject.subject).to.equal('Hello world')
+      expect(mailObject.html).to.equal('<h2>Hello world</h2>')
+      expect(mailObject.text).to.equal('Hello world')
       done()
     })
 
@@ -77,8 +77,8 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.from[0].name).to.equal('Harminder Virk')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.from[0].name).to.equal('Harminder Virk')
       done()
     })
 
@@ -100,8 +100,8 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.to[0].name).to.equal('Harminder Virk')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.to[0].name).to.equal('Harminder Virk')
       done()
     })
 
@@ -124,9 +124,9 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.cc[0].name).to.equal('Harminder Virk')
-      expect(mail_object.cc[0].address).to.equal('virk@baz.com')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.cc[0].name).to.equal('Harminder Virk')
+      expect(mailObject.cc[0].address).to.equal('virk@baz.com')
       done()
     })
 
@@ -149,10 +149,10 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.to.length).to.equal(2)
-      expect(mail_object.to[0].address).to.equal('virk@foo.com')
-      expect(mail_object.to[1].address).to.equal('virk@baz.com')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.to.length).to.equal(2)
+      expect(mailObject.to[0].address).to.equal('virk@foo.com')
+      expect(mailObject.to[1].address).to.equal('virk@baz.com')
       done()
     })
 
@@ -174,8 +174,8 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.headers.sender).to.equal('virk@bar.com')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.headers.sender).to.equal('virk@bar.com')
       done()
     })
 
@@ -197,8 +197,8 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.replyTo[0].address).to.equal('virk@bar.com')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.replyTo[0].address).to.equal('virk@bar.com')
       done()
     })
 
@@ -221,8 +221,8 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.headers['x-priority']).to.equal('high')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.headers['x-priority']).to.equal('high')
       done()
     })
 
@@ -245,8 +245,8 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.headers['x-id']).to.equal('1')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.headers['x-id']).to.equal('1')
       done()
     })
 
@@ -269,9 +269,9 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.headers['x-id']).to.equal('2')
-      expect(mail_object.headers['x-user']).to.equal('doe')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.headers['x-id']).to.equal('2')
+      expect(mailObject.headers['x-user']).to.equal('doe')
       done()
     })
 
@@ -293,8 +293,8 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.subject).to.equal('Hello world')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.subject).to.equal('Hello world')
       done()
     })
 
@@ -315,10 +315,10 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.attachments.length).to.equal(1)
-      expect(mail_object.attachments[0].contentType).to.equal('image/svg+xml')
-      expect(mail_object.attachments[0].fileName).to.equal('logo_white.svg')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.attachments.length).to.equal(1)
+      expect(mailObject.attachments[0].contentType).to.equal('image/svg+xml')
+      expect(mailObject.attachments[0].fileName).to.equal('logo_white.svg')
       done()
     })
 
@@ -339,10 +339,10 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.attachments.length).to.equal(1)
-      expect(mail_object.attachments[0].contentType).to.equal('image/svg+xml')
-      expect(mail_object.attachments[0].fileName).to.equal('logo.svg')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.attachments.length).to.equal(1)
+      expect(mailObject.attachments[0].contentType).to.equal('image/svg+xml')
+      expect(mailObject.attachments[0].fileName).to.equal('logo.svg')
       done()
     })
 
@@ -363,9 +363,9 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.attachments.length).to.equal(1)
-      expect(mail_object.attachments[0].contentType).to.equal('image/png')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.attachments.length).to.equal(1)
+      expect(mailObject.attachments[0].contentType).to.equal('image/png')
       done()
     })
 
@@ -386,11 +386,11 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.attachments.length).to.equal(1)
-      expect(mail_object.attachments[0].contentType).to.equal('text/plain')
-      expect(mail_object.attachments[0].fileName).to.equal('a.txt')
-      expect(mail_object.attachments[0].content.toString('utf8')).to.equal('hello world')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.attachments.length).to.equal(1)
+      expect(mailObject.attachments[0].contentType).to.equal('text/plain')
+      expect(mailObject.attachments[0].fileName).to.equal('a.txt')
+      expect(mailObject.attachments[0].content.toString('utf8')).to.equal('hello world')
       done()
     })
 
@@ -412,8 +412,8 @@ describe('Log driver', function () {
     const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
     const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
 
-    mailparser.on('end', function (mail_object) {
-      expect(mail_object.html).to.equal('<img src="cid:LOGO" />')
+    mailparser.on('end', function (mailObject) {
+      expect(mailObject.html).to.equal('<img src="cid:LOGO" />')
       done()
     })
 
