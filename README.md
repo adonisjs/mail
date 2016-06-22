@@ -15,6 +15,7 @@ Mail provider has support for several drivers to send email from your adonis app
 1. SMTP
 2. Amazon SES
 3. Mandrill
+3. SendGrid
 4. Log ( for testing emails )
 
 ## Table of Contents

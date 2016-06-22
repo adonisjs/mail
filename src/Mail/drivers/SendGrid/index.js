@@ -1,6 +1,5 @@
 'use strict'
 
-
 const BaseDriver = require('../BaseDriver')
 
 class SendGrid extends BaseDriver {
