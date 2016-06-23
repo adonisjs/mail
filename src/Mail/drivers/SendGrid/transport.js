@@ -1,5 +1,6 @@
 'use strict'
 
+const fs = require('fs')
 const got = require('got')
 
 class SendGridTransport {
@@ -55,52 +56,93 @@ class SendGridTransport {
    * @public
    */
   send (mail, callback) {
-    const body = { personalizations: [], content: [] }
-    body.from = this._mimeToObject(mail.data.from)
-
-    const toObjects = []
-    mail.data.to.forEach((contact) => {
-      toObjects.push(this._mimeToObject(contact))
-    })
-
-    body.personalizations.push({
-      subject: mail.data.subject,
-      to: toObjects
-    })
-
-    if (mail.data.text) {
-      body.content.push({
-        type: 'text/plain',
-        value: mail.data.text
+    // Base64 encode each attachment
+    const attachments = []
+    const readPromises = []
+    if (mail.data.attachments) {
+      mail.data.attachments.forEach((attachment) => {
+        const path = attachment.path
+        const filename = path.split('/').pop()
+        readPromises.push(
+          new Promise((resolve, reject) => {
+            fs.readFile(path, {
+              encoding: 'base64'
+            }, (err, data) => {
+              if (err) return reject(err)
+              const content = data
+              attachments.push({ filename, content })
+              return resolve(data)
+            })
+          })
+        )
       })
     }
 
-    if (mail.data.html) {
-      body.content.push({
-        type: 'text/html',
-        value: mail.data.html
-      })
-    }
+    Promise.all(readPromises).then(() => {
+      const body = {
+        personalizations: [],
+        content: []
+      }
 
-    got.post(this.apiUrl, {
-      body: JSON.stringify(body),
-      json: true,
-      headers: {
-        'user-agent': 'adonis-mail',
-        'Authorization': 'Bearer ' + this.options.apiKey,
-        'Content-Type': 'application/json'
+      // Add attachments if there are any
+      if (attachments.length > 0) {
+        body.attachments = attachments
       }
-    })
-    .then((response) => {
-      const messageId = (mail.message.getHeader('message-id') || '').replace(/[<>\s]/g, '')
-      callback(null, { messageId })
-    })
-    .catch((error) => {
-      try {
-        callback(JSON.parse(error.response.body), {})
-      } catch (e) {
-        callback(error, {})
+
+      // Add from object
+      body.from = this._mimeToObject(mail.data.from)
+
+      // Add all recipient obejcts
+      const toObjects = []
+      mail.data.to.forEach((contact) => {
+        toObjects.push(this._mimeToObject(contact))
+      })
+
+      // Add to recipients to body with subject
+      body.personalizations.push({
+        subject: mail.data.subject,
+        to: toObjects
+      })
+
+      // add plain content
+      if (mail.data.text) {
+        body.content.push({
+          type: 'text/plain',
+          value: mail.data.text
+        })
       }
+
+      // add html content
+      if (mail.data.html) {
+        body.content.push({
+          type: 'text/html',
+          value: mail.data.html
+        })
+      }
+
+      // Send request to api
+      got.post(this.apiUrl, {
+        body: JSON.stringify(body),
+        json: true,
+        headers: {
+          'user-agent': 'adonis-mail',
+          'Authorization': 'Bearer ' + this.options.apiKey,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then((response) => {
+        const messageId = (mail.message.getHeader('message-id') || '').replace(/[<>\s]/g, '')
+        callback(null, { messageId })
+      })
+      .catch((error) => {
+        try {
+          callback(JSON.parse(error.response.body), {})
+        } catch (e) {
+          callback(error, {})
+        }
+      })
+    }).catch((error) => {
+      return callback(error, {})
     })
   }
 }
