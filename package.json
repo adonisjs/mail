@@ -1,6 +1,6 @@
 {
   "name": "adonis-mail-provider",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "main": "index.js",
   "directories": {
@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run standard && istanbul cover _mocha --report lcovonly -- -R spec test/unit && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
-    "standard": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js providers/*.js"
+    "test": "npm run lint && istanbul cover _mocha --report lcovonly -- -R spec test/unit && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
+    "lint": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js providers/*.js"
   },
   "keywords": [
     "adonis",
@@ -18,7 +18,7 @@
   "author": "adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "adonis-fold": "^2.0.1",
+    "adonis-fold": "^3.0.2",
     "chai": "^3.5.0",
     "co-mocha": "^1.1.2",
     "coveralls": "^2.11.6",
@@ -37,11 +37,12 @@
   },
   "dependencies": {
     "co-fs-extra": "^1.1.0",
+    "form-data": "^0.2.0",
     "node-exceptions": "^1.0.1",
     "nodemailer": "^2.1.0"
   },
   "peerDependencies": {
-    "adonis-fold": "^2.0.1"
+    "adonis-fold": "^3.0.2"
   },
   "repository": {
     "type": "git",

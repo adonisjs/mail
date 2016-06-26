@@ -2,11 +2,11 @@
 
 [![Gitter](https://img.shields.io/badge/+%20GITTER-JOIN%20CHAT%20%E2%86%92-1DCE73.svg?style=flat-square)](https://gitter.im/adonisjs/adonis-framework)
 [![Trello](https://img.shields.io/badge/TRELLO-%E2%86%92-89609E.svg?style=flat-square)](https://trello.com/b/yzpqCgdl/adonis-for-humans)
-[![Version](https://img.shields.io/npm/v/adonis-mail.svg?style=flat-square)](https://www.npmjs.com/package/adonis-mail)
+[![Version](https://img.shields.io/npm/v/adonis-mail-provider.svg?style=flat-square)](https://www.npmjs.com/package/adonis-mail-provider)
 [![Build Status](https://img.shields.io/travis/adonisjs/adonis-mail/master.svg?style=flat-square)](https://travis-ci.org/adonisjs/adonis-mail)
 [![Coverage Status](https://img.shields.io/coveralls/adonisjs/adonis-mail/master.svg?style=flat-square)](https://coveralls.io/github/adonisjs/adonis-mail?branch=master)
-[![Downloads](https://img.shields.io/npm/dt/adonis-mail.svg?style=flat-square)](https://www.npmjs.com/package/adonis-mail)
-[![License](https://img.shields.io/npm/l/adonis-mail.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Downloads](https://img.shields.io/npm/dt/adonis-mail-provider.svg?style=flat-square)](https://www.npmjs.com/package/adonis-mail-provider)
+[![License](https://img.shields.io/npm/l/adonis-mail-provider.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 > :pray: This repository contains email sending facilities for adonis framework.
 
