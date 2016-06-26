@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run standard && istanbul cover _mocha --report lcovonly -- -R spec test/unit && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
-    "standard": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js providers/*.js"
+    "test": "npm run lint && istanbul cover _mocha --report lcovonly -- -R spec test/unit && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
+    "lint": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js providers/*.js"
   },
   "keywords": [
     "adonis",
