@@ -71,6 +71,20 @@ module.exports = {
 
   /*
   |--------------------------------------------------------------------------
+  | MailGun
+  |--------------------------------------------------------------------------
+  |
+  | Here we define api credentials for Amazon SES account. Make sure you have
+  | verified your domain and email address, before you can send emails.
+  |
+  */
+  mailgun: {
+    domain: Env.get('MAILGUN_DOMAIN'),
+    apiKey: Env.get('MAILGUN_APIKEY')
+  },
+
+  /*
+  |--------------------------------------------------------------------------
   | Log
   |--------------------------------------------------------------------------
   |
