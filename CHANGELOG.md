@@ -1,3 +1,13 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/adonisjs/adonis-mail/compare/v1.0.1...v2.0.0) (2016-06-26)
+
+
+### Features
+
+* **mail:mailgun:** add mailgun driver([3979774](https://github.com/adonisjs/adonis-mail/commit/3979774))
+
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/adonisjs/adonis-mail/compare/v1.0.0...v1.0.1) (2016-02-13)
 
