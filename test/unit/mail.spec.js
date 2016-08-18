@@ -16,6 +16,7 @@ const Ioc = require('adonis-fold').Ioc
 const NE = require('node-exceptions')
 const fs = require('fs')
 const path = require('path')
+const co = require('co')
 const got = require('got')
 const expect = chai.expect
 require('co-mocha')
@@ -194,20 +195,25 @@ describe('Smtp driver', function () {
       expect(emailBody.to_email).to.equal('virk@inbox.mailtrap.io')
     })
 
-    it('should be able to send attachments with email', function * () {
-      yield mail.raw('Email with attachment', function (message) {
-        message.to('virk@inbox.mailtrap.io')
-        message.from('random@bar.com')
-        message.subject('Email with attachment')
-        message.attach(path.join(__dirname, './assets/logo_white.svg'))
+    it('should be able to send attachments with email', function (done) {
+      co(function * () {
+        yield mail.raw('Email with attachment', function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Email with attachment')
+          message.attach(path.join(__dirname, './assets/logo_white.svg'))
+        })
+        const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
+        const emailId = JSON.parse(mailTrapResponse.body)[0].id
+        const attachments = yield got(`${mailtrapUri}/messages/${emailId}/attachments`, {headers: mailTrapHeaders})
+        const attachment = JSON.parse(attachments.body)[0]
+        expect(attachment.filename).to.equal('logo_white.svg')
+        expect(attachment.attachment_type).to.equal('attachment')
+        expect(attachment.content_type).to.equal('image/svg+xml')
+        setTimeout(() => {
+          done()
+        }, 1000)
       })
-      const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
-      const emailId = JSON.parse(mailTrapResponse.body)[0].id
-      const attachments = yield got(`${mailtrapUri}/messages/${emailId}/attachments`, {headers: mailTrapHeaders})
-      const attachment = JSON.parse(attachments.body)[0]
-      expect(attachment.filename).to.equal('logo_white.svg')
-      expect(attachment.attachment_type).to.equal('attachment')
-      expect(attachment.content_type).to.equal('image/svg+xml')
     })
 
     it('should be able to send raw data as attachments with email', function * () {
@@ -226,16 +232,21 @@ describe('Smtp driver', function () {
       expect(attachment.content_type).to.equal('text/plain')
     })
 
-    it('should be able to send email using a view', function * () {
-      yield mail.send('welcome', {}, function (message) {
-        message.to('virk@inbox.mailtrap.io')
-        message.from('random@bar.com')
-        message.subject('Welcome to adonis')
+    it('should be able to send email using a view', function (done) {
+      co(function * () {
+        yield mail.send('welcome', {}, function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Welcome to adonis')
+        })
+        const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
+        const emailBody = JSON.parse(mailTrapResponse.body)[0]
+        expect(emailBody.subject).to.equal('Welcome to adonis')
+        expect(emailBody.html_body.trim()).to.equal('<h2> Welcome to adonis </h2>')
+        setTimeout(() => {
+          done()
+        }, 1000)
       })
-      const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
-      const emailBody = JSON.parse(mailTrapResponse.body)[0]
-      expect(emailBody.subject).to.equal('Welcome to adonis')
-      expect(emailBody.html_body.trim()).to.equal('<h2> Welcome to adonis </h2>')
     })
 
     it('should be able to attach attachments using cid', function * () {
@@ -250,18 +261,23 @@ describe('Smtp driver', function () {
       expect(emailBody.html_body.trim()).to.equal('<img src="cid:paris" />')
     })
 
-    it('should be able to send runtime config to the send method', function * () {
-      try {
-        yield mail.send('paris', {}, function (message) {
-          message.to('virk@inbox.mailtrap.io')
-          message.from('random@bar.com')
-          message.subject('Welcome to adonis')
-          message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
-        }, 'smtp.invalid')
-        expect(true).to.equal(false)
-      } catch (e) {
-        expect(e.message).to.match(/ECONNREFUSED/)
-      }
+    it('should be able to send runtime config to the send method', function (done) {
+      co(function * () {
+        try {
+          yield mail.send('paris', {}, function (message) {
+            message.to('virk@inbox.mailtrap.io')
+            message.from('random@bar.com')
+            message.subject('Welcome to adonis')
+            message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
+          }, 'smtp.invalid')
+          expect(true).to.equal(false)
+        } catch (e) {
+          expect(e.message).to.match(/ECONNREFUSED/)
+          setTimeout(() => {
+            done()
+          }, 1000)
+        }
+      })
     })
 
     it('should not override instance transport when sending runtime configKey', function * () {

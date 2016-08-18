@@ -48,7 +48,6 @@ describe('Log driver', function () {
       const log = new Log(Config)
       yield log.send(message.data)
       const mailparser = new MailParser()
-      console.log(mailparser)
 
       const emailLogs = yield fs.readFile(Config.get().toPath, 'utf8')
       const email = emailLogs.split(/-\s?Email Start\s?-/gi).pop().replace(/-\s?EMAIL END\s?-/i, '').trim()
