@@ -11,7 +11,7 @@
 
 /* global it, describe, context */
 const MailManager = require('../../src/Mail/MailManager')
-const LogDriver = require('../../src/Mail/drivers/Log')
+const LogDriver = require('../../src/Mail/drivers').log
 const NE = require('node-exceptions')
 const chai = require('chai')
 const expect = chai.expect
