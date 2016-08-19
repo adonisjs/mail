@@ -10,7 +10,7 @@ module.exports = {
   |--------------------------------------------------------------------------
   |
   | driver defines the default driver to be used for sending emails. Adonis
-  | has support for 'mandrill', 'smtp', 'ses' and 'log' driver.
+  | has support for 'mailgun', 'mandrill', 'smtp', 'ses' and 'log' driver.
   |
   */
   driver: Env.get('MAIL_DRIVER', 'smtp'),
