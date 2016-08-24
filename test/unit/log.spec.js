@@ -16,7 +16,7 @@ const path = require('path')
 const fs = require('co-fs-extra')
 const MailParser = require('mailparser').MailParser
 const co = require('co')
-const Log = require('../../src/Mail/drivers').log
+const Log = require('../../src/Mail/Drivers').log
 const Message = require('../../src/Mail/Message')
 require('co-mocha')
 
