@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-framework
+/*
+ * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -33,8 +33,12 @@ class BaseDriver {
   _createTransport (configKey) {
     const nodemailer = require('nodemailer')
     const options = this.config.get(configKey)
-    const transportInstance = this.TransportLibrary ? new this.TransportLibrary(options) : options
-    return nodemailer.createTransport(transportInstance)
+    if (!this.TransportLibrary) {
+      // make transport using the config. for example - SMTP transport
+      // works without the transport library
+      return nodemailer.createTransport(options)
+    }
+    return nodemailer.createTransport(new this.TransportLibrary(options))
   }
 
   /**

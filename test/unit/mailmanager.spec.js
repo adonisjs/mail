@@ -9,421 +9,295 @@
  * file that was distributed with this source code.
 */
 
-/* global it, describe, context */
+/* global it, describe, context, after */
 const MailManager = require('../../src/Mail/MailManager')
-const LogDriver = require('../../src/Mail/drivers').log
-const NE = require('node-exceptions')
 const chai = require('chai')
-const expect = chai.expect
+const Ioc = require('adonis-fold').Ioc
+const fs = require('fs')
 const path = require('path')
+const co = require('co')
+const got = require('got')
+const expect = chai.expect
 require('co-mocha')
 
-const view = {
-  make: function * (key) {
+const Config = {
+  get: function (key) {
     switch (key) {
-      case 'welcome':
-        return '<h2>Welcome to Adonis</h2>'
-      case 'welcome.text':
-        return 'Welcome to Adonis'
-      case 'welcome.watch':
-        return '<h2>Welcome to Adonis</h2>'
+      case 'mail.driver':
+        return 'smtp'
+      case 'smtp.invalid':
+        return {}
+      case 'mail.smtp':
+        return {
+          host: 'mailtrap.io',
+          pool: true,
+          port: 2525,
+          auth: {
+            user: process.env.MAILTRAP_USERNAME,
+            pass: process.env.MAILTRAP_PASSWORD
+          }
+        }
     }
   }
 }
 
-const driver = {
-  send: function * () {}
+const mailtrapUri = 'https://mailtrap.io/api/v1/inboxes/28268'
+const mailTrapHeaders = {'Api-Token': process.env.MAILTRAP_APIKEY}
+
+Ioc.bind('Config', function () {
+  return Config
+})
+
+const View = {
+  make: function * (name) {
+    return new Promise(function (resolve, reject) {
+      fs.readFile(`${path.join(__dirname, './views/' + name + '.html')}`, function (error, contents) {
+        if (error) reject(error)
+        else resolve(contents.toString('utf8'))
+      })
+    })
+  }
 }
+const mailManager = new MailManager(View, Config)
 
-describe('Mail', function () {
-  context('MailManager', function () {
-    it('should throw an error when callback is not defined when using send method', function * () {
-      const m = new MailManager(view, driver)
-      try {
-        yield m.send('user')
-        expect(true).to.equal(false)
-      } catch (e) {
-        expect(e.message).to.equal('callback must be function')
+describe('Smtp driver', function () {
+  context('Mail', function () {
+    it('should not create the driver instance, until one of the mailing methods have been called', function () {
+      const mailManager = new MailManager()
+      expect(mailManager instanceof MailManager).to.equal(true)
+    })
+
+    it('should throw an error when driver is not found', function () {
+      const mailManager = new MailManager()
+      const fn = function () {
+        return mailManager.driver('foo')
       }
+      expect(fn).to.throw('RuntimeException: E_INVALID_MAIL_DRIVER: Unable to locate foo mail driver')
     })
 
-    it('should throw an error when callback is not defined when using raw method', function * () {
-      const m = new MailManager(view, driver)
-      try {
-        yield m.raw('user')
-        expect(true).to.equal(false)
-      } catch (e) {
-        expect(e.message).to.equal('callback must be function')
-      }
-    })
-
-    it('should set from field on mail body', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.from('virk@foo.com')
-        expect(message.data.from).to.equal('virk@foo.com')
-      })
-    })
-
-    it('should set from field on mail body with from name', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.from('virk@foo.com', 'Aman Virk')
-        expect(message.data.from).to.equal('Aman Virk <virk@foo.com>')
-      })
-    })
-
-    it('should set replyTo field on mail body', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.replyTo('virk@foo.com')
-        expect(message.data.replyTo).to.equal('virk@foo.com')
-      })
-    })
-
-    it('should set replyTo field on mail body with replyTo name', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.replyTo('virk@foo.com', 'Aman Virk')
-        expect(message.data.replyTo).to.equal('Aman Virk <virk@foo.com>')
-      })
-    })
-
-    it('should set sender field on mail body', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.sender('virk@foo.com')
-        expect(message.data.sender).to.equal('virk@foo.com')
-      })
-    })
-
-    it('should set sender field on mail body with sender name', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.sender('virk@foo.com', 'Aman Virk')
-        expect(message.data.sender).to.equal('Aman Virk <virk@foo.com>')
-      })
-    })
-
-    it('should set to field on mail body', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.to('virk@bar.com')
-        expect(message.data.to).deep.equal(['virk@bar.com'])
-      })
-    })
-
-    it('should set to field on mail body with to name', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.to('virk@bar.com', 'Virk')
-        expect(message.data.to).deep.equal(['Virk <virk@bar.com>'])
-      })
-    })
-
-    it('should be able to set multiple to emails', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.to('virk@bar.com', 'Virk')
-        message.to('virk@foo.com')
-        expect(message.data.to).deep.equal(['Virk <virk@bar.com>', 'virk@foo.com'])
-      })
-    })
-
-    it('should set cc field on mail body', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.cc('virk@bar.com')
-        expect(message.data.cc).deep.equal(['virk@bar.com'])
-      })
-    })
-
-    it('should set cc field on mail body with cc name', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.cc('virk@bar.com', 'Aman')
-        expect(message.data.cc).deep.equal(['Aman <virk@bar.com>'])
-      })
-    })
-
-    it('should be able to set multiple cc emails', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.cc('virk@bar.com', 'Aman')
-        message.cc('virk@virk.com')
-        expect(message.data.cc).deep.equal(['Aman <virk@bar.com>', 'virk@virk.com'])
-      })
-    })
-
-    it('should set bcc field on mail body', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.bcc('virk@bar.com')
-        expect(message.data.bcc).deep.equal(['virk@bar.com'])
-      })
-    })
-
-    it('should set bcc field on mail body with bcc name', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.bcc('virk@bar.com', 'Aman')
-        expect(message.data.bcc).deep.equal(['Aman <virk@bar.com>'])
-      })
-    })
-
-    it('should be able to set multiple bcc emails', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.bcc('virk@bar.com', 'Aman')
-        message.bcc('virk@virk.com')
-        expect(message.data.bcc).deep.equal(['Aman <virk@bar.com>', 'virk@virk.com'])
-      })
-    })
-
-    it('should be able to set email subject', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.subject('Hello world')
-        expect(message.data.subject).to.equal('Hello world')
-      })
-    })
-
-    it('should throw an error when email priority is not one of the defined levels', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        const fn = function () {
-          return message.priority('foo')
+    it('should be able to extend mail provider', function * () {
+      class Dummy {
+        * send () {
+          return 'send called'
         }
-        expect(fn).to.throw(NE.InvalidArgumentException, /Priority must be/)
-      })
-    })
-
-    it('should be able to set email priority', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.priority('normal')
-        expect(message.data.priority).to.equal('normal')
-      })
-    })
-
-    it('should be able to set email headers as an array', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        const xTime = new Date().getTime()
-        message.headers([{key: 'X-TIME', value: xTime}])
-        expect(message.data.headers[0].value).to.equal(xTime)
-      })
-    })
-
-    it('should be able to set email headers using key value as method arguments', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        const xTime = new Date().getTime()
-        message.header('X-TIME', xTime)
-        expect(message.data.headers[0].value).to.equal(xTime)
-      })
-    })
-
-    it('should attach file using raw text', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.attachData('Hello world', 'hello.txt')
-        expect(message.data.attachments[0].content).to.equal('Hello world')
-        expect(message.data.attachments[0].filename).to.equal('hello.txt')
-      })
-    })
-
-    it("should attach file using it's path", function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.attach('../../package.json')
-        expect(message.data.attachments[0].path).to.equal('../../package.json')
-      })
-    })
-
-    it('should embed file using cid', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send('user', {}, function (message) {
-        message.embed('../../package.json', 'packagefile')
-        expect(message.data.attachments[0].cid).to.equal('packagefile')
-      })
-    })
-
-    it('should set html view when an array with first item is passed', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send(['welcome'], {}, function (message) {
-        expect(message.data.html).to.equal('<h2>Welcome to Adonis</h2>')
-      })
-    })
-
-    it('should set html and text view when an array with two items has been passed', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send(['welcome', 'welcome.text'], {}, function (message) {
-        expect(message.data.html).to.equal('<h2>Welcome to Adonis</h2>')
-        expect(message.data.text).to.equal('Welcome to Adonis')
-      })
-    })
-
-    it('should set html, text and watch view when an array with three items has been passed', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send(['welcome', 'welcome.text', 'welcome.watch'], {}, function (message) {
-        expect(message.data.html).to.equal('<h2>Welcome to Adonis</h2>')
-        expect(message.data.text).to.equal('Welcome to Adonis')
-        expect(message.data.watchHtml).to.equal('<h2>Welcome to Adonis</h2>')
-      })
-    })
-
-    it('should set text view when first item in array is empty', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send(['', 'welcome.text', 'welcome.watch'], {}, function (message) {
-        expect(message.data.html).to.equal(undefined)
-        expect(message.data.text).to.equal('Welcome to Adonis')
-        expect(message.data.watchHtml).to.equal('<h2>Welcome to Adonis</h2>')
-      })
-    })
-
-    it('should set watch view when first two items in array are empty', function * () {
-      const m = new MailManager(view, driver)
-      yield m.send(['', '', 'welcome.watch'], {}, function (message) {
-        expect(message.data.html).to.equal(undefined)
-        expect(message.data.text).to.equal(undefined)
-        expect(message.data.watchHtml).to.equal('<h2>Welcome to Adonis</h2>')
-      })
-    })
-
-    it('should return the driver transport using getTransport method', function () {
+      }
+      MailManager.extend('dummy', new Dummy())
       const Config = {
         get: function () {
-          return {toPath: null}
+          return 'dummy'
         }
       }
-      const driver = new LogDriver(Config)
-      const m = new MailManager(view, driver)
-      expect(m.getTransport().use).to.be.a('function')
+      const mailManager = new MailManager(View, Config)
+      const i = yield mailManager.send('welcome', {}, function () {})
+      expect(i).to.equal('send called')
     })
 
-    it('should send config key to the driver using send method', function * () {
-      let configKey = null
+    it('should not create the driver instance if already exists', function * () {
       class Dummy {
-        * send (message, config) {
-          configKey = config
+        * send () {
+          return 'send called'
         }
       }
-      const m = new MailManager(view, new Dummy())
-      yield m.send('view', {}, function () {}, 'mail.other')
-      expect(configKey).to.equal('mail.other')
+      MailManager.extend('dummy', new Dummy())
+      const Config = {
+        get: function () {
+          return 'dummy'
+        }
+      }
+      const mailManager = new MailManager(View, Config)
+      yield mailManager.send('welcome', {}, function () {})
+      yield mailManager.raw('welcome', function () {})
+      expect(Object.keys(mailManager.driversPool).length).to.equal(1)
+      expect(Object.keys(mailManager.driversPool)).deep.equal(['default'])
     })
 
-    it('should send config key to the driver using raw method', function * () {
-      let configKey = null
+    it('should return the old driver instance if exists', function * () {
       class Dummy {
-        * send (message, config) {
-          configKey = config
+        * send () {
+          return 'send called'
         }
       }
-      const m = new MailManager(view, new Dummy())
-      yield m.raw('view', function () {}, 'mail.other')
-      expect(configKey).to.equal('mail.other')
-    })
-
-    it('should set view as html view when view value is string', function () {
-      const m = new MailManager(view, driver)
-      const views = m._returnViews('welcome')
-      expect(views).to.be.an('object')
-      expect(views.htmlView).to.equal('welcome')
-      expect(views.textView).to.equal(null)
-      expect(views.watchView).to.equal(null)
-    })
-
-    it('should set view as html view an array with single item is passed', function () {
-      const m = new MailManager(view, driver)
-      const views = m._returnViews(['welcome'])
-      expect(views).to.be.an('object')
-      expect(views.htmlView).to.equal('welcome')
-      expect(views.textView).to.equal(null)
-      expect(views.watchView).to.equal(null)
-    })
-
-    it('should set html and text view an array with couple of items have been passed', function () {
-      const m = new MailManager(view, driver)
-      const views = m._returnViews(['welcome', 'welcome.text'])
-      expect(views).to.be.an('object')
-      expect(views.htmlView).to.equal('welcome')
-      expect(views.textView).to.equal('welcome.text')
-      expect(views.watchView).to.equal(null)
-    })
-
-    it('should set html, text and watch view an array with 3 items have been passed', function () {
-      const m = new MailManager(view, driver)
-      const views = m._returnViews(['welcome', 'welcome.text', 'welcome.watch'])
-      expect(views).to.be.an('object')
-      expect(views.htmlView).to.equal('welcome')
-      expect(views.textView).to.equal('welcome.text')
-      expect(views.watchView).to.equal('welcome.watch')
-    })
-
-    it('should thrown an error when an empty array is passed', function () {
-      const m = new MailManager(view, driver)
-      const fn = function () {
-        return m._returnViews([])
+      MailManager.extend('dummy', new Dummy())
+      const Config = {
+        get: function () {
+          return 'dummy'
+        }
       }
-      expect(fn).to.throw(NE.InvalidArgumentException, /you must set atleast one template/)
+      const mailManager = new MailManager(View, Config)
+      const mail = mailManager.driver('default')
+      mail.driver.foo = 'bar'
+      const mail1 = mailManager.driver('default')
+      expect(mail1.driver.foo).to.equal('bar')
     })
 
-    it('should thrown an error when an empty string is passed', function () {
-      const m = new MailManager(view, driver)
-      const fn = function () {
-        return m._returnViews('')
+    it('should create the driver instance if does not exists', function * () {
+      class Dummy {
+        * send () {
+        }
       }
-      expect(fn).to.throw(NE.InvalidArgumentException, /you must set atleast one template/)
-    })
 
-    it('should thrown an error when an null is passed', function () {
-      const m = new MailManager(view, driver)
-      const fn = function () {
-        return m._returnViews(null)
+      class Custom {
+        * send () {
+        }
       }
-      expect(fn).to.throw(NE.InvalidArgumentException, /you must set atleast one template/)
+      MailManager.extend('dummy', new Dummy())
+      MailManager.extend('custom', new Custom())
+
+      const Config = {
+        get: function () {
+          return 'dummy'
+        }
+      }
+
+      const mailManager = new MailManager(View, Config)
+      yield mailManager.send('welcome', {}, function () {})
+      yield mailManager.driver('custom').raw('welcome', function () {})
+      expect(Object.keys(mailManager.driversPool).length).to.equal(2)
+      expect(Object.keys(mailManager.driversPool)).deep.equal(['default', 'custom'])
     })
 
-    it('should not thrown an error when an array with text only view is defined', function () {
-      const m = new MailManager(view, driver)
-      const views = m._returnViews(['', 'welcome.text'])
-      expect(views).to.be.an('object')
-      expect(views.htmlView).to.equal(null)
-      expect(views.textView).to.equal('welcome.text')
-      expect(views.watchView).to.equal(null)
+    it('should return driver transport using getTransport method', function () {
+      const mailManager = new MailManager(View, Config)
+      expect(mailManager.getTransport().use).to.be.a('function')
+    })
+
+    it('should return driver transport when new driver is retreived', function () {
+      class Dummy {
+        constructor () {
+          this.transport = 'foo'
+        }
+      }
+      MailManager.extend('dummy', new Dummy())
+      const mailManager = new MailManager()
+      expect(mailManager.driver('dummy').getTransport()).to.equal('foo')
     })
   })
 
-  context('Sending Fake Email', function () {
-    let driverMessage = null
-    const messageView = {
-      make: function * (template) {
-        if (template === 'index') {
-          return 'Hello index'
-        }
-      }
-    }
+  context('Sending Mail', function () {
+    this.timeout(0)
 
-    const smtpDriver = {
-      send: function * (message) {
-        driverMessage = message
-      }
-    }
+    after(function * () {
+      yield got.patch(`${mailtrapUri}/clean`, {headers: mailTrapHeaders})
+    })
 
-    it('should return send valid object to driver send method', function * () {
-      this.timeout(5000)
-      const m = new MailManager(messageView, smtpDriver)
-      let expectedMessage = null
-      yield m.send('index', {}, function (message) {
-        message
-          .from('harminder.virk@foo.com', 'Aman Virk')
-          .to('virk@bar.com')
-          .attach(path.join(__dirname, '../../.travis.yml'))
-        expectedMessage = message.data
+    it('should be able to send raw email', function * () {
+      yield mailManager.raw('Hello world', function (message) {
+        message.to('virk@inbox.mailtrap.io')
+        message.from('random@bar.com')
+        message.subject('This is a raw email')
       })
-      expect(expectedMessage).deep.equal(driverMessage)
+      const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
+      const emailBody = JSON.parse(mailTrapResponse.body)[0]
+      expect(emailBody.subject).to.equal('This is a raw email')
+      expect(emailBody.text_body.trim()).to.equal('Hello world')
+      expect(emailBody.from_email).to.equal('random@bar.com')
+      expect(emailBody.to_email).to.equal('virk@inbox.mailtrap.io')
+    })
+
+    it('should be able to send attachments with email', function (done) {
+      co(function * () {
+        yield mailManager.raw('Email with attachment', function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Email with attachment')
+          message.attach(path.join(__dirname, './assets/logo_white.svg'))
+        })
+        const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
+        const emailId = JSON.parse(mailTrapResponse.body)[0].id
+        const attachments = yield got(`${mailtrapUri}/messages/${emailId}/attachments`, {headers: mailTrapHeaders})
+        const attachment = JSON.parse(attachments.body)[0]
+        expect(attachment.filename).to.equal('logo_white.svg')
+        expect(attachment.attachment_type).to.equal('attachment')
+        expect(attachment.content_type).to.equal('image/svg+xml')
+        setTimeout(() => {
+          done()
+        }, 1000)
+      })
+    })
+
+    it('should be able to send raw data as attachments with email', function * () {
+      yield mailManager.raw('Email with raw attachment', function (message) {
+        message.to('virk@inbox.mailtrap.io')
+        message.from('random@bar.com')
+        message.subject('Email with attachment')
+        message.attachData('What\'s up', 'hello.txt')
+      })
+      const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
+      const emailId = JSON.parse(mailTrapResponse.body)[0].id
+      const attachments = yield got(`${mailtrapUri}/messages/${emailId}/attachments`, {headers: mailTrapHeaders})
+      const attachment = JSON.parse(attachments.body)[0]
+      expect(attachment.filename).to.equal('hello.txt')
+      expect(attachment.attachment_type).to.equal('attachment')
+      expect(attachment.content_type).to.equal('text/plain')
+    })
+
+    it('should be able to send email using a view', function (done) {
+      co(function * () {
+        yield mailManager.send('welcome', {}, function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Welcome to adonis')
+        })
+        const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
+        const emailBody = JSON.parse(mailTrapResponse.body)[0]
+        expect(emailBody.subject).to.equal('Welcome to adonis')
+        expect(emailBody.html_body.trim()).to.equal('<h2> Welcome to adonis </h2>')
+        setTimeout(() => {
+          done()
+        }, 1000)
+      })
+    })
+
+    it('should be able to attach attachments using cid', function * () {
+      yield mailManager.send('paris', {}, function (message) {
+        message.to('virk@inbox.mailtrap.io')
+        message.from('random@bar.com')
+        message.subject('Welcome to adonis')
+        message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
+      })
+      const mailTrapResponse = yield got(`${mailtrapUri}/messages`, {headers: mailTrapHeaders})
+      const emailBody = JSON.parse(mailTrapResponse.body)[0]
+      expect(emailBody.html_body.trim()).to.equal('<img src="cid:paris" />')
+    })
+
+    it('should be able to send runtime config to the send method', function (done) {
+      co(function * () {
+        try {
+          yield mailManager.send('paris', {}, function (message) {
+            message.to('virk@inbox.mailtrap.io')
+            message.from('random@bar.com')
+            message.subject('Welcome to adonis')
+            message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
+          }, 'smtp.invalid')
+          expect(true).to.equal(false)
+        } catch (e) {
+          expect(e.message).to.match(/ECONNREFUSED/)
+          setTimeout(() => {
+            done()
+          }, 1000)
+        }
+      })
+    })
+
+    it('should not override instance transport when sending runtime configKey', function * () {
+      try {
+        yield mailManager.send('paris', {}, function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Welcome to adonis')
+          message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
+        }, 'smtp.invalid')
+        expect(true).to.equal(false)
+      } catch (e) {
+        expect(e.message).to.match(/ECONNREFUSED/)
+        const response = yield mailManager.send('paris', {}, function (message) {
+          message.to('virk@inbox.mailtrap.io')
+          message.from('random@bar.com')
+          message.subject('Welcome to adonis')
+          message.embed(path.join(__dirname, './assets/paris-880754_960_720.jpg'), 'paris')
+        })
+        expect(response.accepted.length).to.equal(1)
+      }
     })
   })
 })

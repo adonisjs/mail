@@ -14,13 +14,13 @@ const ServiceProvider = require('adonis-fold').ServiceProvider
 class MailProvider extends ServiceProvider {
 
   * register () {
-    const Mail = require('../src/Mail')
+    const MailManager = require('../src/Mail/Manager')
     this.app.singleton('Adonis/Addons/Mail', function (app) {
       const View = app.use('Adonis/Src/View')
       const Config = app.use('Adonis/Src/Config')
-      return new Mail(View, Config)
+      return new MailManager(View, Config)
     })
-    this.app.manager('Adonis/Addons/Mail', Mail)
+    this.app.manager('Adonis/Addons/Mail', MailManager)
     this.app.bind('Adonis/Addons/MailBaseDriver', function () {
       return require('../src/Mail/drivers/BaseDriver')
     })

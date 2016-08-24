@@ -14,7 +14,7 @@
 // const expect = chai.expect
 // const path = require('path')
 // const Mandrill = require('../../src/Mail/drivers/Mandrill')
-// const Messages = require('../../src/Mail/MailManager/message')
+// const Messages = require('../../src/Mail/Message')
 //
 // const Config = {
 //   get: function (key) {

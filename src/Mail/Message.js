@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-framework
+/*
+ * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
 */
 
-const NE = require('node-exceptions')
+const CE = require('../Exceptions')
 
 class Message {
 
@@ -178,7 +178,7 @@ class Message {
    */
   priority (level) {
     if (this.allowed_levels.indexOf(level) <= -1) {
-      throw new NE.InvalidArgumentException('Priority must be high, low or normal')
+      throw CE.InvalidArgumentException.invalidParameter('Email priority must be high, low or normal')
     }
     this.data.priority = level
     return this

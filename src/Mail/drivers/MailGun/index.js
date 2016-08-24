@@ -1,6 +1,6 @@
 'use strict'
 
-/**
+/*
  * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>

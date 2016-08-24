@@ -13,7 +13,7 @@
 const chai = require('chai')
 const expect = chai.expect
 const Ses = require('../../src/Mail/drivers').ses
-const Message = require('../../src/Mail/MailManager/message')
+const Message = require('../../src/Mail/Message')
 require('co-mocha')
 
 const Config = {
