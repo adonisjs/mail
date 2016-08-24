@@ -11,6 +11,9 @@
     "test": "npm run lint && istanbul cover _mocha --report lcovonly -- -R spec test/unit && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "lint": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js providers/*.js"
   },
+  "standard": {
+    "global": ["describe", "it", "before", "use", "make"]
+  },
   "keywords": [
     "adonis",
     "adonis-framework"
@@ -29,6 +32,7 @@
     "mailparser": "^0.5.3",
     "mocha": "^3.0.2",
     "nodemailer-ses-transport": "^1.4.0",
+    "sinon": "^1.17.5",
     "standard": "^8.0.0"
   },
   "config": {

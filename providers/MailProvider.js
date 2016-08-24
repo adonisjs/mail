@@ -14,7 +14,7 @@ const ServiceProvider = require('adonis-fold').ServiceProvider
 class MailProvider extends ServiceProvider {
 
   * register () {
-    const MailManager = require('../src/Mail/Manager')
+    const MailManager = require('../src/Mail/MailManager')
     this.app.singleton('Adonis/Addons/Mail', function (app) {
       const View = app.use('Adonis/Src/View')
       const Config = app.use('Adonis/Src/Config')
