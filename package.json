@@ -29,7 +29,7 @@
     "mailparser": "^0.5.3",
     "mocha": "^3.0.2",
     "nodemailer-ses-transport": "^1.4.0",
-    "standard": "^7.1.2"
+    "standard": "^8.0.0"
   },
   "config": {
     "commitizen": {
