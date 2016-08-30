@@ -46,9 +46,6 @@
     "node-exceptions": "^1.0.3",
     "nodemailer": "^2.5.0"
   },
-  "peerDependencies": {
-    "adonis-fold": "^3.0.2"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adonisjs/adonis-mail.git"
