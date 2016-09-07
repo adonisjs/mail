@@ -173,7 +173,7 @@ describe('Smtp driver', function () {
     })
   })
 
-  context('Sending Mail', function () {
+  context('Sending Mail @smtpmail', function () {
     this.timeout(0)
 
     after(function * () {

@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run lint && istanbul cover _mocha --report lcovonly -- -R spec test/unit && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
+    "test": "npm run lint && istanbul cover _mocha --report lcovonly -- -R spec test/unit --grep=smtpmail --invert && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "lint": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js providers/*.js"
   },
   "standard": {
