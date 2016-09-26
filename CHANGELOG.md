@@ -1,3 +1,19 @@
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/adonisjs/adonis-mail/compare/v1.0.1...v2.0.1) (2016-09-26)
+
+
+### Bug Fixes
+
+* **driver:** Expose mailgun driver ([ed29f54](https://github.com/adonisjs/adonis-mail/commit/ed29f54))
+* **mailgun:** add got as a dependency since some drivers are dependent on it ([2185c5c](https://github.com/adonisjs/adonis-mail/commit/2185c5c)), closes [#4](https://github.com/adonisjs/adonis-mail/issues/4)
+
+
+### Features
+
+* **mail:mailgun:** add mailgun driver ([3979774](https://github.com/adonisjs/adonis-mail/commit/3979774))
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/adonisjs/adonis-mail/compare/v1.0.1...v2.0.0) (2016-06-26)
 
