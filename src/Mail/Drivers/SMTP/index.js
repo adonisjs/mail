@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-mail
+/*
+ * adonis-framework
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -10,14 +10,13 @@
 */
 const BaseDriver = require('../BaseDriver')
 
-class Mandrill extends BaseDriver {
+class SMTP extends BaseDriver {
 
   constructor (Config) {
     super(Config)
-    this.TransportLibrary = require('./transport')
-    this.transport = this._createTransport('mail.mandrill')
+    this.transport = this._createTransport('mail.smtp')
   }
 
 }
 
-module.exports = Mandrill
+module.exports = SMTP

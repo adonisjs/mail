@@ -13,8 +13,8 @@
 const chai = require('chai')
 const expect = chai.expect
 const path = require('path')
-const MailGun = require('../../src/Mail/drivers/MailGun')
-const Messages = require('../../src/Mail/MailManager/message')
+const MailGun = require('../../src/Mail/Drivers').mailgun
+const Messages = require('../../src/Mail/Message')
 require('co-mocha')
 
 const Config = {

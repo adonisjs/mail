@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-framework
+/*
+ * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -10,14 +10,14 @@
 */
 const BaseDriver = require('../BaseDriver')
 
-class SES extends BaseDriver {
+class Log extends BaseDriver {
 
   constructor (Config) {
     super(Config)
-    this.TransportLibrary = require('nodemailer-ses-transport')
-    this.transport = this._createTransport('mail.ses')
+    this.TransportLibrary = require('./transport')
+    this.transport = this._createTransport('mail.log')
   }
 
 }
 
-module.exports = SES
+module.exports = Log

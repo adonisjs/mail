@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-framework
+/*
+ * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -14,10 +14,10 @@
 |                           I AM SINGLETON
 |--------------------------------------------------------------------------
 */
-const Drivers = require('./drivers')
+const Drivers = require('./Drivers')
 const Ioc = require('adonis-fold').Ioc
-const NE = require('node-exceptions')
-const MailManager = require('./MailManager')
+const CE = require('../Exceptions')
+const Mail = require('./Mail')
 
 const extendedDrivers = {}
 
@@ -26,7 +26,7 @@ const extendedDrivers = {}
  * inside Ioc container
  * @class
  */
-class Mail {
+class MailManager {
 
   /**
    * requried by ioc container to let outside
@@ -55,16 +55,12 @@ class Mail {
    * @private
    */
   _makeDriverInstance (driver) {
-    if (driver === 'default') {
-      driver = this.config.get('mail.driver')
+    driver = driver === 'default' ? this.config.get('mail.driver') : driver
+    const driverInstance = Drivers[driver] ? Ioc.make(Drivers[driver]) : extendedDrivers[driver]
+    if (!driverInstance) {
+      throw CE.RuntimeException.invalidMailDriver(driver)
     }
-    if (Drivers[driver]) {
-      return Ioc.make(Drivers[driver])
-    } else if (extendedDrivers[driver]) {
-      return extendedDrivers[driver]
-    } else {
-      throw new NE.DomainException(`Unable to locate ${driver} mail driver`)
-    }
+    return driverInstance
   }
 
   /**
@@ -83,10 +79,10 @@ class Mail {
    */
   driver (driver) {
     if (!this.driversPool[driver]) {
-      let driverInstance = this._makeDriverInstance(driver)
+      const driverInstance = this._makeDriverInstance(driver)
       this.driversPool[driver] = driverInstance
     }
-    return new MailManager(this.view, this.driversPool[driver])
+    return new Mail(this.view, this.driversPool[driver])
   }
 
   /**
@@ -98,21 +94,19 @@ class Mail {
     this.driversPool = {}
 
     /**
-     * here we spoof methods on the mail manager, which means
-     * if any of these methods are called, we will initiate
-     * the mailManager and will execute method on the
-     * created instance instead of this class.
-     * @type {Array}
+     * here we spoof methods on the mail class, which means if
+     * any of these methods are called, we will initiate the
+     * mail class and will execute method on the created
+     * instance instead of this class.
      */
-    this.methodsToSpoof = ['send', 'raw', 'getTransport']
-    this.methodsToSpoof.forEach((method) => {
-      const self = this
+    const methodsToSpoof = ['send', 'raw', 'getTransport']
+    methodsToSpoof.forEach((method) => {
       this[method] = function () {
-        const instance = self.driver('default')
+        const instance = this.driver('default')
         return instance[method].apply(instance, arguments)
-      }
+      }.bind(this)
     })
   }
 }
 
-module.exports = Mail
+module.exports = MailManager

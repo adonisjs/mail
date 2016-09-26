@@ -1,6 +1,6 @@
 {
   "name": "adonis-mail-provider",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "main": "index.js",
   "directories": {
@@ -8,8 +8,17 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run lint && istanbul cover _mocha --report lcovonly -- -R spec test/unit && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
+    "test": "npm run lint && istanbul cover _mocha --report lcovonly -- -R spec test/unit --grep=smtpmail --invert && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "lint": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js providers/*.js"
+  },
+  "standard": {
+    "global": [
+      "describe",
+      "it",
+      "before",
+      "use",
+      "make"
+    ]
   },
   "keywords": [
     "adonis",
@@ -20,15 +29,17 @@
   "devDependencies": {
     "adonis-fold": "^3.0.2",
     "chai": "^3.5.0",
-    "co-mocha": "^1.1.2",
-    "coveralls": "^2.11.6",
-    "cz-conventional-changelog": "^1.1.5",
-    "got": "^6.1.1",
-    "istanbul": "^0.4.2",
+    "co": "^4.6.0",
+    "co-mocha": "^1.1.3",
+    "coveralls": "^2.11.12",
+    "cz-conventional-changelog": "^1.2.0",
+    "got": "^6.3.0",
+    "istanbul": "^0.4.4",
     "mailparser": "^0.5.3",
-    "mocha": "^2.4.5",
-    "nodemailer-ses-transport": "^1.3.0",
-    "standard": "^6.0.4"
+    "mocha": "^3.0.2",
+    "nodemailer-ses-transport": "^1.4.0",
+    "sinon": "^1.17.5",
+    "standard": "^8.0.0"
   },
   "config": {
     "commitizen": {
@@ -36,13 +47,11 @@
     }
   },
   "dependencies": {
-    "co-fs-extra": "^1.1.0",
+    "co-fs-extra": "^1.2.1",
     "form-data": "^0.2.0",
-    "node-exceptions": "^1.0.1",
-    "nodemailer": "^2.1.0"
-  },
-  "peerDependencies": {
-    "adonis-fold": "^3.0.2"
+    "got": "^6.3.0",
+    "node-exceptions": "^1.0.3",
+    "nodemailer": "^2.5.0"
   },
   "repository": {
     "type": "git",

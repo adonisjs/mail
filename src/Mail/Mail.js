@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-framework
+/*
+ * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
 */
 
-const Message = require('./message')
-const NE = require('node-exceptions')
+const Message = require('./Message')
+const CE = require('../Exceptions')
 
-class MailManager {
+class Mail {
 
   constructor (view, driver) {
     this.driver = driver
@@ -56,9 +56,8 @@ class MailManager {
       viewsHash.textView = view[1] || null
       viewsHash.watchView = view[2] || null
     } else {
-      throw new NE.InvalidArgumentException('you must set atleast one template')
+      throw CE.InvalidArgumentException.invalidMailView()
     }
-
     return viewsHash
   }
 
@@ -92,7 +91,7 @@ class MailManager {
    */
   * send (view, data, callback, config) {
     if (typeof (callback) !== 'function') {
-      throw new NE.InvalidArgumentException('callback must be function')
+      throw CE.InvalidArgumentException.invalidParameter('Mail.send expects callback to be a function')
     }
 
     /**
@@ -155,7 +154,7 @@ class MailManager {
    */
   * raw (text, callback, config) {
     if (typeof (callback) !== 'function') {
-      throw new NE.InvalidArgumentException('callback must be function')
+      throw CE.InvalidArgumentException.invalidParameter('Mail.raw expects callback to be a function')
     }
 
     /**
@@ -176,4 +175,4 @@ class MailManager {
 
 }
 
-module.exports = MailManager
+module.exports = Mail

@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-framework
+/*
+ * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -13,5 +13,6 @@ module.exports = {
   smtp: require('./SMTP'),
   ses: require('./SES'),
   mandrill: require('./Mandrill'),
-  log: require('./Log')
+  log: require('./Log'),
+  mailgun: require('./MailGun')
 }

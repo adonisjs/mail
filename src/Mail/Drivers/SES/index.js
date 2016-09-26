@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-mail
+/*
+ * adonis-framework
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -10,14 +10,14 @@
 */
 const BaseDriver = require('../BaseDriver')
 
-class MailGun extends BaseDriver {
+class SES extends BaseDriver {
 
   constructor (Config) {
     super(Config)
-    this.TransportLibrary = require('./transport')
-    this.transport = this._createTransport('mail.mailgun')
+    this.TransportLibrary = require('nodemailer-ses-transport')
+    this.transport = this._createTransport('mail.ses')
   }
 
 }
 
-module.exports = MailGun
+module.exports = SES
