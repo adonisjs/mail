@@ -14,7 +14,7 @@
 |                           I AM SINGLETON
 |--------------------------------------------------------------------------
 */
-const Drivers = require('./Drivers')
+const Drivers = require('./MailDrivers')
 const Ioc = require('adonis-fold').Ioc
 const CE = require('../Exceptions')
 const Mail = require('./Mail')

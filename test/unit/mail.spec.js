@@ -11,7 +11,7 @@
 
 /* global it, describe, context */
 const Mail = require('../../src/Mail/Mail')
-const LogDriver = require('../../src/Mail/Drivers').log
+const LogDriver = require('../../src/Mail/MailDrivers').log
 const chai = require('chai')
 const expect = chai.expect
 const path = require('path')
