@@ -1,3 +1,13 @@
+<a name="2.0.2"></a>
+## [2.0.2](https://github.com/adonisjs/adonis-mail/compare/v2.0.1...v2.0.2) (2016-10-11)
+
+
+### Bug Fixes
+
+* **drivers:** rename Drivers dir to MailDrivers ([fd5d995](https://github.com/adonisjs/adonis-mail/commit/fd5d995)), closes [#5](https://github.com/adonisjs/adonis-mail/issues/5)
+
+
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/adonisjs/adonis-mail/compare/v1.0.1...v2.0.1) (2016-09-26)
 
