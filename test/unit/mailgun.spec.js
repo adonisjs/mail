@@ -36,7 +36,7 @@ describe('MailGun', function () {
   it('should be able to send messages using mailgun', function * () {
     this.timeout(0)
     const message = new Messages()
-    message.to('sent@test.mailgun.com')
+    message.to('virk@adonisjs.com')
     message.from('virk@bar.com')
     message.subject('New email')
     message.html('Hello world')
@@ -50,7 +50,7 @@ describe('MailGun', function () {
   it('should be able to send attachments using mailgun', function * () {
     this.timeout(0)
     const message = new Messages()
-    message.to('sent@test.mailgun.com')
+    message.to('virk@adonisjs.com')
     message.from('virk@bar.com')
     message.subject('mail with attachment')
     message.attach(path.join(__dirname, './assets/logo_white.svg'))
@@ -65,7 +65,7 @@ describe('MailGun', function () {
   it('should throw an erorr when using wrong api key', function * () {
     this.timeout(0)
     const message = new Messages()
-    message.to('sent@test.mailgun.com')
+    message.to('virk@adonisjs.com')
     message.from('virk@bar.com')
     message.subject('mail with attachment')
     message.attach(path.join(__dirname, './assets/logo_white.svg'))
