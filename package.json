@@ -35,7 +35,7 @@
     "cz-conventional-changelog": "^1.2.0",
     "got": "^6.3.0",
     "istanbul": "^0.4.4",
-    "mailparser": "^0.5.3",
+    "mailparser": "^0.6.1",
     "mocha": "^3.0.2",
     "nodemailer-ses-transport": "^1.4.0",
     "sinon": "^1.17.5",
@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "co-fs-extra": "^1.2.1",
-    "form-data": "^0.2.0",
+    "form-data": "^2.1.2",
     "got": "^6.3.0",
     "node-exceptions": "^1.0.3",
     "nodemailer": "^2.5.0"
