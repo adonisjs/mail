@@ -14,8 +14,9 @@
 |                           I AM SINGLETON
 |--------------------------------------------------------------------------
 */
+
+const { ioc } = require('@adonisjs/fold')
 const Drivers = require('./MailDrivers')
-const Ioc = require('adonis-fold').Ioc
 const CE = require('../Exceptions')
 const Mail = require('./Mail')
 
@@ -56,7 +57,7 @@ class MailManager {
    */
   _makeDriverInstance (driver) {
     driver = driver === 'default' ? this.config.get('mail.driver') : driver
-    const driverInstance = Drivers[driver] ? Ioc.make(Drivers[driver]) : extendedDrivers[driver]
+    const driverInstance = Drivers[driver] ? ioc.make(Drivers[driver]) : extendedDrivers[driver]
     if (!driverInstance) {
       throw CE.RuntimeException.invalidMailDriver(driver)
     }
@@ -79,8 +80,7 @@ class MailManager {
    */
   driver (driver) {
     if (!this.driversPool[driver]) {
-      const driverInstance = this._makeDriverInstance(driver)
-      this.driversPool[driver] = driverInstance
+      this.driversPool[driver] = this._makeDriverInstance(driver)
     }
     return new Mail(this.view, this.driversPool[driver])
   }

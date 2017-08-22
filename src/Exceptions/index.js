@@ -1,7 +1,7 @@
 'use strict'
 
 /*
- * adonis-mail
+ * adonis-validator
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -9,71 +9,39 @@
  * file that was distributed with this source code.
 */
 
-const NE = require('node-exceptions')
+const GE = require('@adonisjs/generic-exceptions')
 
-class RuntimeException extends NE.RuntimeException {
-  /**
-   * default error code to be used for raising
-   * exceptions
-   *
-   * @return {Number}
-   */
-  static get defaultErrorCode () {
-    return 500
-  }
-
+/**
+ * @class RuntimeException
+ */
+class RuntimeException extends GE.RuntimeException {
   /**
    * this exception is raised when an uknown
    * mail driver is used
    *
    * @param  {String} driver
-   * @param  {Number} [code=500]
    *
    * @return {Object}
    */
-  static invalidMailDriver (driver, code) {
-    return new this(`Unable to locate ${driver} mail driver`, code || this.defaultErrorCode, 'E_INVALID_MAIL_DRIVER')
+  static invalidMailDriver (driver) {
+    return new this(`Unable to locate ${driver} mail driver`, 500, 'E_INVALID_MAIL_DRIVER')
   }
-
 }
 
-class InvalidArgumentException extends NE.InvalidArgumentException {
-
-  /**
-   * default error code to be used for raising
-   * exceptions
-   *
-   * @return {Number}
-   */
-  static get defaultErrorCode () {
-    return 500
-  }
-
+/**
+ * @class InvalidArgumentException
+ */
+class InvalidArgumentException extends GE.InvalidArgumentException {
   /**
    * This exception is raised when user does not specify
    * a valid email view or defined views are in not
    * the right format
    *
-   * @param  {Number} [code=500]
-   *
    * @return {Object}
    */
-  static invalidMailView (code) {
-    return new this('Make sure to specify a view for your email', code || this.defaultErrorCode, 'E_INVALID_MAIL_VIEW')
-  }
-
-  /**
-   * this exception is raised when a method parameter value
-   * is invalid.
-   *
-   * @param  {String} message
-   * @param  {Number} [code=500]
-   *
-   * @return {Object}
-   */
-  static invalidParameter (message, code) {
-    return new this(message, code || this.defaultErrorCode, 'E_INVALID_PARAMETER')
+  static invalidMailView () {
+    return new this('Make sure to specify a view for your email', 500, 'E_INVALID_MAIL_VIEW')
   }
 }
 
-module.exports = {RuntimeException, InvalidArgumentException}
+module.exports = { RuntimeException, InvalidArgumentException }
