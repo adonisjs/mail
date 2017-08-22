@@ -12,7 +12,6 @@
 const got = require('got')
 
 class MandrillTransport {
-
   constructor (options) {
     this.options = options
     this.apiUrl = 'https://mandrillapp.com/api/1.0/messages/send-raw.json'
@@ -93,7 +92,6 @@ class MandrillTransport {
       })
     })
   }
-
 }
 
 module.exports = MandrillTransport

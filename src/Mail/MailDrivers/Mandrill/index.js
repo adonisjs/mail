@@ -11,13 +11,11 @@
 const BaseDriver = require('../BaseDriver')
 
 class Mandrill extends BaseDriver {
-
   constructor (Config) {
     super(Config)
     this.TransportLibrary = require('./transport')
     this.transport = this._createTransport('mail.mandrill')
   }
-
 }
 
 module.exports = Mandrill

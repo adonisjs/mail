@@ -13,7 +13,6 @@ const got = require('got')
 const FormData = require('form-data')
 
 class MailGunTransport {
-
   constructor (options) {
     this.options = options
     this.name = 'mailgun'

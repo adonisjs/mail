@@ -11,12 +11,10 @@
 const BaseDriver = require('../BaseDriver')
 
 class SMTP extends BaseDriver {
-
   constructor (Config) {
     super(Config)
     this.transport = this._createTransport('mail.smtp')
   }
-
 }
 
 module.exports = SMTP

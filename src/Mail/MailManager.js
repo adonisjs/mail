@@ -28,7 +28,6 @@ const extendedDrivers = {}
  * @class
  */
 class MailManager {
-
   /**
    * requried by ioc container to let outside
    * world extend the mail provider.

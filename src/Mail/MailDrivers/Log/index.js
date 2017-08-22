@@ -11,13 +11,11 @@
 const BaseDriver = require('../BaseDriver')
 
 class Log extends BaseDriver {
-
   constructor (Config) {
     super(Config)
     this.TransportLibrary = require('./transport')
     this.transport = this._createTransport('mail.log')
   }
-
 }
 
 module.exports = Log
