@@ -2,4 +2,7 @@ coverage
 node_modules
 .DS_Store
 npm-debug.log
-.env
+.idea
+out
+.nyc_output
+test/tmp
