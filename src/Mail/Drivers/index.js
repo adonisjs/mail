@@ -10,5 +10,6 @@
 */
 
 module.exports = {
-  smtp: require('./Smtp')
+  smtp: require('./Smtp'),
+  sparkpost: require('./SparkPost')
 }
