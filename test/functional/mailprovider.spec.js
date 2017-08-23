@@ -19,9 +19,10 @@ test.group('Providers', (group) => {
   group.before(() => {
     const providersDir = path.join(__dirname, '../../providers')
     const providers = fs.readdirSync(providersDir).map((file) => path.join(providersDir, file))
-    ioc.bind('Adonis/Src/View', function () {})
-    ioc.bind('Adonis/Src/Config', function () {})
-    registrar.register(providers)
+    ioc.bind('Adonis/Src/View', () => {})
+    ioc.bind('Adonis/Src/Config', () => {})
+    registrar.providers(providers)
+    registrar.register()
   })
 
   test('should return mail provider', (assert) => {
