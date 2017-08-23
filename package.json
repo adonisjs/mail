@@ -1,5 +1,5 @@
 {
-  "name": "adonis-mail-provider",
+  "name": "@adonisjs/mail",
   "version": "2.0.2",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "main": "index.js",
@@ -8,23 +8,19 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run lint && istanbul cover _mocha --report lcovonly -- -R spec test/unit --grep=smtpmail --invert && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
-    "lint": "standard src/**/*.js src/**/**/*.js src/**/**/**/*.js test/**/*.js providers/*.js"
-  },
-  "standard": {
-    "global": [
-      "describe",
-      "it",
-      "before",
-      "use",
-      "make"
-    ]
+    "lint": "standard",
+    "pretest": "npm run lint",
+    "posttest": "npm run coverage",
+    "test:local": "FORCE_COLOR=true node bin/index.js --local",
+    "test": "nyc npm run test:local",
+    "test:win": "set FORCE_COLOR=true && node bin/index.js --win",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
     "adonis",
     "adonis-framework"
   ],
-  "author": "adonisjs",
+  "author": "virk",
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/sink": "^1.0.13",
@@ -36,6 +32,7 @@
     "mailparser": "^2.0.5",
     "nodemailer-ses-transport": "^1.5.1",
     "nyc": "^11.1.0",
+    "semver": "^5.4.1",
     "standard": "^10.0.3"
   },
   "config": {
