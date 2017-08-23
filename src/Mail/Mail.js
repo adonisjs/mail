@@ -13,7 +13,6 @@ const Message = require('./Message')
 const CE = require('../Exceptions')
 
 class Mail {
-
   constructor (view, driver) {
     this.driver = driver
     this.view = view
@@ -89,7 +88,7 @@ class Mail {
    *
    * @public
    */
-  * send (view, data, callback, config) {
+  async send (view, data, callback, config) {
     if (typeof (callback) !== 'function') {
       throw CE.InvalidArgumentException.invalidParameter('Mail.send expects callback to be a function')
     }
@@ -108,15 +107,15 @@ class Mail {
     const message = new Message()
 
     if (views.htmlView) {
-      const htmlCompiledView = yield this.view.make(views.htmlView, data)
+      const htmlCompiledView = await this.view.render(views.htmlView, data)
       message.html(htmlCompiledView)
     }
     if (views.textView) {
-      const textCompiledView = yield this.view.make(views.textView, data)
+      const textCompiledView = await this.view.render(views.textView, data)
       message.text(textCompiledView)
     }
     if (views.watchView) {
-      const watchCompiledView = yield this.view.make(views.watchView, data)
+      const watchCompiledView = await this.view.render(views.watchView, data)
       message.watchHtml(watchCompiledView)
     }
 
@@ -126,7 +125,8 @@ class Mail {
      * finally calling send method on
      * driver to send email
      */
-    return yield this.driver.send(message.data, config)
+    const response = await this.driver.send(message.data, config)
+    return response
   }
 
   /**
@@ -152,7 +152,7 @@ class Mail {
    *
    * @public
    */
-  * raw (text, callback, config) {
+  async raw (text, callback, config) {
     if (typeof (callback) !== 'function') {
       throw CE.InvalidArgumentException.invalidParameter('Mail.raw expects callback to be a function')
     }
@@ -170,9 +170,9 @@ class Mail {
      * finally calling send method on
      * driver to send email
      */
-    return yield this.driver.send(message.data, config)
+    const response = await this.driver.send(message.data, config)
+    return response
   }
-
 }
 
 module.exports = Mail

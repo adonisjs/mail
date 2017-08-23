@@ -11,13 +11,11 @@
 const BaseDriver = require('../BaseDriver')
 
 class MailGun extends BaseDriver {
-
   constructor (Config) {
     super(Config)
     this.TransportLibrary = require('./transport')
     this.transport = this._createTransport('mail.mailgun')
   }
-
 }
 
 module.exports = MailGun

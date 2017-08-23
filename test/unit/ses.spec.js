@@ -9,15 +9,12 @@
  * file that was distributed with this source code.
 */
 
-/* global it, describe */
-const chai = require('chai')
-const expect = chai.expect
+const test = require('japa')
 const Ses = require('../../src/Mail/MailDrivers').ses
 const Message = require('../../src/Mail/Message')
-require('co-mocha')
 
 const Config = {
-  get: function () {
+  get: () => {
     return {
       accessKeyId: process.env.SES_KEY,
       secretAccessKey: process.env.SES_SECRET,
@@ -26,16 +23,15 @@ const Config = {
   }
 }
 
-describe('SES driver', function () {
-  it('should be able to send email using ses driver', function * () {
-    this.timeout(0)
+test.group('SES driver', () => {
+  test('should be able to send email using ses driver', async (assert) => {
     const message = new Message()
     message.to('success@simulator.amazonses.com')
     message.from(process.env.SES_EMAIL)
     message.subject('Hello world')
     message.html('Hello world')
     const ses = new Ses(Config)
-    const res = yield ses.send(message.data)
-    expect(res.messageId).to.exist
-  })
+    const res = await ses.send(message.data)
+    assert.exists(res.messageId)
+  }).timeout(0)
 })

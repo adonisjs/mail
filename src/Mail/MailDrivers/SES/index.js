@@ -11,13 +11,11 @@
 const BaseDriver = require('../BaseDriver')
 
 class SES extends BaseDriver {
-
   constructor (Config) {
     super(Config)
     this.TransportLibrary = require('nodemailer-ses-transport')
     this.transport = this._createTransport('mail.ses')
   }
-
 }
 
 module.exports = SES

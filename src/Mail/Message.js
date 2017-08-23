@@ -12,7 +12,6 @@
 const CE = require('../Exceptions')
 
 class Message {
-
   constructor () {
     this.data = {}
     this.allowed_levels = ['high', 'normal', 'low']
@@ -330,7 +329,6 @@ class Message {
     this.data.watchHtml = body
     return this
   }
-
 }
 
 module.exports = Message

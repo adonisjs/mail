@@ -10,6 +10,9 @@
 */
 
 class BaseDriver {
+  static get inject () {
+    return ['Adonis/Src/Config']
+  }
 
   constructor (Config) {
     this.config = Config
