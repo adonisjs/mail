@@ -77,4 +77,25 @@ test.group('Stmp driver', (group) => {
 
     await helpers.cleanInbox()
   }).timeout(0)
+
+  test('throw errors if unable to send email', async (assert) => {
+    assert.plan(1)
+    this.config.auth.user = null
+    const smtp = new SmtpDriver(this.config)
+
+    try {
+      await helpers.processWithDelay(smtp.send({
+        from: process.env.SMTP_FROM_EMAIL,
+        to: process.env.SMTP_TO_EMAIL,
+        subject: 'Attachment email',
+        html: '<h2> Attachment </h2>',
+        attachments: [{
+          filename: 'sample.txt',
+          content: 'Hello world'
+        }]
+      }), 3 * 1000)
+    } catch ({ code }) {
+      assert.equal(code, 'EAUTH')
+    }
+  }).timeout(0)
 })
