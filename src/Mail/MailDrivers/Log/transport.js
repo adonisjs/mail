@@ -8,7 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
 */
-const fs = require('co-fs-extra')
+const fs = require('fs')
 
 class Transport {
   constructor (options) {
@@ -28,7 +28,7 @@ class Transport {
    */
   send (mail, callback) {
     const input = mail.message.createReadStream()
-    const writable = fs.createOutputStream(this.toPath, {flags: 'a'})
+    const writable = fs.createWriteStream(this.toPath, {flags: 'a'})
     writable.write('- EMAIL START -\n')
     input.on('data', (chunk) => {
       writable.write(chunk)
