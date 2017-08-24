@@ -89,6 +89,56 @@ test.group('Spark Post', () => {
     ])
   })
 
+  test('get config options', (assert) => {
+    const sparkpost = new (SparkPost.Transport)({
+      extras: {
+        options: {
+          sandbox: false
+        }
+      }
+    })
+
+    const options = sparkpost._getOptions()
+    assert.deepEqual(options, { sandbox: false })
+  })
+
+  test('give priority to runtime options', (assert) => {
+    const sparkpost = new (SparkPost.Transport)({
+      extras: {
+        options: {
+          sandbox: false
+        }
+      }
+    })
+
+    const options = sparkpost._getOptions({
+      options: { sandbox: true }
+    })
+    assert.deepEqual(options, { sandbox: true })
+  })
+
+  test('get campaign id', (assert) => {
+    const sparkpost = new (SparkPost.Transport)({
+      extras: {
+        campaign_id: 10
+      }
+    })
+
+    const campaignId = sparkpost._getCampaignId()
+    assert.equal(campaignId, 10)
+  })
+
+  test('give priority to runtime campaign id', (assert) => {
+    const sparkpost = new (SparkPost.Transport)({
+      extras: {
+        campaign_id: 10
+      }
+    })
+
+    const campaignId = sparkpost._getCampaignId({ campaign_id: 20 })
+    assert.equal(campaignId, 20)
+  })
+
   test('send email', async (assert) => {
     const config = {
       apiKey: process.env.SPARKPOST_API_KEY
@@ -124,7 +174,10 @@ test.group('Spark Post', () => {
       attachments: [{
         filename: 'sample.txt',
         content: 'Hello world'
-      }]
+      }],
+      extras: {
+        campaignId: '10'
+      }
     })
 
     assert.equal(response.acceptedCount, 1)

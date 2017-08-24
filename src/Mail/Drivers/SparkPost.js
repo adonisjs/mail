@@ -150,6 +150,38 @@ class SparkPostTransporter {
   }
 
   /**
+   * Returns options to be sent with email
+   *
+   * @method _getOptions
+   *
+   * @param  {Object}    extras
+   *
+   * @return {Object|Null}
+   *
+   * @private
+   */
+  _getOptions (extras) {
+    extras = extras || this.config.extras
+    return extras && extras.options ? extras.options : null
+  }
+
+  /**
+   * Returns the campaign id for the email
+   *
+   * @method _getCampaignId
+   *
+   * @param  {Object}       extras
+   *
+   * @return {String|null}
+   *
+   * @private
+   */
+  _getCampaignId (extras) {
+    extras = extras || this.config.extras
+    return extras && extras.campaign_id ? extras.campaign_id : null
+  }
+
+  /**
    * Sending email from transport
    *
    * @method send
@@ -162,17 +194,34 @@ class SparkPostTransporter {
   send (mail, callback) {
     this._runValidations()
     const recipients = this._getRecipients(mail)
+    const options = this._getOptions(mail.data.extras)
+    const campaignId = this._getCampaignId(mail.data.extras)
+
+    /**
+     * Post body
+     *
+     * @type {Object}
+     */
+    const body = { recipients }
+
+    /**
+     * If email has options sent them along
+     */
+    if (options) {
+      body.options = options
+    }
+
+    /**
+     * If email has campaign id sent it along
+     */
+    if (campaignId) {
+      body.campaign_id = campaignId
+    }
 
     getStream(mail.message.createReadStream())
     .then((content) => {
-      return new Request()
-        .auth(this.config.apiKey)
-        .acceptJson()
-        .post(this.endpoint, {
-          recipients,
-          content: { email_rfc822: content },
-          options: this.config.options || {}
-        })
+      body.content = { email_rfc822: content }
+      return new Request().auth(this.config.apiKey).acceptJson().post(this.endpoint, body)
     })
     .then((response) => {
       callback(null, this._formatSuccess(response))
