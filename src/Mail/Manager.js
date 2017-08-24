@@ -50,10 +50,11 @@ class MailManager {
    *
    * @param  {String} name
    * @param  {Object} config
+   * @param  {Object} viewInstance
    *
    * @return {MailSender}
    */
-  driver (name, config) {
+  driver (name, config, viewInstance) {
     if (!name) {
       throw GE.InvalidArgumentException.invalidParameter('Cannot get driver instance without a name')
     }
@@ -67,7 +68,7 @@ class MailManager {
 
     const driverInstance = ioc.make(Driver)
     driverInstance.setConfig(config)
-    return new MailSender(driverInstance)
+    return new MailSender(driverInstance, viewInstance)
   }
 }
 

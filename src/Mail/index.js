@@ -23,8 +23,9 @@ const MailManager = require('./Manager')
  * @constructor
  */
 class Mail {
-  constructor (Config) {
+  constructor (Config, View) {
     this.Config = Config
+    this.View = View
     this._sendersPool = {}
   }
 
@@ -75,7 +76,7 @@ class Mail {
       throw GE.RuntimeException.missingConfig(`${name}.driver`, 'config/mail.js')
     }
 
-    this._sendersPool[name] = MailManager.driver(connectionConfig.driver, connectionConfig)
+    this._sendersPool[name] = MailManager.driver(connectionConfig.driver, connectionConfig, this.View)
     return this._sendersPool[name]
   }
 }

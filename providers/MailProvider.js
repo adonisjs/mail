@@ -24,8 +24,11 @@ class MailProvider extends ServiceProvider {
    */
   _registerMail () {
     this.app.singleton('Adonis/Addons/Mail', (app) => {
+      const View = app.use('Adonis/Src/View')
+      const Config = app.use('Adonis/Src/Config')
+
       const Mail = require('../src/Mail')
-      return new Mail(app.use('Adonis/Src/Config'))
+      return new Mail(Config, View)
     })
   }
 
