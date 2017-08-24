@@ -46,6 +46,9 @@
       "bin"
     ]
   },
+  "standard": {
+    "globals": ["use"]
+  },
   "dependencies": {
     "@adonisjs/generic-exceptions": "^1.0.0",
     "debug": "^3.0.0",
