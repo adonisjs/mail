@@ -27,13 +27,15 @@ test.group('Stmp driver', (group) => {
   })
 
   test('newup smtp driver', (assert) => {
-    const smtp = new SmtpDriver(this.config)
+    const smtp = new SmtpDriver()
+    smtp.setConfig(this.config)
     assert.instanceOf(smtp, SmtpDriver)
     assert.isDefined(smtp.transporter)
   })
 
   test('send plain email', async (assert) => {
-    const smtp = new SmtpDriver(this.config)
+    const smtp = new SmtpDriver()
+    smtp.setConfig(this.config)
 
     const response = await helpers.processWithDelay(smtp.send({
       from: process.env.SMTP_FROM_EMAIL,
@@ -53,7 +55,8 @@ test.group('Stmp driver', (group) => {
   }).timeout(0)
 
   test('send email with attachment', async (assert) => {
-    const smtp = new SmtpDriver(this.config)
+    const smtp = new SmtpDriver()
+    smtp.setConfig(this.config)
 
     const response = await helpers.processWithDelay(smtp.send({
       from: process.env.SMTP_FROM_EMAIL,
@@ -81,7 +84,8 @@ test.group('Stmp driver', (group) => {
   test('throw errors if unable to send email', async (assert) => {
     assert.plan(1)
     this.config.auth.user = null
-    const smtp = new SmtpDriver(this.config)
+    const smtp = new SmtpDriver()
+    smtp.setConfig(this.config)
 
     try {
       await helpers.processWithDelay(smtp.send({

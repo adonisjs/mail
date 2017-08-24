@@ -94,7 +94,9 @@ test.group('Spark Post', () => {
       apiKey: process.env.SPARKPOST_API_KEY
     }
 
-    const sparkPost = new SparkPost(config)
+    const sparkPost = new SparkPost()
+    sparkPost.setConfig(config)
+
     const response = await sparkPost.send({
       from: ['virk@adonisjs.com'],
       to: [{ name: 'virk', address: process.env.SMTP_TO_EMAIL }],
@@ -112,6 +114,8 @@ test.group('Spark Post', () => {
     }
 
     const sparkPost = new SparkPost(config)
+    sparkPost.setConfig(config)
+
     const response = await sparkPost.send({
       from: ['virk@adonisjs.com'],
       to: [{ name: 'virk', address: process.env.SMTP_TO_EMAIL }],

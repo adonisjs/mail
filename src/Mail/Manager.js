@@ -10,6 +10,7 @@
 */
 
 const GE = require('@adonisjs/generic-exceptions')
+const { ioc } = require('@adonisjs/fold')
 const Drivers = require('./Drivers')
 const MailSender = require('./Sender')
 
@@ -21,6 +22,26 @@ const MailSender = require('./Sender')
  * @constructor
  */
 class MailManager {
+  constructor () {
+    this._drivers = {}
+  }
+
+  /**
+   * Exposing api to be extend, IoC container will
+   * use this method when someone tries to
+   * extend mail provider
+   *
+   * @method extend
+   *
+   * @param  {String} name
+   * @param  {Object} implementation
+   *
+   * @return {void}
+   */
+  extend (name, implementation) {
+    this._drivers[name] = implementation
+  }
+
   /**
    * Returns an instance of sender with the defined
    * driver.
@@ -37,13 +58,16 @@ class MailManager {
       throw GE.InvalidArgumentException.invalidParameter('Cannot get driver instance without a name')
     }
 
-    const Driver = Drivers[name.toLowerCase()]
+    name = name.toLowerCase()
+    const Driver = Drivers[name] || this._drivers[name]
 
     if (!Driver) {
       throw GE.InvalidArgumentException.invalidParameter(`${name} is not a valid mail driver`)
     }
 
-    return new MailSender(new Driver(config))
+    const driverInstance = ioc.make(Driver)
+    driverInstance.setConfig(config)
+    return new MailSender(driverInstance)
   }
 }
 

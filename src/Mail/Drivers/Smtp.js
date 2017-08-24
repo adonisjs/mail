@@ -20,7 +20,15 @@ const nodemailer = require('nodemailer')
  * @constructor
  */
 class SmtpDriver {
-  constructor (config) {
+  /**
+   * This method is called by mail manager automatically
+   * and passes the config object
+   *
+   * @method setConfig
+   *
+   * @param  {Object}  config
+   */
+  setConfig (config) {
     this.transporter = nodemailer.createTransport(config)
   }
 

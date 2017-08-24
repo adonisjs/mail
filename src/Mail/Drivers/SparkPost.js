@@ -12,6 +12,12 @@ const nodemailer = require('nodemailer')
 const getStream = require('get-stream')
 const Request = require('../../Request')
 
+/**
+ * The core transportor node-mailer
+ *
+ * @class SparkPostTransporter
+ * @constructor
+ */
 class SparkPostTransporter {
   constructor (config) {
     this.config = config
@@ -182,7 +188,15 @@ class SparkPostTransporter {
  * @constructor
  */
 class SparkPost {
-  constructor (config) {
+  /**
+   * This method is called by mail manager automatically
+   * and passes the config object
+   *
+   * @method setConfig
+   *
+   * @param  {Object}  config
+   */
+  setConfig (config) {
     this.transporter = nodemailer.createTransport(new SparkPostTransporter(config))
   }
 

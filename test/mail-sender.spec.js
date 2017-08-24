@@ -20,7 +20,8 @@ test.group('Mail sender', () => {
     /**
      * Driver instance
      */
-    const smtp = new SmtpDriver({
+    const smtp = new SmtpDriver()
+    smtp.setConfig({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
       auth: {
@@ -96,7 +97,8 @@ test.group('Mail sender', () => {
     /**
      * Driver instance
      */
-    const smtp = new SmtpDriver({
+    const smtp = new SmtpDriver()
+    smtp.setConfig({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
       auth: {
