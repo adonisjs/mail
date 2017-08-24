@@ -199,4 +199,13 @@ test.group('Message', () => {
       inReplyTo: '11010'
     })
   })
+
+  test('define driver extras', (assert) => {
+    const message = new Message()
+    message.driverExtras({ campaign_id: 20 })
+
+    assert.deepEqual(message.toJSON(), {
+      extras: { campaign_id: 20 }
+    })
+  })
 })

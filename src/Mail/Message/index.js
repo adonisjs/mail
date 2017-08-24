@@ -392,6 +392,22 @@ class Message {
   }
 
   /**
+   * Set extras to be sent to the current driver in
+   * use. It is the responsibility of the driver
+   * to parse and use the extras
+   *
+   * @method driverExtras
+   *
+   * @param  {Object}     extras
+   *
+   * @chainable
+   */
+  driverExtras (extras) {
+    this.mailerMessage.extras = extras
+    return this
+  }
+
+  /**
    * Returns nodemailer compatable message
    * object
    *
