@@ -11,6 +11,7 @@
 
 const GE = require('@adonisjs/generic-exceptions')
 const MailManager = require('./Manager')
+const proxyMethods = ['send', 'raw']
 
 /**
  * The mail class is used to grab an instance of
@@ -27,6 +28,9 @@ class Mail {
     this.Config = Config
     this.View = View
     this._sendersPool = {}
+  }
+
+  send () {
   }
 
   /**
@@ -80,5 +84,11 @@ class Mail {
     return this._sendersPool[name]
   }
 }
+
+proxyMethods.forEach((method) => {
+  Mail.prototype[method] = function (...params) {
+    return this.connection()[method](...params)
+  }
+})
 
 module.exports = Mail
