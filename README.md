@@ -1,28 +1,24 @@
-# Adonis Mail
+# Adonis Mail 📩
+
+This repo is a AdonisJs provider to send emails using one of the available drivers, or by writing your own driver.
+
+It uses [node mailer](https://nodemailer.com) internally to parse and send emails.
 
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Appveyor][appveyor-image]][appveyor-url]
 [![Coveralls][coveralls-image]][coveralls-url]
 
-Mail provider has support for several drivers to send email from your adonis app.
+<img src="http://res.cloudinary.com/adonisjs/image/upload/q_100/v1497112678/adonis-purple_pzkmzt.svg" width="200px" align="right" hspace="30px" vspace="140px">
 
 ## What's in the box?
 
-1. SMTP
-2. Amazon SES
-3. Mandrill
-4. Log ( for testing emails ) 
+This repo contains following providers.
 
-## Setup
-
-Install the package from npm
-
-```bash
-adonis install @adonisjs/mail
-```
-
-Next make sure to read [instructions.md](instructions.md) file.
+1. Consistent API to send email
+2. Support for multiple drivers include **smtp**,**sparkmost**,**mailgun**,**amazon ses** etc.
+3. API to add your own drivers
+4. Write email content inside Edge templates.
 
 ## Node/OS Target
 
@@ -37,6 +33,12 @@ Run the following command to see list of available npm scripts.
 ```
 npm run
 ```
+
+## Environment Variables
+
+There is a `.env.example` file in the project root, rename it as `.env` and add values for all services to run tests on your local. 
+
+DO MAKE SURE TO NOT COMMIT THE `.env` FILE.
 
 ### Tests & Linting
 
@@ -77,16 +79,16 @@ test.failing('2 + 2 is always 4, but add method returns 6', (assert) => {
 
 Now since the `add` method has a bug, it will return `6` instead of `4`. But the build will pass.
 
-[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/adonis-shield/master.svg?style=flat-square
+[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/adonis-mail/master.svg?style=flat-square
 
-[appveyor-url]: https://ci.appveyor.com/project/thetutlage/adonis-shield
+[appveyor-url]: https://ci.appveyor.com/project/thetutlage/adonis-mail
 
-[npm-image]: https://img.shields.io/npm/v/@adonisjs/shield.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/@adonisjs/shield
+[npm-image]: https://img.shields.io/npm/v/@adonisjs/mail.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@adonisjs/mail
 
-[travis-image]: https://img.shields.io/travis/adonisjs/adonis-shield/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/adonisjs/adonis-shield
+[travis-image]: https://img.shields.io/travis/adonisjs/adonis-mail/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/adonisjs/adonis-mail
 
-[coveralls-image]: https://img.shields.io/coveralls/adonisjs/adonis-shield/master.svg?style=flat-square
+[coveralls-image]: https://img.shields.io/coveralls/adonisjs/adonis-mail/develop.svg?style=flat-square
 
-[coveralls-url]: https://coveralls.io/github/adonisjs/adonis-shield
+[coveralls-url]: https://coveralls.io/github/adonisjs/adonis-mail

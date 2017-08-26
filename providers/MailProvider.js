@@ -1,7 +1,7 @@
 'use strict'
 
-/**
- * adonis-framework
+/*
+ * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -13,8 +13,8 @@ const { ServiceProvider } = require('@adonisjs/fold')
 
 class MailProvider extends ServiceProvider {
   /**
-   * Register the mail to the IoC container
-   * with `Adonis/Addons/Mail` namespace.
+   * Register mail provider under `Adonis/Addons/Mail`
+   * namespace
    *
    * @method _registerMail
    *
@@ -23,29 +23,25 @@ class MailProvider extends ServiceProvider {
    * @private
    */
   _registerMail () {
-    const MailManager = require('../src/Mail/MailManager')
     this.app.singleton('Adonis/Addons/Mail', (app) => {
       const View = app.use('Adonis/Src/View')
       const Config = app.use('Adonis/Src/Config')
-      return new MailManager(View, Config)
+
+      const Mail = require('../src/Mail')
+      return new Mail(Config, View)
     })
-    this.app.alias('Adonis/Addons/Mail', 'Mail')
-    this.app.manager('Adonis/Addons/Mail', MailManager)
   }
 
   /**
-   * Register the mail manager to the IoC container
-   * with `Adonis/Addons/MailBaseManager` namespace.
+   * Register mail manager to expose the API to get
+   * extended
    *
-   * @method _registerMailBaseDriver
+   * @method _registerMailManager
    *
    * @return {void}
-   *
-   * @private
    */
-  _registerMailBaseDriver () {
-    this.app.bind('Adonis/Addons/MailBaseDriver', () => require('../src/Mail/MailDrivers/BaseDriver'))
-    this.app.alias('Adonis/Addons/MailBaseDriver', 'MailBaseDriver')
+  _registerMailManager () {
+    this.app.manager('Adonis/Addons/Mail', require('../src/Mail/Manager'))
   }
 
   /**
@@ -57,7 +53,7 @@ class MailProvider extends ServiceProvider {
    */
   register () {
     this._registerMail()
-    this._registerMailBaseDriver()
+    this._registerMailManager()
   }
 }
 

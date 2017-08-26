@@ -1,7 +1,7 @@
 'use strict'
 
 /*
- * adonis-auth
+ * adonis-mail
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -11,41 +11,11 @@
 
 const path = require('path')
 
-async function makeConfigFile (cli) {
-  const driver = await cli.command.choice('Which mail driver you would like to use', [
-    {
-      name: 'SMTP',
-      value: 'smtp'
-    },
-    {
-      name: 'Mandrill',
-      value: 'mandrill'
-    },
-    {
-      name: 'Mailgun',
-      value: 'mailgun'
-    },
-    {
-      name: 'SES',
-      value: 'ses'
-    },
-    {
-      name: 'log',
-      value: 'log'
-    }
-  ])
-
+module.exports = async (cli) => {
   try {
-    await cli.makeConfig('mail.js', path.join(__dirname, './templates/mail.mustache'), {
-      driver
-    })
-
+    await cli.copy(path.join(__dirname, 'examples/config.js'), path.join(cli.helpers.configPath(), 'mail.js'))
     cli.command.completed('create', 'config/mail.js')
   } catch (error) {
     console.log(error)
   }
-}
-
-module.exports = async (cli) => {
-  await makeConfigFile(cli)
 }

@@ -4,6 +4,7 @@
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "main": "index.js",
   "directories": {
+    "example": "examples",
     "test": "test"
   },
   "scripts": {
@@ -15,27 +16,23 @@
     "test:win": "set FORCE_COLOR=true && node bin/index.js --win",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
-  "standard": {
-    "global": [
-      "use",
-      "make"
-    ]
-  },
   "keywords": [
     "adonis",
-    "adonis-framework",
-    "mail",
-    "smtp"
+    "adonis-framework"
   ],
-  "author": "adonisjs",
+  "author": "virk",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/sink": "^1.0.11",
+    "@adonisjs/fold": "^4.0.2",
+    "@adonisjs/sink": "^1.0.13",
+    "aws-sdk": "^2.104.0",
     "coveralls": "^2.13.1",
     "cz-conventional-changelog": "^2.0.0",
+    "dotenv": "^4.0.0",
     "japa": "^1.0.4",
     "japa-cli": "^1.0.1",
     "mailparser": "^2.0.5",
+    "nodemailer-ses-transport": "^1.5.1",
     "nyc": "^11.1.0",
     "semver": "^5.4.1",
     "standard": "^10.0.3"
@@ -45,15 +42,23 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
+  "nyc": {
+    "exclude": [
+      "bin"
+    ]
+  },
+  "standard": {
+    "globals": [
+      "use"
+    ]
+  },
   "dependencies": {
-    "@adonisjs/fold": "^4.0.2",
     "@adonisjs/generic-exceptions": "^1.0.0",
-    "fs-extra": "^4.0.1",
-    "form-data": "^2.1.2",
+    "debug": "^3.0.0",
+    "form-data": "^2.2.0",
+    "get-stream": "^3.0.0",
     "got": "^7.1.0",
-    "lodash": "^4.17.4",
-    "nodemailer": "^4.0.1",
-    "nodemailer-ses-transport": "^1.5.0"
+    "nodemailer": "^4.0.1"
   },
   "repository": {
     "type": "git",

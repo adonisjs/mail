@@ -1,6 +1,6 @@
-## Register provider
+## Registering provider
 
-Make sure to register the provider inside `start/app.js` file.
+The provider is registered inside `start/app.js` file under `providers` array.
 
 ```js
 const providers = [
@@ -8,29 +8,21 @@ const providers = [
 ]
 ```
 
-That's all 🎉
-
-## Example usage
-
-Generate view `welcome.edge` as 
-
-```bash
-adonis make:view welcome
-```
-
-Then send message as
+That's all! Now you can use the mail provider as follows.
 
 ```js
-const user = {
-  name: 'Jon Snow',
-  email: 'jsonsnow@example.com'
-}
+const Mail = use('Mail')
 
-await Mail.send('welcome', {
-  user
-}, (message) => {
-  message.from('noreply@mydomainname.com')
-  message.to(user.email, user.name)
-  message.subject('Test, Hello world!')
+await Mail.send('emails.welcome', {}, (message) => {
+  message.from('foo@bar.com')
+  message.to('bar@baz.com')
 })
 ```
+
+The `welcome` is the view name stored inside the `resources/views/emails` directory.
+
+## Configuration and Environment variables
+
+The configuration file is saved as `config/mail.js`, feel free to tweak it according.
+
+Also make sure to define sensitive driver details inside the `.env` file and reference them via `Env` provider.
