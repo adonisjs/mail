@@ -14,6 +14,7 @@ const got = require('got')
 class Request {
   constructor () {
     this._headers = {}
+    this._basicAuth = null
     this._auth = null
     this._isJson = false
   }
@@ -45,6 +46,20 @@ class Request {
   }
 
   /**
+   * Set basic auth onrequest headers
+   *
+   * @method basicAuth
+   *
+   * @param  {String}  val
+   *
+   * @chainable
+   */
+  basicAuth (val) {
+    this._basicAuth = val
+    return this
+  }
+
+  /**
    * Set headers on request
    *
    * @method headers
@@ -71,7 +86,7 @@ class Request {
   async post (url, body) {
     const headers = this._auth ? Object.assign({ 'Authorization': this._auth }, this._headers) : this._headers
     try {
-      const response = await got(url, { headers, body, json: this._isJson })
+      const response = await got(url, { headers, body, json: this._isJson, auth: this._basicAuth })
       return response.body
     } catch ({ response, message }) {
       const error = new Error(message)

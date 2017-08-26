@@ -148,7 +148,7 @@ test.group('Spark Post', () => {
     sparkPost.setConfig(config)
 
     const response = await sparkPost.send({
-      from: ['virk@adonisjs.com'],
+      from: [process.env.SMTP_TO_EMAIL],
       to: [{ name: 'virk', address: process.env.SMTP_TO_EMAIL }],
       subject: 'Plain email',
       html: '<h2> Hello </h2>'
@@ -167,7 +167,7 @@ test.group('Spark Post', () => {
     sparkPost.setConfig(config)
 
     const response = await sparkPost.send({
-      from: ['virk@adonisjs.com'],
+      from: [process.env.SMTP_TO_EMAIL],
       to: [{ name: 'virk', address: process.env.SMTP_TO_EMAIL }],
       subject: 'Plain email',
       html: '<h2> Hello </h2>',
