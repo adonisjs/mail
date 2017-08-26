@@ -6,3 +6,8 @@ test
 .travis.yml
 .editorconfig
 benchmarks
+.idea
+bin
+out
+.nyc_output
+.env

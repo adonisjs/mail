@@ -1,56 +1,94 @@
-# Adonis Mail
+# Adonis Mail 📩
 
-[![Gitter](https://img.shields.io/badge/+%20GITTER-JOIN%20CHAT%20%E2%86%92-1DCE73.svg?style=flat-square)](https://gitter.im/adonisjs/adonis-framework)
-[![Trello](https://img.shields.io/badge/TRELLO-%E2%86%92-89609E.svg?style=flat-square)](https://trello.com/b/yzpqCgdl/adonis-for-humans)
-[![Version](https://img.shields.io/npm/v/adonis-mail-provider.svg?style=flat-square)](https://www.npmjs.com/package/adonis-mail-provider)
-[![Build Status](https://img.shields.io/travis/adonisjs/adonis-mail/master.svg?style=flat-square)](https://travis-ci.org/adonisjs/adonis-mail)
-[![Coverage Status](https://img.shields.io/coveralls/adonisjs/adonis-mail/master.svg?style=flat-square)](https://coveralls.io/github/adonisjs/adonis-mail?branch=master)
-[![Downloads](https://img.shields.io/npm/dt/adonis-mail-provider.svg?style=flat-square)](https://www.npmjs.com/package/adonis-mail-provider)
-[![License](https://img.shields.io/npm/l/adonis-mail-provider.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+This repo is a AdonisJs provider to send emails using one of the available drivers, or by writing your own driver.
 
-> :pray: This repository contains email sending facilities for adonis framework.
+It uses [node mailer](https://nodemailer.com) internally to parse and send emails.
 
-Mail provider has support for several drivers to send email from your adonis app.
+[![NPM Version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+[![Appveyor][appveyor-image]][appveyor-url]
+[![Coveralls][coveralls-image]][coveralls-url]
 
-1. SMTP
-2. Amazon SES
-3. Mandrill
-4. Log ( for testing emails )
+<img src="http://res.cloudinary.com/adonisjs/image/upload/q_100/v1497112678/adonis-purple_pzkmzt.svg" width="200px" align="right" hspace="30px" vspace="140px">
 
-## Table of Contents
+## What's in the box?
 
-* [Team Members](#team-members)
-* [Getting Started](#getting-started)
-* [Contribution Guidelines](#contribution-guidelines)
+This repo contains following providers.
 
-## <a name="team-members"></a>Team Members
+1. Consistent API to send email
+2. Support for multiple drivers include **smtp**,**sparkmost**,**mailgun**,**amazon ses** etc.
+3. API to add your own drivers
+4. Write email content inside Edge templates.
 
-* Harminder Virk ([Caffiene Blogging](http://amanvirk.me/)) <virk.officials@gmail.com>
+## Node/OS Target
 
-## <a name="getting-started"></a>Getting Started
+This repo/branch is supposed to run fine on all major OS platforms and targets `Node.js >=7.0`
 
-```bash
-$ npm i --save adonis-mail-provider
+## Development
+
+Great! If you are planning to contribute to the framework, make sure to adhere to following conventions, since a consistent code-base is always joy to work with.
+
+Run the following command to see list of available npm scripts.
+
+```
+npm run
 ```
 
-next register the provider in your `bootstrap/app.js` file.
+## Environment Variables
 
-```bash
-const providers = [
-  'adonis-mail-provider/providers/MailProvider'
-]
+There is a `.env.example` file in the project root, rename it as `.env` and add values for all services to run tests on your local. 
 
-const aliases = {
-  Mail: 'Adonis/Addons/Mail'
-}
+DO MAKE SURE TO NOT COMMIT THE `.env` FILE.
+
+### Tests & Linting
+
+1. Lint your code using standardJs. Run `npm run lint` command to check if there are any linting errors.
+2. Make sure you write tests for all the changes/bug fixes.
+3. Also you can write **regression tests**, which shows that something is failing but doesn't breaks the build. Which is actually a nice way to show that something fails. Regression tests are written using `test.failing()` method.
+4. Make sure all the tests are passing on `travis` and `appveyor`.
+
+### General Practices
+
+Since Es6 is in, you should strive to use latest features. For example:
+
+1. Use `Spread` over `arguments` keyword.
+2. Never use `bind` or `call`. After calling these methods, we cannot guarantee the scope of any methods and in AdonisJs codebase we do not override the methods scope.
+3. Make sure to write proper docblock.
+
+## Issues & PR
+
+It is always helpful if we try to follow certain practices when creating issues or PR's, since it will save everyone's time.
+
+1. Always try creating regression tests when you find a bug (if possible).
+2. Share some context on what you are trying to do, with enough code to reproduce the issue.
+3. For general questions, please create a forum thread.
+4. When creating a PR for a feature, make sure to create a parallel PR for docs too.
+
+
+## Regression Tests
+
+Regression tests are tests, which shows how a piece of code fails under certain circumstance, but the beauty is even after the failure, the test suite will never fail. Actually is a nice way to notify about bugs, but making sure everything is green.
+
+The regression tests are created using
+
+```
+test.failing('2 + 2 is always 4, but add method returns 6', (assert) => {
+ assert.true(add(2, 2), 4)
+})
 ```
 
-Example configuration file can be downloaded from [examples/mail.js](examples/mail.js), and should be kept inside `config/mail.js`.
+Now since the `add` method has a bug, it will return `6` instead of `4`. But the build will pass.
 
-[Official Documentation](http://adonisjs.com/docs/mail)
+[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/adonis-mail/master.svg?style=flat-square
 
-## <a name="contribution-guidelines"></a>Contribution Guidelines
+[appveyor-url]: https://ci.appveyor.com/project/thetutlage/adonis-mail
 
-In favor of active development we accept contributions for everyone. You can contribute by submitting a bug, creating pull requests or even improving documentation.
+[npm-image]: https://img.shields.io/npm/v/@adonisjs/mail.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@adonisjs/mail
 
-You can find a complete guide to be followed strictly before submitting your pull requests in the [Official Documentation](http://adonisjs.com/docs/2.0/contributing).
+[travis-image]: https://img.shields.io/travis/adonisjs/adonis-mail/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/adonisjs/adonis-mail
+
+[coveralls-image]: https://img.shields.io/coveralls/adonisjs/adonis-mail/develop.svg?style=flat-square
+
+[coveralls-url]: https://coveralls.io/github/adonisjs/adonis-mail
