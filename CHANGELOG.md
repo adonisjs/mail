@@ -1,3 +1,13 @@
+<a name="3.0.1"></a>
+## [3.0.1](https://github.com/adonisjs/adonis-mail/compare/v3.0.0...v3.0.1) (2017-08-26)
+
+
+### Features
+
+* **mail:** proxy mailsender methods ([01c19c9](https://github.com/adonisjs/adonis-mail/commit/01c19c9))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/adonisjs/adonis-mail/compare/v2.0.2...v3.0.0) (2017-08-26)
 

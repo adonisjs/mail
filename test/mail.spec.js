@@ -63,4 +63,15 @@ test.group('Mail', () => {
     const smtp1 = mail.connection('smtp')
     assert.deepEqual(smtp, smtp1)
   })
+
+  test('proxy sender methods', (assert) => {
+    const config = new Config()
+    config.set('mail.connection', 'smtp')
+    config.set('mail.smtp', {
+      driver: 'smtp'
+    })
+    const mail = new Mail(config)
+    assert.isFunction(mail.send)
+    assert.isFunction(mail.raw)
+  })
 })
