@@ -30,6 +30,7 @@ class MailProvider extends ServiceProvider {
       const Mail = require('../src/Mail')
       return new Mail(Config, View)
     })
+    this.app.alias('Adonis/Addons/Mail', 'Mail')
   }
 
   /**
