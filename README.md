@@ -34,6 +34,12 @@ Run the following command to see list of available npm scripts.
 npm run
 ```
 
+## Environment Variables
+
+There is a `.env.example` file in the project root, rename it as `.env` and add values for all services to run tests on your local. 
+
+DO MAKE SURE TO NOT COMMIT THE `.env` FILE.
+
 ### Tests & Linting
 
 1. Lint your code using standardJs. Run `npm run lint` command to check if there are any linting errors.

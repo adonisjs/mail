@@ -25,6 +25,7 @@
   "devDependencies": {
     "@adonisjs/fold": "^4.0.2",
     "@adonisjs/sink": "^1.0.13",
+    "aws-sdk": "^2.104.0",
     "coveralls": "^2.13.1",
     "cz-conventional-changelog": "^2.0.0",
     "dotenv": "^4.0.0",
@@ -47,7 +48,9 @@
     ]
   },
   "standard": {
-    "globals": ["use"]
+    "globals": [
+      "use"
+    ]
   },
   "dependencies": {
     "@adonisjs/generic-exceptions": "^1.0.0",

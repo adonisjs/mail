@@ -12,5 +12,6 @@
 module.exports = {
   smtp: require('./Smtp'),
   sparkpost: require('./SparkPost'),
-  mailgun: require('./Mailgun')
+  mailgun: require('./Mailgun'),
+  ses: require('./Ses')
 }
