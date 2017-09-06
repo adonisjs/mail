@@ -9,6 +9,7 @@
  * file that was distributed with this source code.
 */
 
+const { ioc } = require('@adonisjs/fold')
 const GE = require('@adonisjs/generic-exceptions')
 const MailManager = require('./Manager')
 const proxyMethods = ['send', 'raw']
@@ -28,9 +29,6 @@ class Mail {
     this.Config = Config
     this.View = View
     this._sendersPool = {}
-  }
-
-  send () {
   }
 
   /**
@@ -82,6 +80,19 @@ class Mail {
 
     this._sendersPool[name] = MailManager.driver(connectionConfig.driver, connectionConfig, this.View)
     return this._sendersPool[name]
+  }
+
+  /**
+   * Binding a fake to the Ioc container for the mail. It
+   * can be used to fake the emails and instead get
+   * them back as json objects.
+   *
+   * @method fake
+   *
+   * @return {void}
+   */
+  fake () {
+    ioc.singletonFake('Adonis/Addons/Mail', () => new (require('./Fake'))(this.Config, this.View))
   }
 }
 
