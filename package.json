@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/mail",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "main": "index.js",
   "directories": {
@@ -23,9 +23,9 @@
   "author": "virk",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/fold": "^4.0.2",
+    "@adonisjs/fold": "^4.0.3",
     "@adonisjs/sink": "^1.0.13",
-    "aws-sdk": "^2.104.0",
+    "aws-sdk": "^2.109.0",
     "coveralls": "^2.13.1",
     "cz-conventional-changelog": "^2.0.0",
     "dotenv": "^4.0.0",
@@ -33,7 +33,7 @@
     "japa-cli": "^1.0.1",
     "mailparser": "^2.0.5",
     "nodemailer-ses-transport": "^1.5.1",
-    "nyc": "^11.1.0",
+    "nyc": "^11.2.1",
     "semver": "^5.4.1",
     "standard": "^10.0.3"
   },
@@ -54,11 +54,12 @@
   },
   "dependencies": {
     "@adonisjs/generic-exceptions": "^1.0.0",
-    "debug": "^3.0.0",
-    "form-data": "^2.2.0",
+    "clone": "^2.1.1",
+    "debug": "^3.0.1",
+    "form-data": "^2.3.1",
     "get-stream": "^3.0.0",
     "got": "^7.1.0",
-    "nodemailer": "^4.0.1"
+    "nodemailer": "^4.1.0"
   },
   "repository": {
     "type": "git",
