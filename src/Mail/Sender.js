@@ -46,12 +46,12 @@ class MailSender {
        * Loop over views to find the best match
        */
       const viewsCopy = views.slice().filter((view) => {
-        if (view.endsWith('.text')) {
+        if (view.endsWith('.text') || view.endsWith('-text')) {
           returnHash['text'] = view
           return false
         }
 
-        if (view.endsWith('.watch')) {
+        if (view.endsWith('.watch') || view.endsWith('-watch')) {
           returnHash['watch'] = view
           return false
         }
