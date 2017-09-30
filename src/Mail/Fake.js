@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
 */
 
-const { ioc } = require('@adonisjs/fold')
 const MailManager = require('./Manager')
 const clone = require('clone')
 const proxyMethods = ['send', 'raw']
@@ -84,17 +83,6 @@ class FakeMail {
    */
   clear () {
     this._mails = []
-  }
-
-  /**
-   * Restore the mail fake
-   *
-   * @method restore
-   *
-   * @return {void}
-   */
-  restore () {
-    ioc.restore('Adonis/Addons/Mail')
   }
 }
 
