@@ -9,10 +9,30 @@
  * file that was distributed with this source code.
 */
 
-const { ioc } = require('@adonisjs/fold')
 const GE = require('@adonisjs/generic-exceptions')
 const MailManager = require('./Manager')
 const proxyMethods = ['send', 'raw']
+
+const proxyHandler = {
+  get (target, name) {
+    /**
+     * if node is inspecting then stick to target properties
+     */
+    if (typeof (name) === 'symbol' || name === 'inspect') {
+      return target[name]
+    }
+
+    /**
+     * If a faker object exists, give preference to it over
+     * the actual methods
+     */
+    if (target._fake && target._fake[name] !== undefined) {
+      return typeof (target._fake[name]) === 'function' ? target._fake[name].bind(target._fake) : target._fake[name]
+    }
+
+    return target[name]
+  }
+}
 
 /**
  * The mail class is used to grab an instance of
@@ -29,6 +49,9 @@ class Mail {
     this.Config = Config
     this.View = View
     this._sendersPool = {}
+    this._fake = null
+
+    return new Proxy(this, proxyHandler)
   }
 
   /**
@@ -83,16 +106,26 @@ class Mail {
   }
 
   /**
-   * Binding a fake to the Ioc container for the mail. It
-   * can be used to fake the emails and instead get
-   * them back as json objects.
+   * Setup a faker object, which will be used over
+   * using the actual emailer methods
    *
    * @method fake
    *
    * @return {void}
    */
   fake () {
-    ioc.singletonFake('Adonis/Addons/Mail', () => new (require('./Fake'))(this.Config, this.View))
+    this._fake = new (require('./Fake'))(this.Config, this.View)
+  }
+
+  /**
+   * Restore faker object
+   *
+   * @method restore
+   *
+   * @return {void}
+   */
+  restore () {
+    this._fake = null
   }
 }
 

@@ -1,3 +1,13 @@
+<a name="3.0.3"></a>
+## [3.0.3](https://github.com/adonisjs/adonis-mail/compare/v3.0.2...v3.0.3) (2017-10-03)
+
+
+### Bug Fixes
+
+* **mail:** use in-memory mail fake ([4665cbe](https://github.com/adonisjs/adonis-mail/commit/4665cbe))
+
+
+
 <a name="3.0.2"></a>
 ## [3.0.2](https://github.com/adonisjs/adonis-mail/compare/v3.0.1...v3.0.2) (2017-09-06)
 
