@@ -27,7 +27,7 @@ class MailGunTransporter {
    * @return {String}
    */
   get name () {
-    return 'sparkpost'
+    return 'mailgun'
   }
 
   /**
