@@ -1,3 +1,13 @@
+<a name="3.0.4"></a>
+## [3.0.4](https://github.com/adonisjs/adonis-mail/compare/v3.0.3...v3.0.4) (2018-01-24)
+
+
+### Bug Fixes
+
+* **mailgun:** fix wrong driver name ([b954e41](https://github.com/adonisjs/adonis-mail/commit/b954e41))
+
+
+
 <a name="3.0.3"></a>
 ## [3.0.3](https://github.com/adonisjs/adonis-mail/compare/v3.0.2...v3.0.3) (2017-10-03)
 

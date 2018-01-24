@@ -57,5 +57,29 @@ module.exports = {
     driver: 'sparkpost',
     apiKey: Env.get('SPARKPOST_API_KEY'),
     extras: {}
+  },
+
+  /*
+  |--------------------------------------------------------------------------
+  | Mailgun
+  |--------------------------------------------------------------------------
+  |
+  | Here we define configuration for mailgun. Extra options can be defined
+  | inside the `extra` object.
+  |
+  | https://mailgun-documentation.readthedocs.io/en/latest/api-sending.html#sending
+  |
+  | extras: {
+  |   'o:tag': '',
+  |   'o:campaign': '',,
+  |   . . .
+  | }
+  |
+  */
+  mailgun: {
+    driver: 'mailgun',
+    domain: Env.get('MAILGUN_DOMAIN'),
+    apiKey: Env.get('MAILGUN_API_KEY'),
+    extras: {}
   }
 }

@@ -115,7 +115,7 @@ test.group('Mailgun', () => {
         html: '<h2> Hello </h2>'
       })
     } catch (error) {
-      assert.equal(error.message, 'Response code 401 (Unauthorized)')
+      assert.match(error.message, /Response code 401/)
     }
   }).timeout(0)
 })
