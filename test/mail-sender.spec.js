@@ -93,7 +93,7 @@ test.group('Mail sender', () => {
     })
   })
 
-  test('send email as raw body', async (assert) => {
+  test('send email from raw text as plain body', async (assert) => {
     /**
      * Driver instance
      */
@@ -139,6 +139,38 @@ test.group('Mail sender', () => {
      */
     await helpers.cleanInbox()
   }).timeout(0)
+
+  test('send email from raw text as html', async (assert) => {
+    assert.plan(1)
+
+    /**
+     * Driver instance
+     */
+    const smtp = new SmtpDriver()
+    smtp.setConfig({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      auth: {
+        user: process.env.SMTP_USERNAME,
+        pass: process.env.SMTP_PASSWORD
+      }
+    })
+
+    /**
+     * Using driver with the mail sender
+     *
+     * @type {MailSender}
+     */
+    const mailSender = new MailSender(smtp)
+
+    /**
+     * Sending email with a minimum delay, since mailtrap doesn't
+     * allow sending more than 2 emails in 1 sec
+     */
+    mailSender.raw('<h2> Hello </h2>', (message) => {
+      assert.equal(message.mailerMessage.html, '<h2> Hello </h2>')
+    })
+  })
 
   test('render views via view instance', async (assert) => {
     const fakeDriver = {

@@ -149,7 +149,13 @@ class MailSender {
    */
   raw (body, callback) {
     const message = new Message()
-    message.text(body)
+
+    if (/^\s*</.test(body)) {
+      message.html(body)
+    } else {
+      message.text(body)
+    }
+
     callback(message)
     return this._driverInstance.send(message.toJSON())
   }
