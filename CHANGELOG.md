@@ -1,3 +1,13 @@
+<a name="3.0.5"></a>
+## [3.0.5](https://github.com/adonisjs/adonis-mail/compare/v3.0.4...v3.0.5) (2018-01-31)
+
+
+### Features
+
+* **mail:** detect raw body type when using mail.raw ([79fd24d](https://github.com/adonisjs/adonis-mail/commit/79fd24d)), closes [#21](https://github.com/adonisjs/adonis-mail/issues/21)
+
+
+
 <a name="3.0.4"></a>
 ## [3.0.4](https://github.com/adonisjs/adonis-mail/compare/v3.0.3...v3.0.4) (2018-01-24)
 
