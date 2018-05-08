@@ -219,14 +219,14 @@ class SparkPostTransporter {
     }
 
     getStream(mail.message.createReadStream())
-    .then((content) => {
-      body.content = { email_rfc822: content }
-      return new Request().auth(this.config.apiKey).acceptJson().post(this.endpoint, body)
-    })
-    .then((response) => {
-      callback(null, this._formatSuccess(response))
-    })
-    .catch(callback)
+      .then((content) => {
+        body.content = { email_rfc822: content }
+        return new Request().auth(this.config.apiKey).acceptJson().post(this.endpoint, body)
+      })
+      .then((response) => {
+        callback(null, this._formatSuccess(response))
+      })
+      .catch(callback)
   }
 }
 
