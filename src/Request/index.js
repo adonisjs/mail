@@ -86,7 +86,12 @@ class Request {
   async post (url, body) {
     const headers = this._auth ? Object.assign({ 'Authorization': this._auth }, this._headers) : this._headers
     try {
-      const response = await got(url, { headers, body, json: this._isJson, auth: this._basicAuth })
+      const response = await got(url, {
+        headers,
+        body,
+        json: this._isJson,
+        auth: this._basicAuth
+      })
       return response.body
     } catch ({ response, message }) {
       const error = new Error(message)

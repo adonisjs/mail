@@ -14,7 +14,7 @@ const test = require('japa')
 const { ses: Ses } = require('../src/Mail/Drivers')
 
 test.group('Ses', () => {
-  test('send email', async (assert) => {
+  test.skip('send email', async (assert) => {
     const config = {
       apiVersion: '2010-12-01',
       accessKeyId: process.env.SES_KEY,
