@@ -86,7 +86,7 @@ test.group('Mailgun', () => {
     mailgun.setConfig(config)
 
     const response = await mailgun.send({
-      from: [process.env.SMTP_TO_EMAIL],
+      from: [process.env.SMTP_FROM_EMAIL],
       to: [{ name: 'virk', address: process.env.SMTP_TO_EMAIL }],
       subject: 'Mailgun email',
       html: '<h2> Hello </h2>'
