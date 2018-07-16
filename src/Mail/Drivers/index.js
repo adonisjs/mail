@@ -14,5 +14,6 @@ module.exports = {
   sparkpost: require('./SparkPost'),
   mailgun: require('./Mailgun'),
   ses: require('./Ses'),
-  memory: require('./Memory')
+  memory: require('./Memory'),
+  ethereal: require('./Ethereal')
 }
