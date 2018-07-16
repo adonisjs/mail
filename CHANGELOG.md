@@ -1,3 +1,13 @@
+<a name="3.0.7"></a>
+## [3.0.7](https://github.com/adonisjs/adonis-mail/compare/v3.0.6...v3.0.7) (2018-07-16)
+
+
+### Features
+
+* **ethereal:** add ethereal driver for test emails ([d84b417](https://github.com/adonisjs/adonis-mail/commit/d84b417)), closes [#22](https://github.com/adonisjs/adonis-mail/issues/22)
+
+
+
 <a name="3.0.6"></a>
 ## [3.0.6](https://github.com/adonisjs/adonis-mail/compare/v3.0.5...v3.0.6) (2018-05-08)
 
