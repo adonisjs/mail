@@ -1,3 +1,8 @@
+<a name="3.0.8"></a>
+## [3.0.8](https://github.com/adonisjs/adonis-mail/compare/v3.0.7...v3.0.8) (2018-07-20)
+
+
+
 <a name="3.0.7"></a>
 ## [3.0.7](https://github.com/adonisjs/adonis-mail/compare/v3.0.6...v3.0.7) (2018-07-16)
 

@@ -81,5 +81,20 @@ module.exports = {
     domain: Env.get('MAILGUN_DOMAIN'),
     apiKey: Env.get('MAILGUN_API_KEY'),
     extras: {}
+  },
+
+  /*
+  |--------------------------------------------------------------------------
+  | Ethereal
+  |--------------------------------------------------------------------------
+  |
+  | Ethereal driver to quickly test emails in your browser. A disposable
+  | account is created automatically for you.
+  |
+  | https://ethereal.email
+  |
+  */
+  ethereal: {
+    driver: 'ethereal'
   }
 }
