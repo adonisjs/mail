@@ -18,7 +18,7 @@
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
     "test:local": "FORCE_COLOR=true node bin/index.js --local",
-    "test": "nyc japa",
+    "test": "nyc node japaFile.js",
     "test:win": "node ./node_modules/japa-cli/index.js",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "commit": "git-cz",
@@ -32,22 +32,22 @@
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/fold": "^4.0.9",
-    "@adonisjs/mrm-preset": "^1.0.9",
-    "@adonisjs/sink": "^1.0.16",
-    "aws-sdk": "^2.275.1",
+    "@adonisjs/mrm-preset": "^1.0.13",
+    "@adonisjs/sink": "^1.0.17",
+    "aws-sdk": "^2.325.0",
     "commitizen": "^2.10.1",
     "coveralls": "^3.0.2",
     "cz-conventional-changelog": "^2.1.0",
     "dotenv": "^6.0.0",
-    "japa": "^1.0.6",
+    "japa": "^2.0.3",
     "japa-cli": "^1.0.1",
-    "mailparser": "^2.2.0",
+    "mailparser": "^2.3.4",
     "mrm": "^1.2.1",
     "nodemailer-ses-transport": "^1.5.1",
-    "nyc": "^12.0.2",
+    "nyc": "^13.0.1",
     "pkg-ok": "^2.2.0",
-    "semver": "^5.5.0",
-    "standard": "^11.0.1"
+    "semver": "^5.5.1",
+    "standard": "^12.0.1"
   },
   "config": {
     "commitizen": {
@@ -56,8 +56,7 @@
   },
   "nyc": {
     "exclude": [
-      "test",
-      "japaFile.js"
+      "test"
     ]
   },
   "standard": {
@@ -67,12 +66,12 @@
   },
   "dependencies": {
     "@adonisjs/generic-exceptions": "^2.0.1",
-    "clone": "^2.1.1",
-    "debug": "^3.1.0",
+    "clone": "^2.1.2",
+    "debug": "^4.0.1",
     "form-data": "^2.3.2",
-    "get-stream": "^3.0.0",
+    "get-stream": "^4.0.0",
     "got": "8.3.0",
-    "nodemailer": "^4.6.7"
+    "nodemailer": "^4.6.8"
   },
   "repository": {
     "type": "git",
