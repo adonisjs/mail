@@ -49,7 +49,7 @@ class MailGunTransporter {
    * @return {String}
    */
   get endpoint () {
-    return `https://api.mailgun.net/v3/${this.config.domain}/messages.mime`
+    return `https://api.${this.config.region.length > 0 ? this.config.region.toLowerCase() + '.' : ''}mailgun.net/v3/${this.config.domain}/messages.mime`
   }
 
   /**
