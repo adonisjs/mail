@@ -79,7 +79,7 @@ module.exports = {
   mailgun: {
     driver: 'mailgun',
     domain: Env.get('MAILGUN_DOMAIN'),
-    region: Env.get('MAILGUN_REGION'),
+    region: Env.get('MAILGUN_REGION', ''),
     apiKey: Env.get('MAILGUN_API_KEY'),
     extras: {}
   },
