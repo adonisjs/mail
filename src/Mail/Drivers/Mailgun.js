@@ -49,7 +49,9 @@ class MailGunTransporter {
    * @return {String}
    */
   get endpoint () {
-    return `https://api.mailgun.net/v3/${this.config.domain}/messages.mime`
+    const region = this.config.region ? this.config.region.toLowerCase() : null
+    const host = region ? `api.${region}.mailgun.net` : `api.mailgun.net`
+    return `https://${host}/v3/${this.config.domain}/messages.mime`
   }
 
   /**
