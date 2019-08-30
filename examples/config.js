@@ -67,11 +67,11 @@ module.exports = {
   | Here we define configuration for mailgun. Extra options can be defined
   | inside the `extra` object.
   |
-  | https://mailgun-documentation.readthedocs.io/en/latest/api-sending.html#sending
+  | https://documentation.mailgun.com/en/latest/api-sending.html#sending
   |
   | extras: {
   |   'o:tag': '',
-  |   'o:campaign': '',,
+  |   'o:tracking': '',
   |   . . .
   | }
   |
