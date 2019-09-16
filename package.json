@@ -2,14 +2,6 @@
   "name": "@adonisjs/mail",
   "version": "3.0.9",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
-  "main": "index.js",
-  "files": [
-    "examples",
-    "providers",
-    "src",
-    "instructions.js",
-    "instructions.md"
-  ],
   "directories": {
     "example": "examples",
     "test": "test"
@@ -17,62 +9,44 @@
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
-    "test:local": "FORCE_COLOR=true node bin/index.js --local",
-    "test": "nyc node japaFile.js",
-    "test:win": "node ./node_modules/japa-cli/index.js",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "test": "node japaFile.js",
+    "lint": "tslint --project tsconfig.json",
+    "clean": "del build",
+    "compile": "npm run lint && npm run clean && tsc",
+    "build": "npm run compile",
     "commit": "git-cz",
-    "lint": "standard"
+    "release": "np",
+    "version": "npm run build"
   },
   "keywords": [
     "adonis",
-    "adonis-framework"
+    "mailer",
+    "node-mailer"
   ],
   "author": "virk",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/fold": "^4.0.9",
-    "@adonisjs/mrm-preset": "^1.0.13",
-    "@adonisjs/sink": "^1.0.17",
-    "aws-sdk": "^2.325.0",
-    "commitizen": "^2.10.1",
-    "coveralls": "^3.0.2",
-    "cz-conventional-changelog": "^2.1.0",
-    "dotenv": "^6.0.0",
-    "japa": "^2.0.3",
-    "japa-cli": "^1.0.1",
-    "mailparser": "^2.3.4",
-    "mrm": "^1.2.1",
-    "nodemailer-ses-transport": "^1.5.1",
-    "nyc": "^13.0.1",
-    "pkg-ok": "^2.2.0",
-    "semver": "^5.5.1",
-    "standard": "^12.0.1"
+    "@adonisjs/mrm-preset": "^2.1.0",
+    "@types/node": "^12.7.5",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.0.2",
+    "del-cli": "^3.0.0",
+    "doctoc": "^1.4.0",
+    "husky": "^3.0.5",
+    "japa": "^3.0.1",
+    "mrm": "^1.2.2",
+    "np": "^5.1.0",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.20.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^3.6.3"
   },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
   },
-  "nyc": {
-    "exclude": [
-      "test"
-    ]
-  },
-  "standard": {
-    "globals": [
-      "use"
-    ]
-  },
-  "dependencies": {
-    "@adonisjs/generic-exceptions": "^2.0.1",
-    "clone": "^2.1.2",
-    "debug": "^4.0.1",
-    "form-data": "^2.3.2",
-    "get-stream": "^4.0.0",
-    "got": "8.3.0",
-    "nodemailer": "^4.6.8"
-  },
+  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adonisjs/adonis-mail.git"
@@ -80,5 +54,29 @@
   "bugs": {
     "url": "https://github.com/adonisjs/adonis-mail/issues"
   },
-  "homepage": "https://github.com/adonisjs/adonis-mail#readme"
+  "homepage": "https://github.com/adonisjs/adonis-mail#readme",
+  "nyc": {
+    "exclude": [
+      "test"
+    ],
+    "extension": [
+      ".ts"
+    ]
+  },
+  "main": "build/index.js",
+  "files": [
+    "build/src",
+    "build/index.d.ts",
+    "build/index.js"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "doctoc README.md --title='## Table of contents' && git add README.md",
+      "commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
+    }
+  },
+  "np": {
+    "contents": ".",
+    "anyBranch": false
+  }
 }
