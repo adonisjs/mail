@@ -6,14 +6,21 @@
     "example": "examples",
     "test": "test"
   },
+  "main": "build/providers/MailProvider.js",
+  "files": [
+    "build/adonis-typings",
+    "build/providers",
+    "build/src"
+  ],
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
     "test": "node japaFile.js",
     "lint": "tslint --project tsconfig.json",
     "clean": "del build",
+    "copyfiles": "copyfiles \"templates/**/*.txt\" build",
     "compile": "npm run lint && npm run clean && tsc",
-    "build": "npm run compile",
+    "build": "npm run compile && npm run copyfiles",
     "commit": "git-cz",
     "release": "np",
     "version": "npm run build"
@@ -26,12 +33,16 @@
   "author": "virk",
   "license": "MIT",
   "devDependencies": {
+    "@adonisjs/fold": "^6.2.0",
     "@adonisjs/mrm-preset": "^2.1.0",
+    "@adonisjs/view": "^1.0.1",
     "@types/node": "^12.7.5",
     "commitizen": "^4.0.3",
+    "copyfiles": "^2.1.1",
     "cz-conventional-changelog": "^3.0.2",
     "del-cli": "^3.0.0",
     "doctoc": "^1.4.0",
+    "dotenv": "^8.1.0",
     "husky": "^3.0.5",
     "japa": "^3.0.1",
     "mrm": "^1.2.2",
@@ -46,7 +57,14 @@
       "path": "cz-conventional-changelog"
     }
   },
-  "dependencies": {},
+  "peerDependencies": {
+    "@adonisjs/view": "^1.x.x",
+    "@adonisjs/core": "^2.x.x"
+  },
+  "dependencies": {
+    "@poppinss/manager": "^2.1.2",
+    "nodemailer": "^6.3.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adonisjs/adonis-mail.git"
@@ -63,12 +81,6 @@
       ".ts"
     ]
   },
-  "main": "build/index.js",
-  "files": [
-    "build/src",
-    "build/index.d.ts",
-    "build/index.js"
-  ],
   "husky": {
     "hooks": {
       "pre-commit": "doctoc README.md --title='## Table of contents' && git add README.md",
@@ -78,5 +90,13 @@
   "np": {
     "contents": ".",
     "anyBranch": false
+  },
+  "adonisjs": {
+    "templates": {
+      "config": [
+        "mail.txt"
+      ]
+    },
+    "types": "@adonisjs/mail"
   }
 }
