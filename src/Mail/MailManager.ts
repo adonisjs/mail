@@ -5,22 +5,20 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
-*/
+ */
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
-import { EdgeContract } from 'edge.js'
-import { Manager } from '@poppinss/manager'
 import { IocContract } from '@adonisjs/fold'
-
 import {
   DriverContract,
+  MailerConfigContract,
   MailerContract,
   MailManagerContract,
-  MailerConfigContract,
   MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
-
+import { Manager } from '@poppinss/manager'
+import { EdgeContract } from 'edge.js'
 import { Mailer } from './Mailer'
 
 /**
@@ -28,7 +26,8 @@ import { Mailer } from './Mailer'
  * in the config file. The manager internally manages the state of mappings and cache
  * them for re-use.
  */
-export class MailManager extends Manager<DriverContract, MailerContract> implements MailManagerContract {
+export class MailManager extends Manager<DriverContract, MailerContract>
+  implements MailManagerContract {
   /**
    * Caching driver instances. One must call `close` to clean it up
    */
@@ -46,7 +45,10 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
    * Since we don't expose the drivers instances directly, we wrap them
    * inside the mailer instance.
    */
-  protected wrapDriverResponse (mappingName: string, driver: DriverContract): MailerContract {
+  protected wrapDriverResponse (
+    mappingName: string,
+    driver: DriverContract,
+  ): MailerContract {
     return new Mailer(mappingName, this._view, driver, ({ name }) => {
       this.release(name)
     })
@@ -84,6 +86,15 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
   }
 
   /**
+   * Creates an instance of `ses` driver by lazy loading. This method
+   * is invoked internally when a new driver instance is required
+   */
+  protected createSes (_mapping, config) {
+    const { SesDriver } = require('../Drivers/Ses')
+    return new SesDriver(config)
+  }
+
+  /**
    * Sends email using the default `mailer`
    */
   public async send (callback: MessageComposeCallback) {
@@ -102,6 +113,10 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
    * Closes the mapping instance and removes it from the cache
    */
   public async closeAll (): Promise<void> {
-    await Promise.all(Array.from(this['_mappingsCache'].keys()).map((name: string) => this.close(name)))
+    await Promise.all(
+      Array.from(this['_mappingsCache'].keys()).map((name: string) =>
+        this.close(name),
+      ),
+    )
   }
 }

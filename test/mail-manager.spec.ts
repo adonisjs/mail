@@ -5,19 +5,19 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
-*/
+ */
 
-import test from 'japa'
-import { Edge } from 'edge.js'
 import { Ioc } from '@adonisjs/fold'
-import { Mailer } from '../src/Mail/Mailer'
+import { DriverContract, MessageNode } from '@ioc:Adonis/Addons/Mail'
+import { Edge } from 'edge.js'
+import test from 'japa'
+import { SesDriver } from '../src/Drivers/Ses'
 import { SmtpDriver } from '../src/Drivers/Smtp'
+import { Mailer } from '../src/Mail/Mailer'
 import { MailManager } from '../src/Mail/MailManager'
 
-import { DriverContract, MessageNode } from '@ioc:Adonis/Addons/Mail'
-
 test.group('Mail Manager', () => {
-  test('return driver for a given mapping', (assert) => {
+  test('return driver for a given mapping', assert => {
     const ioc = new Ioc()
     const view = new Edge()
     const config = {
@@ -33,7 +33,7 @@ test.group('Mail Manager', () => {
     assert.equal(manager['getMappingDriver']('marketing'), 'smtp')
   })
 
-  test('return default mapping name', (assert) => {
+  test('return default mapping name', assert => {
     const ioc = new Ioc()
     const view = new Edge()
     const config = {
@@ -49,7 +49,7 @@ test.group('Mail Manager', () => {
     assert.equal(manager['getDefaultMappingName'](), 'marketing')
   })
 
-  test('return config for a mapping name', (assert) => {
+  test('return config for a mapping name', assert => {
     const ioc = new Ioc()
     const view = new Edge()
     const config = {
@@ -62,10 +62,12 @@ test.group('Mail Manager', () => {
     }
 
     const manager = new MailManager(ioc, config as any, view)
-    assert.deepEqual(manager['getMappingConfig']('marketing'), { driver: 'smtp' })
+    assert.deepEqual(manager['getMappingConfig']('marketing'), {
+      driver: 'smtp',
+    })
   })
 
-  test('get mailer instance for smtp driver', (assert) => {
+  test('get mailer instance for smtp driver', assert => {
     const ioc = new Ioc()
     const view = new Edge()
     const config = {
@@ -84,7 +86,7 @@ test.group('Mail Manager', () => {
     assert.instanceOf(mailer['_driver'], SmtpDriver)
   })
 
-  test('cache mailer instances for smtp driver', (assert) => {
+  test('cache mailer instances for smtp driver', assert => {
     const ioc = new Ioc()
     const view = new Edge()
     const config = {
@@ -103,7 +105,45 @@ test.group('Mail Manager', () => {
     assert.deepEqual(mailer, mailer1)
   })
 
-  test('close driver and release it from cache', async (assert) => {
+  test('get mailer instance for ses driver', assert => {
+    const ioc = new Ioc()
+    const view = new Edge()
+    const config = {
+      mailer: 'marketing',
+      mailers: {
+        marketing: {
+          driver: 'ses',
+        },
+      },
+    }
+
+    const manager = new MailManager(ioc, config as any, view)
+    const mailer = manager.use()
+
+    assert.instanceOf(mailer, Mailer)
+    assert.instanceOf(mailer['_driver'], SesDriver)
+  })
+
+  test('cache mailer instances for ses driver', assert => {
+    const ioc = new Ioc()
+    const view = new Edge()
+    const config = {
+      mailer: 'marketing',
+      mailers: {
+        marketing: {
+          driver: 'ses',
+        },
+      },
+    }
+
+    const manager = new MailManager(ioc, config as any, view)
+    const mailer = manager.use()
+    const mailer1 = manager.use()
+
+    assert.deepEqual(mailer, mailer1)
+  })
+
+  test('close driver and release it from cache', async assert => {
     const ioc = new Ioc()
     const view = new Edge()
     const config = {
@@ -137,14 +177,17 @@ test.group('Mail Manager', () => {
 
     const mailer = manager.use()
     assert.instanceOf(manager['_mappingsCache'].get('marketing')!, Mailer)
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!['_driver'], FakeDriver)
+    assert.instanceOf(
+      manager['_mappingsCache'].get('marketing')!['_driver'],
+      FakeDriver,
+    )
 
     await mailer.close()
     assert.equal(manager['_mappingsCache'].size, 0)
     assert.isTrue(fakeDriver.closed)
   })
 
-  test('close driver by invoke close on manager instance', async (assert) => {
+  test('close driver by invoke close on manager instance', async assert => {
     const ioc = new Ioc()
     const view = new Edge()
     const config = {
@@ -178,14 +221,17 @@ test.group('Mail Manager', () => {
 
     manager.use()
     assert.instanceOf(manager['_mappingsCache'].get('marketing')!, Mailer)
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!['_driver'], FakeDriver)
+    assert.instanceOf(
+      manager['_mappingsCache'].get('marketing')!['_driver'],
+      FakeDriver,
+    )
 
     await manager.close('marketing')
     assert.equal(manager['_mappingsCache'].size, 0)
     assert.isTrue(fakeDriver.closed)
   })
 
-  test('close all mappings and clear cache', async (assert) => {
+  test('close all mappings and clear cache', async assert => {
     const ioc = new Ioc()
     const view = new Edge()
     const config = {
@@ -219,7 +265,10 @@ test.group('Mail Manager', () => {
 
     manager.use()
     assert.instanceOf(manager['_mappingsCache'].get('marketing')!, Mailer)
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!['_driver'], FakeDriver)
+    assert.instanceOf(
+      manager['_mappingsCache'].get('marketing')!['_driver'],
+      FakeDriver,
+    )
 
     await manager.closeAll()
     assert.equal(manager['_mappingsCache'].size, 0)

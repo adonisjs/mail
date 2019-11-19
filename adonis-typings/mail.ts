@@ -5,12 +5,12 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
-*/
+ */
 
 declare module '@ioc:Adonis/Addons/Mail' {
-  import { TlsOptions } from 'tls'
-  import { Readable } from 'stream'
   import { ManagerContract } from '@poppinss/manager'
+  import { Readable } from 'stream'
+  import { TlsOptions } from 'tls'
 
   /**
    * Shape of the driver contract
@@ -24,45 +24,57 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Attachment options
    */
   export type AttachmentOptionsNode = {
-    filename?: string,
-    href?: string,
-    httpHeaders?: { [key: string]: any },
-    contentType?: string,
-    contentDisposition?: string,
-    encoding?: string,
-    headers?: { [key: string]: any },
+    filename?: string;
+    href?: string;
+    httpHeaders?: { [key: string]: any };
+    contentType?: string;
+    contentDisposition?: string;
+    encoding?: string;
+    headers?: { [key: string]: any };
   }
 
   /**
    * Shape of envolpe
    */
-  export type EnvolpeNode = { from?: string, to?: string, cc?: string, bcc?: string }
+  export type EnvolpeNode = {
+    from?: string;
+    to?: string;
+    cc?: string;
+    bcc?: string;
+  }
 
   /**
    * Message node is compatible with nodemailer `sendMail` method
    */
   export type MessageNode = {
-    from?: { address: string, name?: string },
-    to?: { address: string, name?: string }[],
-    cc?: { address: string, name?: string }[],
-    bcc?: { address: string, name?: string }[],
-    messageId?: string,
-    subject?: string,
-    replyTo?: { address: string, name?: string },
-    inReplyTo?: string,
-    references?: string[],
-    encoding?: string,
-    priority?: 'low' | 'normal' | 'high',
-    envelope?: EnvolpeNode,
-    attachments?: (AttachmentOptionsNode & { path?: string, cid?: string, content?: Buffer | Readable })[],
-    headers?: ({
-      [key: string]: string | string[],
-    } | {
-      [key: string]: { prepared: true, value: string | string[] },
-    })[],
-    html?: string,
-    watch?: string,
-    text?: string,
+    from?: { address: string; name?: string };
+    to?: { address: string; name?: string }[];
+    cc?: { address: string; name?: string }[];
+    bcc?: { address: string; name?: string }[];
+    messageId?: string;
+    subject?: string;
+    replyTo?: { address: string; name?: string };
+    inReplyTo?: string;
+    references?: string[];
+    encoding?: string;
+    priority?: 'low' | 'normal' | 'high';
+    envelope?: EnvolpeNode;
+    attachments?: (AttachmentOptionsNode & {
+      path?: string;
+      cid?: string;
+      content?: Buffer | Readable;
+    })[];
+    headers?: (
+      | {
+          [key: string]: string | string[];
+        }
+      | {
+          [key: string]: { prepared: true; value: string | string[] };
+        }
+    )[];
+    html?: string;
+    watch?: string;
+    text?: string;
   }
 
   /**
@@ -104,9 +116,16 @@ declare module '@ioc:Adonis/Addons/Mail' {
      * Attachments
      */
     attach (filePath: string, options: AttachmentOptionsNode): this
-    attachData (content: Readable | Buffer, options: AttachmentOptionsNode): this
+    attachData (
+      content: Readable | Buffer,
+      options: AttachmentOptionsNode,
+    ): this
     embed (filePath: string, cid: string, options: AttachmentOptionsNode)
-    embedData (content: Readable | Buffer, cid: string, options: AttachmentOptionsNode)
+    embedData (
+      content: Readable | Buffer,
+      cid: string,
+      options: AttachmentOptionsNode,
+    )
 
     header (key: string, value: string | string[]): this
     preparedHeader (key: string, value: string | string[]): this
@@ -119,8 +138,12 @@ declare module '@ioc:Adonis/Addons/Mail' {
    */
   export interface MailersList {
     smtp: {
-      config: SmtpConfigContract,
-      implementation: SmtpDriverContract,
+      config: SmtpConfigContract;
+      implementation: SmtpDriverContract;
+    }
+    ses: {
+      config: SesConfigContract;
+      implementation: SesDriverContract;
     }
   }
 
@@ -129,22 +152,24 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * The `MailersList` is extended in the user codebase.
    */
   export type MailerConfigContract = {
-    mailer: keyof MailersList,
-    mailers: { [P in keyof MailersList]: MailersList[P]['config'] },
+    mailer: keyof MailersList;
+    mailers: { [P in keyof MailersList]: MailersList[P]['config'] };
   }
 
   /**
    * Shape of the callback passed to the `send` method to compose the
    * message
    */
-  export type MessageComposeCallback = (message: MessageContract) => void | Promise<void>
+  export type MessageComposeCallback = (
+    message: MessageContract,
+  ) => void | Promise<void>
 
   /**
    * Mailer exposes the unified API to send emails by using a given
    * driver
    */
   export interface MailerContract<Driver extends any = DriverContract> {
-    name: string   // name of the mapping for which the mailer is created
+    name: string // name of the mapping for which the mailer is created
     send (callback: MessageComposeCallback): ReturnType<Driver['send']>
     close (): Promise<void>
   }
@@ -152,11 +177,16 @@ declare module '@ioc:Adonis/Addons/Mail' {
   /**
    * Shape of the mailer
    */
-  export interface MailManagerContract extends ManagerContract<
-    DriverContract,    // Shape of drivers, required for extend
-    MailerContract,    // The output of `use` method
-    { [P in keyof MailersList]: MailerContract<MailersList[P]['implementation']> }
-  > {
+  export interface MailManagerContract
+    extends ManagerContract<
+      DriverContract, // Shape of drivers, required for extend
+      MailerContract, // The output of `use` method
+      {
+        [P in keyof MailersList]: MailerContract<
+          MailersList[P]['implementation']
+        >;
+      }
+    > {
     send (callback: MessageComposeCallback): ReturnType<DriverContract['send']>
     close (name?: string): Promise<void>
     closeAll (): Promise<void>
@@ -175,81 +205,116 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Login options for Oauth2 smtp login
    */
   export type SmtpOauth2 = {
-    type: 'OAuth2',
-    user: string,
-    clientId: string,
-    clientSecret: string,
-    refreshToken?: string,
-    accessToken?: string,
-    expires?: string | number,
-    accessUrl?: string,
+    type: 'OAuth2';
+    user: string;
+    clientId: string;
+    clientSecret: string;
+    refreshToken?: string;
+    accessToken?: string;
+    expires?: string | number;
+    accessUrl?: string;
   }
 
   /**
    * Login options for simple smtp login
    */
   export type SmtpSimpleAuth = {
-    type: 'login',
-    user: string,
-    pass: string,
+    type: 'login';
+    user: string;
+    pass: string;
   }
 
   /**
    * Smtp driver config
    */
   export type SmtpConfigContract = {
-    host: string,
-    driver: 'smtp',
-    port?: number | string,
-    secure?: boolean,
+    host: string;
+    driver: 'smtp';
+    port?: number | string;
+    secure?: boolean;
 
     /**
      * Authentication
      */
-    auth?: SmtpSimpleAuth | SmtpOauth2,
+    auth?: SmtpSimpleAuth | SmtpOauth2;
 
     /**
      * TLS options
      */
-    tls?: TlsOptions,
-    ignoreTLS?: boolean,
-    requireTLS?: boolean,
+    tls?: TlsOptions;
+    ignoreTLS?: boolean;
+    requireTLS?: boolean;
 
     /**
      * Pool options
      */
-    pool?: boolean,
-    maxConnections?: number,
-    maxMessages?: number,
-    rateDelta?: number,
-    rateLimit?: number,
+    pool?: boolean;
+    maxConnections?: number;
+    maxMessages?: number;
+    rateDelta?: number;
+    rateLimit?: number;
 
     /**
      * Proxy
      */
-    proxy?: string,
+    proxy?: string;
   }
 
   /**
    * Shape of mail response for the smtp driver
    */
   export type SmtpMailResponse = {
-    response: string
-    accepted: string[]
-    rejected: string[]
+    response: string;
+    accepted: string[];
+    rejected: string[];
     envelope: {
-      from: string,
-      to: string[],
-      cc?: string[],
-      bcc?: string[],
-    }
-    messageId: string,
+      from: string;
+      to: string[];
+      cc?: string[];
+      bcc?: string[];
+    };
+    messageId: string;
   }
 
   /**
    * Shape of the smtp driver
    */
   export interface SmtpDriverContract extends DriverContract {
+    send (message: MessageNode): Promise<SmtpMailResponse>
+  }
+
+  /**
+   * Ses driver config
+   */
+  export type SesConfigContract = {
+    driver: string;
+    key: string;
+    secret: string;
+    region?: string;
+    sendingRate?: number;
+    maxConnections?: number;
+  }
+
+  /**
+   * Shape of mail response for the ses driver
+   */
+  export type SesMailResponse = {
+    response: string;
+    accepted: string[];
+    rejected: string[];
+    envelope: {
+      from: string;
+      to: string[];
+      cc?: string[];
+      bcc?: string[];
+    };
+    messageId: string;
+  }
+
+  /**
+   * Shape of the ses driver
+   */
+  export interface SesDriverContract extends DriverContract {
     send (message: MessageNode): Promise<SmtpMailResponse>
   }
 

@@ -31,6 +31,12 @@ const mailConfig: MailerConfigContract = {
       host: 'smtp.ethereal.email',
       port: 587,
     },
+    ses: {
+      driver: 'ses',
+      key: 'your-ses-key',
+      secret: 'your-ses-secret',
+      region: 'ses-region', // e.g. us-east-1
+    },
   },
 }
 
