@@ -290,7 +290,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
     driver: string;
     key: string;
     secret: string;
-    region?: string;
+    region: string;
     sendingRate?: number;
     maxConnections?: number;
   }
