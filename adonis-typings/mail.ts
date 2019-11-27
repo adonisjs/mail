@@ -24,57 +24,57 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Attachment options
    */
   export type AttachmentOptionsNode = {
-    filename?: string;
-    href?: string;
-    httpHeaders?: { [key: string]: any };
-    contentType?: string;
-    contentDisposition?: string;
-    encoding?: string;
-    headers?: { [key: string]: any };
+    filename?: string,
+    href?: string,
+    httpHeaders?: { [key: string]: any },
+    contentType?: string,
+    contentDisposition?: string,
+    encoding?: string,
+    headers?: { [key: string]: any },
   }
 
   /**
    * Shape of envolpe
    */
   export type EnvolpeNode = {
-    from?: string;
-    to?: string;
-    cc?: string;
-    bcc?: string;
+    from?: string,
+    to?: string,
+    cc?: string,
+    bcc?: string,
   }
 
   /**
    * Message node is compatible with nodemailer `sendMail` method
    */
   export type MessageNode = {
-    from?: { address: string; name?: string };
-    to?: { address: string; name?: string }[];
-    cc?: { address: string; name?: string }[];
-    bcc?: { address: string; name?: string }[];
-    messageId?: string;
-    subject?: string;
-    replyTo?: { address: string; name?: string };
-    inReplyTo?: string;
-    references?: string[];
-    encoding?: string;
-    priority?: 'low' | 'normal' | 'high';
-    envelope?: EnvolpeNode;
+    from?: { address: string, name?: string },
+    to?: { address: string, name?: string }[],
+    cc?: { address: string, name?: string }[],
+    bcc?: { address: string, name?: string }[],
+    messageId?: string,
+    subject?: string,
+    replyTo?: { address: string, name?: string },
+    inReplyTo?: string,
+    references?: string[],
+    encoding?: string,
+    priority?: 'low' | 'normal' | 'high',
+    envelope?: EnvolpeNode,
     attachments?: (AttachmentOptionsNode & {
-      path?: string;
-      cid?: string;
-      content?: Buffer | Readable;
-    })[];
+      path?: string,
+      cid?: string,
+      content?: Buffer | Readable,
+    })[],
     headers?: (
       | {
-          [key: string]: string | string[];
-        }
+        [key: string]: string | string[],
+      }
       | {
-          [key: string]: { prepared: true; value: string | string[] };
-        }
-    )[];
-    html?: string;
-    watch?: string;
-    text?: string;
+        [key: string]: { prepared: true, value: string | string[] },
+      }
+    )[],
+    html?: string,
+    watch?: string,
+    text?: string,
   }
 
   /**
@@ -138,12 +138,12 @@ declare module '@ioc:Adonis/Addons/Mail' {
    */
   export interface MailersList {
     smtp: {
-      config: SmtpConfigContract;
-      implementation: SmtpDriverContract;
+      config: SmtpConfigContract,
+      implementation: SmtpDriverContract,
     }
     ses: {
-      config: SesConfigContract;
-      implementation: SesDriverContract;
+      config: SesConfigContract,
+      implementation: SesDriverContract,
     }
   }
 
@@ -152,8 +152,8 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * The `MailersList` is extended in the user codebase.
    */
   export type MailerConfigContract = {
-    mailer: keyof MailersList;
-    mailers: { [P in keyof MailersList]: MailersList[P]['config'] };
+    mailer: keyof MailersList,
+    mailers: { [P in keyof MailersList]: MailersList[P]['config'] },
   }
 
   /**
@@ -179,13 +179,13 @@ declare module '@ioc:Adonis/Addons/Mail' {
    */
   export interface MailManagerContract
     extends ManagerContract<
-      DriverContract, // Shape of drivers, required for extend
-      MailerContract, // The output of `use` method
-      {
-        [P in keyof MailersList]: MailerContract<
-          MailersList[P]['implementation']
-        >;
-      }
+    DriverContract, // Shape of drivers, required for extend
+    MailerContract, // The output of `use` method
+    {
+      [P in keyof MailersList]: MailerContract<
+        MailersList[P]['implementation']
+      >
+    }
     > {
     send (callback: MessageComposeCallback): ReturnType<DriverContract['send']>
     close (name?: string): Promise<void>
@@ -205,75 +205,75 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Login options for Oauth2 smtp login
    */
   export type SmtpOauth2 = {
-    type: 'OAuth2';
-    user: string;
-    clientId: string;
-    clientSecret: string;
-    refreshToken?: string;
-    accessToken?: string;
-    expires?: string | number;
-    accessUrl?: string;
+    type: 'OAuth2',
+    user: string,
+    clientId: string,
+    clientSecret: string,
+    refreshToken?: string,
+    accessToken?: string,
+    expires?: string | number,
+    accessUrl?: string,
   }
 
   /**
    * Login options for simple smtp login
    */
   export type SmtpSimpleAuth = {
-    type: 'login';
-    user: string;
-    pass: string;
+    type: 'login',
+    user: string,
+    pass: string,
   }
 
   /**
    * Smtp driver config
    */
   export type SmtpConfigContract = {
-    host: string;
-    driver: 'smtp';
-    port?: number | string;
-    secure?: boolean;
+    host: string,
+    driver: 'smtp',
+    port?: number | string,
+    secure?: boolean,
 
     /**
      * Authentication
      */
-    auth?: SmtpSimpleAuth | SmtpOauth2;
+    auth?: SmtpSimpleAuth | SmtpOauth2,
 
     /**
      * TLS options
      */
-    tls?: TlsOptions;
-    ignoreTLS?: boolean;
-    requireTLS?: boolean;
+    tls?: TlsOptions,
+    ignoreTLS?: boolean,
+    requireTLS?: boolean,
 
     /**
      * Pool options
      */
-    pool?: boolean;
-    maxConnections?: number;
-    maxMessages?: number;
-    rateDelta?: number;
-    rateLimit?: number;
+    pool?: boolean,
+    maxConnections?: number,
+    maxMessages?: number,
+    rateDelta?: number,
+    rateLimit?: number,
 
     /**
      * Proxy
      */
-    proxy?: string;
+    proxy?: string,
   }
 
   /**
    * Shape of mail response for the smtp driver
    */
   export type SmtpMailResponse = {
-    response: string;
-    accepted: string[];
-    rejected: string[];
+    response: string,
+    accepted: string[],
+    rejected: string[],
     envelope: {
-      from: string;
-      to: string[];
-      cc?: string[];
-      bcc?: string[];
-    };
-    messageId: string;
+      from: string,
+      to: string[],
+      cc?: string[],
+      bcc?: string[],
+    },
+    messageId: string,
   }
 
   /**
@@ -287,28 +287,28 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Ses driver config
    */
   export type SesConfigContract = {
-    driver: string;
-    key: string;
-    secret: string;
-    region: string;
-    sendingRate?: number;
-    maxConnections?: number;
+    driver: string,
+    key: string,
+    secret: string,
+    region: string,
+    sendingRate?: number,
+    maxConnections?: number,
   }
 
   /**
    * Shape of mail response for the ses driver
    */
   export type SesMailResponse = {
-    response: string;
-    accepted: string[];
-    rejected: string[];
+    response: string,
+    accepted: string[],
+    rejected: string[],
     envelope: {
-      from: string;
-      to: string[];
-      cc?: string[];
-      bcc?: string[];
-    };
-    messageId: string;
+      from: string,
+      to: string[],
+      cc?: string[],
+      bcc?: string[],
+    },
+    messageId: string,
   }
 
   /**
