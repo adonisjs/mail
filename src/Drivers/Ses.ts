@@ -9,12 +9,7 @@
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
-import {
-  MessageNode,
-  SesConfigContract,
-  SesDriverContract,
-  SesMailResponse,
-} from '@ioc:Adonis/Addons/Mail'
+import { MessageNode, SesConfigContract, SesDriverContract, SesMailResponse } from '@ioc:Adonis/Addons/Mail'
 import * as aws from 'aws-sdk'
 import nodemailer from 'nodemailer'
 
@@ -27,7 +22,7 @@ export class SesDriver implements SesDriverContract {
   constructor (config: SesConfigContract) {
     this._transporter = nodemailer.createTransport({
       SES: new aws.SES({
-        apiVersion: '2010-12-01',
+        apiVersion: config.apiVersion,
         accessKeyId: config.key,
         secretAccessKey: config.secret,
         region: config.region,

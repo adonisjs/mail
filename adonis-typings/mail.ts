@@ -288,6 +288,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
    */
   export type SesConfigContract = {
     driver: string,
+    apiVersion: string,
     key: string,
     secret: string,
     region: string,

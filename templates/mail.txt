@@ -33,9 +33,12 @@ const mailConfig: MailerConfigContract = {
     },
     ses: {
       driver: 'ses',
+      apiVersion: '2010-12-01',
       key: 'your-ses-key',
       secret: 'your-ses-secret',
-      region: 'ses-region', // e.g. us-east-1
+      region: 'ses-region', // e.g. us-east-1,
+      sendingRate: 10,
+      maxConnections: 5,
     },
   },
 }

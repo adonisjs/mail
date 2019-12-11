@@ -22,6 +22,7 @@ test.group('Ses Driver', group => {
   test('send email using ses driver', async assert => {
     const ses = new SesDriver({
       driver: 'ses',
+      apiVersion: '2010-12-01',
       key: process.env.AWS_ACCESS_KEY_ID!,
       secret: process.env.AWS_SECRET_ACCESS_KEY!,
       region: process.env.AWS_REGION!,
