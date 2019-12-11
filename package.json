@@ -59,11 +59,11 @@
   },
   "peerDependencies": {
     "@adonisjs/view": "^1.x.x",
-    "@adonisjs/core": "^2.x.x"
+    "@adonisjs/core": "^2.x.x",
+    "aws-sdk": "^2.573.0"
   },
   "dependencies": {
     "@poppinss/manager": "^2.1.2",
-    "aws-sdk": "^2.573.0",
     "nodemailer": "^6.3.0"
   },
   "repository": {
