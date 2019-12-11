@@ -37,6 +37,7 @@ const mailConfig: MailerConfigContract = {
       key: 'your-ses-key',
       secret: 'your-ses-secret',
       region: 'ses-region', // e.g. us-east-1,
+      sslEnabled: true,
       sendingRate: 10,
       maxConnections: 5,
     },

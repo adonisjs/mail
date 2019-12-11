@@ -26,6 +26,7 @@ test.group('Ses Driver', group => {
       key: process.env.AWS_ACCESS_KEY_ID!,
       secret: process.env.AWS_SECRET_ACCESS_KEY!,
       region: process.env.AWS_REGION!,
+      sslEnabled: true,
     })
 
     const message = new Message(new Edge())

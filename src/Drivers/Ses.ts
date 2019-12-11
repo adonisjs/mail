@@ -26,6 +26,7 @@ export class SesDriver implements SesDriverContract {
         accessKeyId: config.key,
         secretAccessKey: config.secret,
         region: config.region,
+        sslEnabled: config.sslEnabled,
       }),
       sendingRate: config.sendingRate,
       maxConnections: config.maxConnections,

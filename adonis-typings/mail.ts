@@ -292,6 +292,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
     key: string,
     secret: string,
     region: string,
+    sslEnabled?: boolean,
     sendingRate?: number,
     maxConnections?: number,
   }
