@@ -144,7 +144,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * driver
    */
   export interface MailerContract<Driver extends any = DriverContract> {
-    name: string   // name of the mapping for which the mailer is created
+    name: string // name of the mapping for which the mailer is created
     send (callback: MessageComposeCallback): ReturnType<Driver['send']>
     close (): Promise<void>
   }
@@ -153,9 +153,9 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Shape of the mailer
    */
   export interface MailManagerContract extends ManagerContract<
-    DriverContract,    // Shape of drivers, required for extend
-    MailerContract,    // The output of `use` method
-    { [P in keyof MailersList]: MailerContract<MailersList[P]['implementation']> }
+  DriverContract, // Shape of drivers, required for extend
+  MailerContract, // The output of `use` method
+  { [P in keyof MailersList]: MailerContract<MailersList[P]['implementation']> }
   > {
     send (callback: MessageComposeCallback): ReturnType<DriverContract['send']>
     close (name?: string): Promise<void>
