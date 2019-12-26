@@ -102,6 +102,6 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
    * Closes the mapping instance and removes it from the cache
    */
   public async closeAll (): Promise<void> {
-    await Promise.all(Array.from(this['_mappingsCache'].keys()).map((name: string) => this.close(name)))
+    await Promise.all(Array.from(this['mappingsCache'].keys()).map((name: string) => this.close(name)))
   }
 }

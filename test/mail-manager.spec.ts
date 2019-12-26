@@ -136,11 +136,11 @@ test.group('Mail Manager', () => {
     })
 
     const mailer = manager.use()
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!, Mailer)
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!['_driver'], FakeDriver)
+    assert.instanceOf(manager['mappingsCache'].get('marketing')!, Mailer)
+    assert.instanceOf(manager['mappingsCache'].get('marketing')!['_driver'], FakeDriver)
 
     await mailer.close()
-    assert.equal(manager['_mappingsCache'].size, 0)
+    assert.equal(manager['mappingsCache'].size, 0)
     assert.isTrue(fakeDriver.closed)
   })
 
@@ -177,11 +177,11 @@ test.group('Mail Manager', () => {
     })
 
     manager.use()
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!, Mailer)
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!['_driver'], FakeDriver)
+    assert.instanceOf(manager['mappingsCache'].get('marketing')!, Mailer)
+    assert.instanceOf(manager['mappingsCache'].get('marketing')!['_driver'], FakeDriver)
 
     await manager.close('marketing')
-    assert.equal(manager['_mappingsCache'].size, 0)
+    assert.equal(manager['mappingsCache'].size, 0)
     assert.isTrue(fakeDriver.closed)
   })
 
@@ -218,11 +218,11 @@ test.group('Mail Manager', () => {
     })
 
     manager.use()
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!, Mailer)
-    assert.instanceOf(manager['_mappingsCache'].get('marketing')!['_driver'], FakeDriver)
+    assert.instanceOf(manager['mappingsCache'].get('marketing')!, Mailer)
+    assert.instanceOf(manager['mappingsCache'].get('marketing')!['_driver'], FakeDriver)
 
     await manager.closeAll()
-    assert.equal(manager['_mappingsCache'].size, 0)
+    assert.equal(manager['mappingsCache'].size, 0)
     assert.isTrue(fakeDriver.closed)
   })
 })
