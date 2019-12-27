@@ -36,8 +36,8 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
 
   constructor (
     container: IocContract,
-    private _config: MailerConfigContract,
-    private _view: EdgeContract,
+    private config: MailerConfigContract,
+    private view: EdgeContract,
   ) {
     super(container)
   }
@@ -47,7 +47,7 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
    * inside the mailer instance.
    */
   protected wrapDriverResponse (mappingName: string, driver: DriverContract): MailerContract {
-    return new Mailer(mappingName, this._view, driver, ({ name }) => {
+    return new Mailer(mappingName, this.view, driver, ({ name }) => {
       this.release(name)
     })
   }
@@ -64,21 +64,21 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
    * Returns the config for a given mapping
    */
   protected getMappingConfig (name: string) {
-    return this._config.mailers[name]
+    return this.config.mailers[name]
   }
 
   /**
    * Returns the name of the default mapping
    */
   protected getDefaultMappingName () {
-    return this._config.mailer
+    return this.config.mailer
   }
 
   /**
    * Creates an instance of `smtp` driver by lazy loading. This method
    * is invoked internally when a new driver instance is required
    */
-  protected createSmtp (_mapping, config) {
+  protected createSmtp (_, config) {
     const { SmtpDriver } = require('../Drivers/Smtp')
     return new SmtpDriver(config)
   }

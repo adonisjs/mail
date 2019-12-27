@@ -23,13 +23,11 @@ import { Message } from '../Message'
  * driver
  */
 export class Mailer implements MailerContract {
-  protected $cacheMappings = true
-
   constructor (
     public name: string,
-    private _view: EdgeContract,
-    private _driver: DriverContract,
-    private _onClose: (mailer: MailerContract) => void,
+    private view: EdgeContract,
+    public driver: DriverContract,
+    public onClose: (mailer: MailerContract) => void,
   ) {
   }
 
@@ -37,16 +35,16 @@ export class Mailer implements MailerContract {
    * Sends email
    */
   public async send (callback: MessageComposeCallback) {
-    const message = new Message(this._view)
+    const message = new Message(this.view)
     await callback(message)
-    return this._driver.send(message.toJSON())
+    return this.driver.send(message.toJSON())
   }
 
   /**
    * Invokes `close` method on the driver
    */
   public async close () {
-    await this._driver.close()
-    this._onClose(this)
+    await this.driver.close()
+    this.onClose(this)
   }
 }

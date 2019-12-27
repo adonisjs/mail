@@ -22,28 +22,28 @@ import {
  * Smtp driver to send email using smtp
  */
 export class SmtpDriver implements SmtpDriverContract {
-  private _transporter: any
+  private transporter: any
 
   constructor (config: SmtpConfigContract) {
-    this._transporter = nodemailer.createTransport(config)
+    this.transporter = nodemailer.createTransport(config)
   }
 
   /**
    * Send message
    */
   public async send (message: MessageNode): Promise<SmtpMailResponse> {
-    if (!this._transporter) {
+    if (!this.transporter) {
       throw new Error('Driver transport has been closed and cannot be used for sending emails')
     }
 
-    return this._transporter.sendMail(message)
+    return this.transporter.sendMail(message)
   }
 
   /**
    * Close transporter connection, helpful when using connections pool
    */
   public async close () {
-    this._transporter.close()
-    this._transporter = null
+    this.transporter.close()
+    this.transporter = null
   }
 }

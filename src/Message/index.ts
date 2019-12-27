@@ -13,17 +13,20 @@ import { Readable } from 'stream'
 import { EdgeContract } from 'edge.js'
 import { MessageContract, AttachmentOptionsNode, MessageNode, EnvolpeNode } from '@ioc:Adonis/Addons/Mail'
 
+/**
+ * Fluent API to construct node mailer message object
+ */
 export class Message implements MessageContract {
-  private _nodeMailerMessage: MessageNode = {}
+  private nodeMailerMessage: MessageNode = {}
 
-  constructor (private _view: EdgeContract) {
+  constructor (private view: EdgeContract) {
   }
 
   /**
    * Explicit content set on the message object. This will get
    * preference over views
    */
-  private _content: {
+  private content: {
     html?: string,
     text?: string,
     watch?: string,
@@ -32,7 +35,7 @@ export class Message implements MessageContract {
   /**
    * Returns address node with correctly formatted way
    */
-  private _getAddress (address: string, name?: string): { address: string, name?: string } {
+  private getAddress (address: string, name?: string): { address: string, name?: string } {
     return name ? { address, name } : { address }
   }
 
@@ -40,8 +43,8 @@ export class Message implements MessageContract {
    * Add receipent as `to`
    */
   public to (address: string, name?: string): this {
-    this._nodeMailerMessage.to = this._nodeMailerMessage.to || []
-    this._nodeMailerMessage.to.push(this._getAddress(address, name))
+    this.nodeMailerMessage.to = this.nodeMailerMessage.to || []
+    this.nodeMailerMessage.to.push(this.getAddress(address, name))
     return this
   }
 
@@ -49,7 +52,7 @@ export class Message implements MessageContract {
    * Add `from` name and email
    */
   public from (address: string, name?: string): this {
-    this._nodeMailerMessage.from = this._getAddress(address, name)
+    this.nodeMailerMessage.from = this.getAddress(address, name)
     return this
   }
 
@@ -57,8 +60,8 @@ export class Message implements MessageContract {
    * Add receipent as `cc`
    */
   public cc (address: string, name?: string): this {
-    this._nodeMailerMessage.cc = this._nodeMailerMessage.cc || []
-    this._nodeMailerMessage.cc.push(this._getAddress(address, name))
+    this.nodeMailerMessage.cc = this.nodeMailerMessage.cc || []
+    this.nodeMailerMessage.cc.push(this.getAddress(address, name))
     return this
   }
 
@@ -66,8 +69,8 @@ export class Message implements MessageContract {
    * Add receipent as `bcc`
    */
   public bcc (address: string, name?: string): this {
-    this._nodeMailerMessage.bcc = this._nodeMailerMessage.bcc || []
-    this._nodeMailerMessage.bcc.push(this._getAddress(address, name))
+    this.nodeMailerMessage.bcc = this.nodeMailerMessage.bcc || []
+    this.nodeMailerMessage.bcc.push(this.getAddress(address, name))
     return this
   }
 
@@ -75,7 +78,7 @@ export class Message implements MessageContract {
    * Define custom message id
    */
   public messageId (messageId: string): this {
-    this._nodeMailerMessage.messageId = messageId
+    this.nodeMailerMessage.messageId = messageId
     return this
   }
 
@@ -83,7 +86,7 @@ export class Message implements MessageContract {
    * Define subject
    */
   public subject (message: string): this {
-    this._nodeMailerMessage.subject = message
+    this.nodeMailerMessage.subject = message
     return this
   }
 
@@ -91,7 +94,7 @@ export class Message implements MessageContract {
    * Define replyTo email and name
    */
   public replyTo (address: string, name?: string): this {
-    this._nodeMailerMessage.replyTo = this._getAddress(address, name)
+    this.nodeMailerMessage.replyTo = this.getAddress(address, name)
     return this
   }
 
@@ -99,7 +102,7 @@ export class Message implements MessageContract {
    * Define inReplyTo message id
    */
   public inReplyTo (messageId: string): this {
-    this._nodeMailerMessage.inReplyTo = messageId
+    this.nodeMailerMessage.inReplyTo = messageId
     return this
   }
 
@@ -107,7 +110,7 @@ export class Message implements MessageContract {
    * Define multiple message id's as references
    */
   public references (messagesIds: string[]): this {
-    this._nodeMailerMessage.references = messagesIds
+    this.nodeMailerMessage.references = messagesIds
     return this
   }
 
@@ -115,7 +118,7 @@ export class Message implements MessageContract {
    * Optionally define email envolpe
    */
   public envelope (envelope: EnvolpeNode): this {
-    this._nodeMailerMessage.envelope = envelope
+    this.nodeMailerMessage.envelope = envelope
     return this
   }
 
@@ -123,7 +126,7 @@ export class Message implements MessageContract {
    * Define contents encoding
    */
   public encoding (encoding: string): this {
-    this._nodeMailerMessage.encoding = encoding
+    this.nodeMailerMessage.encoding = encoding
     return this
   }
 
@@ -131,7 +134,7 @@ export class Message implements MessageContract {
    * Define email prority
    */
   public priority (priority: 'low' | 'normal' | 'high'): this {
-    this._nodeMailerMessage.priority = priority
+    this.nodeMailerMessage.priority = priority
     return this
   }
 
@@ -139,7 +142,7 @@ export class Message implements MessageContract {
    * Compute email html from defined view
    */
   public htmlView (template: string, data?: any): this {
-    this._content.html = this._view.render(template, data)
+    this.content.html = this.view.render(template, data)
     return this
   }
 
@@ -147,7 +150,7 @@ export class Message implements MessageContract {
    * Compute email text from defined view
    */
   public textView (template: string, data?: any): this {
-    this._content.text = this._view.render(template, data)
+    this.content.text = this.view.render(template, data)
     return this
   }
 
@@ -155,7 +158,7 @@ export class Message implements MessageContract {
    * Compute apple watch html from defined view
    */
   public watchView (template: string, data?: any): this {
-    this._content.watch = this._view.render(template, data)
+    this.content.watch = this.view.render(template, data)
     return this
   }
 
@@ -163,7 +166,7 @@ export class Message implements MessageContract {
    * Compute email html from raw text
    */
   public html (content: string): this {
-    this._content.html = content
+    this.content.html = content
     return this
   }
 
@@ -171,7 +174,7 @@ export class Message implements MessageContract {
    * Compute email text from raw text
    */
   public text (content: string): this {
-    this._content.text = content
+    this.content.text = content
     return this
   }
 
@@ -179,7 +182,7 @@ export class Message implements MessageContract {
    * Compute email watch html from raw text
    */
   public watch (content: string): this {
-    this._content.watch = content
+    this.content.watch = content
     return this
   }
 
@@ -187,8 +190,8 @@ export class Message implements MessageContract {
    * Define one or attachments
    */
   public attach (filePath: string, options?: AttachmentOptionsNode): this {
-    this._nodeMailerMessage.attachments = this._nodeMailerMessage.attachments || []
-    this._nodeMailerMessage.attachments.push({
+    this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
+    this.nodeMailerMessage.attachments.push({
       path: filePath,
       ...options,
     })
@@ -200,8 +203,8 @@ export class Message implements MessageContract {
    * Define attachment from raw data
    */
   public attachData (content: Readable | Buffer, options?: AttachmentOptionsNode): this {
-    this._nodeMailerMessage.attachments = this._nodeMailerMessage.attachments || []
-    this._nodeMailerMessage.attachments.push({
+    this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
+    this.nodeMailerMessage.attachments.push({
       content,
       ...options,
     })
@@ -213,8 +216,8 @@ export class Message implements MessageContract {
    * Embed attachment inside content using `cid`
    */
   public embed (filePath: string, cid: string, options?: AttachmentOptionsNode): this {
-    this._nodeMailerMessage.attachments = this._nodeMailerMessage.attachments || []
-    this._nodeMailerMessage.attachments.push({
+    this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
+    this.nodeMailerMessage.attachments.push({
       path: filePath,
       cid,
       ...options,
@@ -227,8 +230,8 @@ export class Message implements MessageContract {
    * Embed attachment from raw data inside content using `cid`
    */
   public embedData (content: Readable | Buffer, cid: string, options?: AttachmentOptionsNode): this {
-    this._nodeMailerMessage.attachments = this._nodeMailerMessage.attachments || []
-    this._nodeMailerMessage.attachments.push({
+    this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
+    this.nodeMailerMessage.attachments.push({
       content,
       cid,
       ...options,
@@ -241,8 +244,8 @@ export class Message implements MessageContract {
    * Define custom headers for email
    */
   public header (key: string, value: string | string[]): this {
-    this._nodeMailerMessage.headers = this._nodeMailerMessage.headers || []
-    this._nodeMailerMessage.headers.push({ [key]: value })
+    this.nodeMailerMessage.headers = this.nodeMailerMessage.headers || []
+    this.nodeMailerMessage.headers.push({ [key]: value })
 
     return this
   }
@@ -251,8 +254,8 @@ export class Message implements MessageContract {
    * Define custom prepared headers for email
    */
   public preparedHeader (key: string, value: string | string[]): this {
-    this._nodeMailerMessage.headers = this._nodeMailerMessage.headers || []
-    this._nodeMailerMessage.headers.push({ [key]: { prepared: true, value } })
+    this.nodeMailerMessage.headers = this.nodeMailerMessage.headers || []
+    this.nodeMailerMessage.headers.push({ [key]: { prepared: true, value } })
 
     return this
   }
@@ -261,6 +264,6 @@ export class Message implements MessageContract {
    * Get message JSON. The packet can be sent over to nodemailer
    */
   public toJSON (): MessageNode {
-    return Object.assign(this._content, this._nodeMailerMessage)
+    return Object.assign(this.content, this.nodeMailerMessage)
   }
 }

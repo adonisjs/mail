@@ -86,13 +86,12 @@ declare module '@ioc:Adonis/Addons/Mail' {
     inReplyTo (messageId: string): this
     references (messagesIds: string[]): this
     envelope (envelope: EnvolpeNode): this
-
-    encoding (encoding: string): this
     priority (priority: 'low' | 'normal' | 'high'): this
 
     /**
      * Content options
      */
+    encoding (encoding: string): this
     htmlView (template: string, data?: any): this
     textView (template: string, data?: any): this
     watchView (template: string, data?: any): this
@@ -144,7 +143,9 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * driver
    */
   export interface MailerContract<Driver extends any = DriverContract> {
-    name: string // name of the mapping for which the mailer is created
+    name: string
+    driver: Driver
+    onClose: ((mailer: MailerContract) => void),
     send (callback: MessageComposeCallback): ReturnType<Driver['send']>
     close (): Promise<void>
   }
@@ -167,7 +168,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
   | SMTP driver
   |--------------------------------------------------------------------------
   |
-  | Smtp driver contracts
+  | Smtp driver contract
   |
   */
 
