@@ -1,3 +1,10 @@
+/**
+ * Config source: https://git.io/JebFk
+ *
+ * Feel free to let us know via PR, if you find something broken in this contract
+ * file.
+ */
+
 import { MailerConfigContract } from '@ioc:Adonis/Addons/Mail'
 
 const mailConfig: MailerConfigContract = {
