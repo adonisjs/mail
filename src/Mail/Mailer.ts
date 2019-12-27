@@ -12,7 +12,7 @@
 import { EdgeContract } from 'edge.js'
 import {
   MailerContract,
-  DriverContract,
+  MailDriverContract,
   MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
 
@@ -26,7 +26,7 @@ export class Mailer implements MailerContract {
   constructor (
     public name: string,
     private view: EdgeContract,
-    public driver: DriverContract,
+    public driver: MailDriverContract,
     public onClose: (mailer: MailerContract) => void,
   ) {
   }

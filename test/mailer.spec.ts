@@ -10,13 +10,13 @@
 import test from 'japa'
 import { Edge } from 'edge.js'
 import { Mailer } from '../src/Mail/Mailer'
-import { DriverContract, MessageNode } from '@ioc:Adonis/Addons/Mail'
+import { MailDriverContract, MessageNode } from '@ioc:Adonis/Addons/Mail'
 
 test.group('Mailer', () => {
   test('invoke send on the driver instance', async (assert) => {
     const view = new Edge()
 
-    class FakeDriver implements DriverContract {
+    class FakeDriver implements MailDriverContract {
       public message: MessageNode
       public async send (message) {
         this.message = message
@@ -43,7 +43,7 @@ test.group('Mailer', () => {
   test('message instance must be able to make views', async (assert) => {
     const view = new Edge()
 
-    class FakeDriver implements DriverContract {
+    class FakeDriver implements MailDriverContract {
       public message: MessageNode
       public async send (message) {
         this.message = message
@@ -73,7 +73,7 @@ test.group('Mailer', () => {
   test('invoke close on the driver instance', async (assert) => {
     const view = new Edge()
 
-    class FakeDriver implements DriverContract {
+    class FakeDriver implements MailDriverContract {
       public message: MessageNode
       public closed: boolean
 

@@ -15,7 +15,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
   /**
    * Shape of the driver contract
    */
-  export interface DriverContract {
+  export interface MailDriverContract {
     send (message: MessageNode): Promise<any>
     close (): void | Promise<void>
   }
@@ -114,13 +114,22 @@ declare module '@ioc:Adonis/Addons/Mail' {
   }
 
   /**
-   * Mailers will be extended in the user land.
+   * A shortcut way for someone to define `config` and `implementation`
+   * keys on the `MailersList` interface.
    */
-  export interface MailersList {
+  export type MailDrivers = {
     smtp: {
       config: SmtpConfigContract,
-      implementation: SmtpDriverContract,
-    }
+      implementation: SmtpConfigContract,
+    },
+  }
+
+  /**
+   * Using declaration merging, one must extend this interface.
+   *
+   * MUST BE SET IN THE USER LAND.
+   */
+  export interface MailersList {
   }
 
   /**
@@ -142,7 +151,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Mailer exposes the unified API to send emails by using a given
    * driver
    */
-  export interface MailerContract<Driver extends any = DriverContract> {
+  export interface MailerContract<Driver extends any = MailDriverContract> {
     name: string
     driver: Driver
     onClose: ((mailer: MailerContract) => void),
@@ -151,14 +160,22 @@ declare module '@ioc:Adonis/Addons/Mail' {
   }
 
   /**
+   * Piggy back on the driver method when driver exists, otherwise fallback to `never`
+   */
+  export type DriverMethod<T, K extends keyof MailDriverContract> = T extends MailDriverContract
+    ? MailDriverContract[K]
+    : never
+
+  /**
    * Shape of the mailer
    */
-  export interface MailManagerContract extends ManagerContract<
-  DriverContract, // Shape of drivers, required for extend
-  MailerContract, // The output of `use` method
-  { [P in keyof MailersList]: MailerContract<MailersList[P]['implementation']> }
-  > {
-    send (callback: MessageComposeCallback): ReturnType<DriverContract['send']>
+  export interface MailManagerContract<
+    DefaultDriver = MailersList[MailerConfigContract['mailer']]['implementation']
+  > extends ManagerContract<
+    MailDriverContract,
+    { [P in keyof MailersList]: MailersList[P]['implementation'] }
+    > {
+    send (callback: MessageComposeCallback): ReturnType<DriverMethod<DefaultDriver, 'send'>>
     close (name?: string): Promise<void>
     closeAll (): Promise<void>
   }
@@ -250,7 +267,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
   /**
    * Shape of the smtp driver
    */
-  export interface SmtpDriverContract extends DriverContract {
+  export interface SmtpDriverContract extends MailDriverContract {
     send (message: MessageNode): Promise<SmtpMailResponse>
   }
 

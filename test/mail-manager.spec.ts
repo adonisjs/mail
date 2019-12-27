@@ -14,7 +14,7 @@ import { Mailer } from '../src/Mail/Mailer'
 import { SmtpDriver } from '../src/Drivers/Smtp'
 import { MailManager } from '../src/Mail/MailManager'
 
-import { DriverContract, MessageNode } from '@ioc:Adonis/Addons/Mail'
+import { MailDriverContract, MessageNode, MailerContract } from '@ioc:Adonis/Addons/Mail'
 
 test.group('Mail Manager', () => {
   test('return driver for a given mapping', (assert) => {
@@ -78,7 +78,7 @@ test.group('Mail Manager', () => {
     }
 
     const manager = new MailManager(ioc, config as any, view)
-    const mailer = manager.use()
+    const mailer = manager.use() as MailerContract
 
     assert.instanceOf(mailer, Mailer)
     assert.instanceOf(mailer.driver, SmtpDriver)
@@ -115,7 +115,7 @@ test.group('Mail Manager', () => {
       },
     }
 
-    class FakeDriver implements DriverContract {
+    class FakeDriver implements MailDriverContract {
       public message: MessageNode
       public closed: boolean
 
@@ -135,7 +135,7 @@ test.group('Mail Manager', () => {
       return fakeDriver
     })
 
-    const mailer = manager.use()
+    const mailer = manager.use() as MailerContract
     assert.instanceOf(manager['mappingsCache'].get('marketing')!, Mailer)
     assert.instanceOf(manager['mappingsCache'].get('marketing')!.driver, FakeDriver)
 
@@ -156,7 +156,7 @@ test.group('Mail Manager', () => {
       },
     }
 
-    class FakeDriver implements DriverContract {
+    class FakeDriver implements MailDriverContract {
       public message: MessageNode
       public closed: boolean
 
@@ -197,7 +197,7 @@ test.group('Mail Manager', () => {
       },
     }
 
-    class FakeDriver implements DriverContract {
+    class FakeDriver implements MailDriverContract {
       public message: MessageNode
       public closed: boolean
 

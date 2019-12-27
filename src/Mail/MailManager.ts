@@ -14,8 +14,9 @@ import { Manager } from '@poppinss/manager'
 import { IocContract } from '@adonisjs/fold'
 
 import {
-  DriverContract,
+  MailersList,
   MailerContract,
+  MailDriverContract,
   MailManagerContract,
   MailerConfigContract,
   MessageComposeCallback,
@@ -28,7 +29,10 @@ import { Mailer } from './Mailer'
  * in the config file. The manager internally manages the state of mappings and cache
  * them for re-use.
  */
-export class MailManager extends Manager<DriverContract, MailerContract> implements MailManagerContract {
+export class MailManager extends Manager<
+MailDriverContract,
+{ [P in keyof MailersList]: MailersList[P]['implementation'] }
+> implements MailManagerContract<MailDriverContract> {
   /**
    * Caching driver instances. One must call `close` to clean it up
    */
@@ -46,7 +50,7 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
    * Since we don't expose the drivers instances directly, we wrap them
    * inside the mailer instance.
    */
-  protected wrapDriverResponse (mappingName: string, driver: DriverContract): MailerContract {
+  protected wrapDriverResponse (mappingName: string, driver: MailDriverContract): MailerContract {
     return new Mailer(mappingName, this.view, driver, ({ name }) => {
       this.release(name)
     })
@@ -87,7 +91,7 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
    * Sends email using the default `mailer`
    */
   public async send (callback: MessageComposeCallback) {
-    return this.use().send(callback)
+    return (this.use() as MailerContract<MailDriverContract>).send(callback)
   }
 
   /**
@@ -95,7 +99,7 @@ export class MailManager extends Manager<DriverContract, MailerContract> impleme
    */
   public async close (name?: string): Promise<void> {
     const mailer = name ? this.use(name) : this.use()
-    await mailer.close()
+    await (mailer as MailerContract<MailDriverContract>).close()
   }
 
   /**
