@@ -13,6 +13,15 @@ declare module '@ioc:Adonis/Addons/Mail' {
   import { ManagerContract } from '@poppinss/manager'
 
   /**
+   * Shape of base config contract
+   */
+  export type BaseConfigContract = {
+    meta?: {
+      [key: string]: any,
+    }
+  }
+
+  /**
    * Shape of the driver contract. Each driver must adhere to
    * this interface
    */
@@ -171,11 +180,14 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Mailer exposes the unified API to send emails by using a given
    * driver
    */
-  export interface MailerContract<Driver extends any = MailDriverContract, Config extends any = any> {
+  export interface MailerContract<
+    Driver extends any = MailDriverContract,
+    Config extends BaseConfigContract = BaseConfigContract
+  > {
     name: string
     driver: Driver
     onClose: ((mailer: MailerContract) => void),
-    send (callback: MessageComposeCallback, config?: Config): ReturnType<Driver['send']>
+    send (callback: MessageComposeCallback, metaOptions?: Config['meta']): ReturnType<Driver['send']>
     close (): Promise<void>
   }
 
@@ -214,7 +226,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
   /**
    * Smtp driver config
    */
-  export type SmtpConfigContract = {
+  export type SmtpConfigContract = BaseConfigContract & {
     host: string,
     driver: 'smtp',
     port?: number | string,
@@ -267,7 +279,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * Shape of the smtp driver
    */
   export interface SmtpDriverContract extends MailDriverContract {
-    send (message: MessageNode, config?: SmtpConfigContract): Promise<SmtpMailResponse>
+    send (message: MessageNode, metaOptions?: SmtpConfigContract['meta']): Promise<SmtpMailResponse>
   }
 
   /**
@@ -283,7 +295,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
     > {
     send (
       callback: MessageComposeCallback,
-      config?: any,
+      metaOptions?: BaseConfigContract['meta'],
     ): ReturnType<MailDriverContract['send']>
     close (name?: string): Promise<void>
     closeAll (): Promise<void>

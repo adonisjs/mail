@@ -225,4 +225,40 @@ test.group('Mail Manager', () => {
     assert.equal(manager['mappingsCache'].size, 0)
     assert.isTrue(fakeDriver.closed)
   })
+
+  test('pass meta options to the driver send method', async (assert) => {
+    const ioc = new Ioc()
+    const view = new Edge()
+    const config = {
+      mailer: 'marketing',
+      mailers: {
+        marketing: {
+          driver: 'fake',
+        },
+      },
+    }
+
+    class FakeDriver implements MailDriverContract {
+      public message: MessageNode
+      public options: any
+
+      public async send (message, options) {
+        this.message = message
+        this.options = options
+      }
+
+      public async close () {
+      }
+    }
+
+    const fakeDriver = new FakeDriver()
+    const manager = new MailManager(ioc, config as any, view)
+
+    manager.extend('fake', () => {
+      return fakeDriver
+    })
+
+    await manager.use().send(() => {}, { foo: 'bar' })
+    assert.deepEqual(fakeDriver.options, { foo: 'bar' })
+  })
 })

@@ -13,6 +13,7 @@ import { EdgeContract } from 'edge.js'
 import {
   MailerContract,
   MailDriverContract,
+  BaseConfigContract,
   MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
 
@@ -34,10 +35,10 @@ export class Mailer implements MailerContract {
   /**
    * Sends email
    */
-  public async send (callback: MessageComposeCallback, config?: any) {
+  public async send (callback: MessageComposeCallback, metaOptions?: BaseConfigContract['meta']) {
     const message = new Message(this.view)
     await callback(message)
-    return this.driver.send(message.toJSON(), config)
+    return this.driver.send(message.toJSON(), metaOptions)
   }
 
   /**

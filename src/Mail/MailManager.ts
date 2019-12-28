@@ -16,6 +16,7 @@ import { IocContract } from '@adonisjs/fold'
 import {
   MailersList,
   MailerContract,
+  BaseConfigContract,
   MailDriverContract,
   MailManagerContract,
   MailerConfigContract,
@@ -91,8 +92,8 @@ MailerContract<MailDriverContract>,
   /**
    * Sends email using the default `mailer`
    */
-  public async send (callback: MessageComposeCallback, config?: any) {
-    return (this.use() as MailerContract<MailDriverContract>).send(callback, config)
+  public async send (callback: MessageComposeCallback, metaOptions?: BaseConfigContract['meta']) {
+    return (this.use() as MailerContract<MailDriverContract>).send(callback, metaOptions)
   }
 
   /**
