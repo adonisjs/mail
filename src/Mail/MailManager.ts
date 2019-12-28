@@ -31,7 +31,8 @@ import { Mailer } from './Mailer'
  */
 export class MailManager extends Manager<
 MailDriverContract,
-{ [P in keyof MailersList]: MailersList[P]['implementation'] }
+MailerContract<MailDriverContract>,
+{ [P in keyof MailersList]: MailerContract<MailersList[P]['implementation'], MailersList[P]['config']> }
 > implements MailManagerContract<MailDriverContract> {
   /**
    * Caching driver instances. One must call `close` to clean it up
@@ -90,8 +91,8 @@ MailDriverContract,
   /**
    * Sends email using the default `mailer`
    */
-  public async send (callback: MessageComposeCallback) {
-    return (this.use() as MailerContract<MailDriverContract>).send(callback)
+  public async send (callback: MessageComposeCallback, config?: any) {
+    return (this.use() as MailerContract<MailDriverContract>).send(callback, config)
   }
 
   /**

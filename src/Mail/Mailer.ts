@@ -34,10 +34,10 @@ export class Mailer implements MailerContract {
   /**
    * Sends email
    */
-  public async send (callback: MessageComposeCallback) {
+  public async send (callback: MessageComposeCallback, config?: any) {
     const message = new Message(this.view)
     await callback(message)
-    return this.driver.send(message.toJSON())
+    return this.driver.send(message.toJSON(), config)
   }
 
   /**
