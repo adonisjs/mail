@@ -96,9 +96,21 @@
   "adonisjs": {
     "templates": {
       "config": [
-        "mail.txt"
+        {
+          "src": "config.txt",
+          "dest": "redis"
+        }
+      ],
+      "contracts": [
+        {
+          "src": "contract.txt",
+          "dest": "redis"
+        }
       ]
     },
-    "types": "@adonisjs/mail"
+    "types": "@adonisjs/mail",
+    "providers": [
+      "@adonisjs/mail"
+    ]
   }
 }
