@@ -33,7 +33,7 @@
   "author": "virk",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/fold": "^6.2.3",
+    "@adonisjs/fold": "^6.3.4",
     "@adonisjs/mrm-preset": "^2.2.4",
     "@adonisjs/view": "^1.0.10",
     "@types/node": "^13.7.7",
