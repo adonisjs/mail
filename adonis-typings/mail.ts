@@ -8,9 +8,9 @@
 */
 
 declare module '@ioc:Adonis/Addons/Mail' {
-  import { TlsOptions } from 'tls'
-  import { Readable } from 'stream'
   import { ManagerContract } from '@poppinss/manager'
+  import { Readable } from 'stream'
+  import { TlsOptions } from 'tls'
 
   /**
    * Shape of base config contract
@@ -150,6 +150,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
       config: SmtpConfigContract,
       implementation: SmtpDriverContract,
     },
+    ses: {
+      config: SesConfigContract,
+      implementation: SesDriverContract,
+    }
   }
 
   /**
@@ -280,6 +284,52 @@ declare module '@ioc:Adonis/Addons/Mail' {
    */
   export interface SmtpDriverContract extends MailDriverContract {
     send (message: MessageNode, metaOptions?: SmtpConfigContract['meta']): Promise<SmtpMailResponse>
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | SES driver
+  |--------------------------------------------------------------------------
+  |
+  | Interfaces and types for the SES Driver
+  |
+  */
+
+  /**
+   * Ses driver config
+   */
+  export type SesConfigContract = BaseConfigContract & {
+    driver: string,
+    apiVersion: string,
+    key: string,
+    secret: string,
+    region: string,
+    sslEnabled?: boolean,
+    sendingRate?: number,
+    maxConnections?: number,
+  }
+
+  /**
+   * Shape of mail response for the ses driver
+   */
+  export type SesMailResponse = {
+    response: string,
+    accepted: string[],
+    rejected: string[],
+    envelope: {
+      from: string,
+      to: string[],
+      cc?: string[],
+      bcc?: string[],
+    },
+    messageId: string,
+  }
+
+  /**
+   * Shape of the ses driver
+   */
+  export interface SesDriverContract extends MailDriverContract {
+    send (message: MessageNode, metaOptions?: SesConfigContract['meta']): Promise<SesMailResponse>
   }
 
   /**

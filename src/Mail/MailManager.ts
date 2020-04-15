@@ -9,20 +9,18 @@
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
-import { EdgeContract } from 'edge.js'
-import { Manager } from '@poppinss/manager'
 import { IocContract } from '@adonisjs/fold'
-
 import {
-  MailersList,
-  MailerContract,
   BaseConfigContract,
   MailDriverContract,
-  MailManagerContract,
   MailerConfigContract,
+  MailerContract,
+  MailersList,
+  MailManagerContract,
   MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
-
+import { Manager } from '@poppinss/manager'
+import { EdgeContract } from 'edge.js'
 import { Mailer } from './Mailer'
 
 /**
@@ -31,10 +29,10 @@ import { Mailer } from './Mailer'
  * them for re-use.
  */
 export class MailManager extends Manager<
-MailDriverContract,
-MailerContract<MailDriverContract>,
-{ [P in keyof MailersList]: MailerContract<MailersList[P]['implementation'], MailersList[P]['config']> }
-> implements MailManagerContract<MailDriverContract> {
+  MailDriverContract,
+  MailerContract<MailDriverContract>,
+  { [P in keyof MailersList]: MailerContract<MailersList[P]['implementation'], MailersList[P]['config']> }
+  > implements MailManagerContract<MailDriverContract> {
   /**
    * Caching driver instances. One must call `close` to clean it up
    */
@@ -87,6 +85,15 @@ MailerContract<MailDriverContract>,
   protected createSmtp (_, config) {
     const { SmtpDriver } = require('../Drivers/Smtp')
     return new SmtpDriver(config)
+  }
+
+  /**
+   * Creates an instance of `ses` driver by lazy loading. This method
+   * is invoked internally when a new driver instance is required
+   */
+  protected createSes (_, config) {
+    const { SesDriver } = require('../Drivers/Ses')
+    return new SesDriver(config)
   }
 
   /**
