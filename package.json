@@ -37,6 +37,7 @@
     "@adonisjs/mrm-preset": "^2.2.4",
     "@adonisjs/view": "^1.0.10",
     "@types/node": "^13.7.7",
+    "aws-sdk": "^2.656.0",
     "commitizen": "^4.0.3",
     "copyfiles": "^2.2.0",
     "cz-conventional-changelog": "^3.1.0",
@@ -62,7 +63,6 @@
   },
   "dependencies": {
     "@poppinss/manager": "^2.1.4",
-    "aws-sdk": "^2.656.0",
     "nodemailer": "^6.4.3"
   },
   "repository": {
