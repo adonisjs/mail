@@ -7,14 +7,14 @@
  * file that was distributed with this source code.
 */
 
-import test from 'japa'
-import { Edge } from 'edge.js'
 import { Ioc } from '@adonisjs/fold'
-import { Mailer } from '../src/Mail/Mailer'
+import { MailDriverContract, MailerContract, MessageNode } from '@ioc:Adonis/Addons/Mail'
+import { Edge } from 'edge.js'
+import test from 'japa'
+import { SesDriver } from '../src/Drivers/Ses'
 import { SmtpDriver } from '../src/Drivers/Smtp'
+import { Mailer } from '../src/Mail/Mailer'
 import { MailManager } from '../src/Mail/MailManager'
-
-import { MailDriverContract, MessageNode, MailerContract } from '@ioc:Adonis/Addons/Mail'
 
 test.group('Mail Manager', () => {
   test('return driver for a given mapping', (assert) => {
@@ -260,5 +260,43 @@ test.group('Mail Manager', () => {
 
     await manager.use().send(() => {}, { foo: 'bar' })
     assert.deepEqual(fakeDriver.options, { foo: 'bar' })
+  })
+
+  test('get mailer instance for ses driver', assert => {
+    const ioc = new Ioc()
+    const view = new Edge()
+    const config = {
+      mailer: 'marketing',
+      mailers: {
+        marketing: {
+          driver: 'ses',
+        },
+      },
+    }
+
+    const manager = new MailManager(ioc, config as any, view)
+    const mailer = manager.use() as MailerContract
+
+    assert.instanceOf(mailer, Mailer)
+    assert.instanceOf(mailer.driver, SesDriver)
+  })
+
+  test('cache mailer instances for ses driver', assert => {
+    const ioc = new Ioc()
+    const view = new Edge()
+    const config = {
+      mailer: 'marketing',
+      mailers: {
+        marketing: {
+          driver: 'ses',
+        },
+      },
+    }
+
+    const manager = new MailManager(ioc, config as any, view)
+    const mailer = manager.use()
+    const mailer1 = manager.use()
+
+    assert.deepEqual(mailer, mailer1)
   })
 })
