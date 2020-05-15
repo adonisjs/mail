@@ -10,8 +10,10 @@
   "files": [
     "build/adonis-typings",
     "build/providers",
-    "build/src"
+    "build/src",
+    "build/templates"
   ],
+  "types": "build/adonis-typings/mail.d.ts",
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
@@ -99,13 +101,13 @@
       "config": [
         {
           "src": "config.txt",
-          "dest": "redis"
+          "dest": "mail"
         }
       ],
       "contracts": [
         {
           "src": "contract.txt",
-          "dest": "redis"
+          "dest": "mail"
         }
       ]
     },

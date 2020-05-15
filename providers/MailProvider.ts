@@ -10,7 +10,7 @@
 import { IocContract } from '@adonisjs/fold'
 import { MailManager } from '../src/Mail/MailManager'
 
-export class MailProvider {
+export default class MailProvider {
   constructor (protected $container: IocContract) {}
 
   public register () {
