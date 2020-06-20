@@ -191,7 +191,9 @@ declare module '@ioc:Adonis/Addons/Mail' {
     name: string
     driver: Driver
     onClose: ((mailer: MailerContract) => void),
-    send (callback: MessageComposeCallback, metaOptions?: Config['meta']): ReturnType<Driver['send']>
+    send (callback: MessageComposeCallback, metaOptions?: Config['meta']): ReturnType<
+      Driver extends MailDriverContract ? Driver['send'] : never
+    >
     close (): Promise<void>
   }
 
