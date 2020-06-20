@@ -10,6 +10,8 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import { IocContract } from '@adonisjs/fold'
+import { Manager } from '@poppinss/manager'
+
 import {
   BaseConfigContract,
   MailDriverContract,
@@ -19,8 +21,9 @@ import {
   MailManagerContract,
   MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
-import { Manager } from '@poppinss/manager'
-import { EdgeContract } from 'edge.js'
+
+import { ViewContract } from '@ioc:Adonis/Core/View'
+
 import { Mailer } from './Mailer'
 
 /**
@@ -41,7 +44,7 @@ export class MailManager extends Manager<
   constructor (
     container: IocContract,
     private config: MailerConfigContract,
-    private view: EdgeContract,
+    private view: ViewContract,
   ) {
     super(container)
   }

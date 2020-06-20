@@ -10,7 +10,7 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import { Readable } from 'stream'
-import { EdgeContract } from 'edge.js'
+import { ViewContract } from '@ioc:Adonis/Core/View'
 import { MessageContract, AttachmentOptionsNode, MessageNode, EnvolpeNode } from '@ioc:Adonis/Addons/Mail'
 
 /**
@@ -19,7 +19,7 @@ import { MessageContract, AttachmentOptionsNode, MessageNode, EnvolpeNode } from
 export class Message implements MessageContract {
   private nodeMailerMessage: MessageNode = {}
 
-  constructor (private view: EdgeContract) {
+  constructor (private view: ViewContract) {
   }
 
   /**

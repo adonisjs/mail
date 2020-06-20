@@ -9,7 +9,8 @@
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
-import { EdgeContract } from 'edge.js'
+import { ViewContract } from '@ioc:Adonis/Core/View'
+
 import {
   MailerContract,
   MailDriverContract,
@@ -26,7 +27,7 @@ import { Message } from '../Message'
 export class Mailer implements MailerContract {
   constructor (
     public name: string,
-    private view: EdgeContract,
+    private view: ViewContract,
     public driver: MailDriverContract,
     public onClose: (mailer: MailerContract) => void,
   ) {

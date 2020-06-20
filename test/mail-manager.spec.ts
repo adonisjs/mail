@@ -7,13 +7,14 @@
  * file that was distributed with this source code.
 */
 
+import test from 'japa'
+import { Edge } from 'edge.js'
 import { Ioc } from '@adonisjs/fold'
 import { MailDriverContract, MailerContract, MessageNode } from '@ioc:Adonis/Addons/Mail'
-import { Edge } from 'edge.js'
-import test from 'japa'
+
+import { Mailer } from '../src/Mail/Mailer'
 import { SesDriver } from '../src/Drivers/Ses'
 import { SmtpDriver } from '../src/Drivers/Smtp'
-import { Mailer } from '../src/Mail/Mailer'
 import { MailManager } from '../src/Mail/MailManager'
 
 test.group('Mail Manager', () => {
