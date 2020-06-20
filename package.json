@@ -34,23 +34,23 @@
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/fold": "^6.3.4",
-    "@adonisjs/mrm-preset": "^2.2.4",
-    "@adonisjs/view": "^1.0.10",
-    "@types/node": "^13.7.7",
-    "aws-sdk": "^2.656.0",
-    "commitizen": "^4.0.3",
-    "copyfiles": "^2.2.0",
-    "cz-conventional-changelog": "^3.1.0",
-    "del-cli": "^3.0.0",
+    "@adonisjs/mrm-preset": "^2.3.0",
+    "@adonisjs/view": "^2.0.7",
+    "@types/node": "^14.0.13",
+    "aws-sdk": "^2.701.0",
+    "commitizen": "^4.1.2",
+    "copyfiles": "^2.3.0",
+    "cz-conventional-changelog": "^3.2.0",
+    "del-cli": "^3.0.1",
     "dotenv": "^8.2.0",
-    "eslint": "^6.8.0",
-    "eslint-plugin-adonis": "^1.0.8",
-    "husky": "^4.2.3",
-    "japa": "^3.0.1",
-    "mrm": "^2.1.0",
-    "np": "^5.2.1",
-    "ts-node": "^8.6.2",
-    "typescript": "^3.8.3"
+    "eslint": "^7.3.0",
+    "eslint-plugin-adonis": "^1.0.10",
+    "husky": "^4.2.5",
+    "japa": "^3.1.1",
+    "mrm": "^2.3.3",
+    "np": "^6.2.4",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5"
   },
   "config": {
     "commitizen": {
@@ -62,8 +62,8 @@
     "@adonisjs/core": ">=5.0.0-preview"
   },
   "dependencies": {
-    "@poppinss/manager": "^2.1.4",
-    "nodemailer": "^6.4.3"
+    "@poppinss/manager": "^2.1.8",
+    "nodemailer": "^6.4.10"
   },
   "repository": {
     "type": "git",
