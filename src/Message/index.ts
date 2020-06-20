@@ -11,7 +11,13 @@
 
 import { Readable } from 'stream'
 import { ViewContract } from '@ioc:Adonis/Core/View'
-import { MessageContract, AttachmentOptionsNode, MessageNode, EnvolpeNode } from '@ioc:Adonis/Addons/Mail'
+
+import {
+  MessageNode,
+  EnvolpeNode,
+  MessageContract,
+  AttachmentOptionsNode,
+} from '@ioc:Adonis/Addons/Mail'
 
 /**
  * Fluent API to construct node mailer message object

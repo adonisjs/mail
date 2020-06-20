@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "@poppinss/manager": "^2.1.8",
+    "@poppinss/utils": "^2.2.7",
     "nodemailer": "^6.4.10"
   },
   "repository": {
@@ -100,19 +101,26 @@
       "config": [
         {
           "src": "config.txt",
-          "dest": "redis"
+          "dest": "mail"
         }
       ],
       "contracts": [
         {
           "src": "contract.txt",
-          "dest": "redis"
+          "dest": "mail"
         }
       ]
     },
     "types": "@adonisjs/mail",
     "providers": [
       "@adonisjs/mail"
-    ]
+    ],
+    "env": {
+      "SMTP_HOST": "smtp.ethereal.email",
+      "SMTP_PORT": "587",
+      "SES_ACCESS_KEY": "",
+      "SES_ACCESS_SECRET": "",
+      "SES_REGION": "us-east-1"
+    }
   }
 }

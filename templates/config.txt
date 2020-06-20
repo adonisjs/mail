@@ -5,6 +5,7 @@
  * file.
  */
 
+import Env from '@ioc:Adonis/Core/Env'
 import { MailerConfigContract } from '@ioc:Adonis/Addons/Mail'
 
 const mailConfig: MailerConfigContract = {
@@ -33,17 +34,39 @@ const mailConfig: MailerConfigContract = {
   |
   */
   mailers: {
+    /*
+    |--------------------------------------------------------------------------
+    | Smtp
+    |--------------------------------------------------------------------------
+    |
+    | Uses SMTP protocol for sending email
+    |
+    */
     smtp: {
       driver: 'smtp',
-      host: 'smtp.ethereal.email',
-      port: 587,
+      host: Env.get('SMTP_HOST') as string,
+      port: Env.get('SMTP_PORT') as number,
     },
+
+    /*
+    |--------------------------------------------------------------------------
+    | SES
+    |--------------------------------------------------------------------------
+    |
+    | Uses Amazon SES for sending emails. You will have to install the aws-sdk
+    | when using this driver.
+    |
+    | ```
+    | npm i aws-sdk
+    | ```
+    |
+    */
     ses: {
       driver: 'ses',
       apiVersion: '2010-12-01',
-      key: 'your-ses-key',
-      secret: 'your-ses-secret',
-      region: 'ses-region', // e.g. us-east-1,
+      key: Env.get('SES_ACCESS_KEY') as string,
+      secret: Env.get('SES_ACCESS_SECRET') as string,
+      region: Env.get('SES_REGION') as string,
       sslEnabled: true,
       sendingRate: 10,
       maxConnections: 5,

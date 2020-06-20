@@ -9,9 +9,15 @@
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
-import { MessageNode, SesConfigContract, SesDriverContract, SesMailResponse } from '@ioc:Adonis/Addons/Mail'
 import * as aws from 'aws-sdk'
 import nodemailer from 'nodemailer'
+
+import {
+  MessageNode,
+  SesMailResponse,
+  SesConfigContract,
+  SesDriverContract,
+} from '@ioc:Adonis/Addons/Mail'
 
 /**
  * Ses driver to send email using ses

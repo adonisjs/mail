@@ -11,14 +11,15 @@
 
 import { IocContract } from '@adonisjs/fold'
 import { Manager } from '@poppinss/manager'
+import { ManagerConfigValidator } from '@poppinss/utils'
 
 import {
-  BaseConfigContract,
-  MailDriverContract,
-  MailerConfigContract,
-  MailerContract,
   MailersList,
+  MailerContract,
+  MailDriverContract,
+  BaseConfigContract,
   MailManagerContract,
+  MailerConfigContract,
   MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
 
@@ -35,7 +36,7 @@ export class MailManager extends Manager<
   MailDriverContract,
   MailerContract<MailDriverContract>,
   { [P in keyof MailersList]: MailerContract<MailersList[P]['implementation'], MailersList[P]['config']> }
-  > implements MailManagerContract<MailDriverContract> {
+> implements MailManagerContract<MailDriverContract> {
   /**
    * Caching driver instances. One must call `close` to clean it up
    */
@@ -47,6 +48,16 @@ export class MailManager extends Manager<
     private view: ViewContract,
   ) {
     super(container)
+    this.validateConfig()
+  }
+
+  /**
+   * Validate config at runtime
+   */
+  private validateConfig () {
+    const validator = new ManagerConfigValidator(this.config, 'mail', 'config/mail')
+    validator.validateDefault('mailer')
+    validator.validateList('mailers', 'mailer')
   }
 
   /**
