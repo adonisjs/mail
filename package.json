@@ -2,15 +2,12 @@
   "name": "@adonisjs/mail",
   "version": "4.0.0",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
-  "directories": {
-    "example": "examples",
-    "test": "test"
-  },
   "main": "build/providers/MailProvider.js",
   "files": [
     "build/adonis-typings",
     "build/providers",
-    "build/src"
+    "build/src",
+    "build/templates"
   ],
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
