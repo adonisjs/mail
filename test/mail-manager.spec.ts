@@ -65,45 +65,9 @@ test.group('Mail Manager', () => {
 		const manager = new MailManager(ioc, config as any, view)
 		assert.deepEqual(manager['getMappingConfig']('marketing'), { driver: 'smtp' })
 	})
+})
 
-	test('get mailer instance for smtp driver', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
-		const config = {
-			mailer: 'marketing',
-			mailers: {
-				marketing: {
-					driver: 'smtp',
-				},
-			},
-		}
-
-		const manager = new MailManager(ioc, config as any, view)
-		const mailer = manager.use() as MailerContract<keyof MailersList>
-
-		assert.instanceOf(mailer, Mailer)
-		assert.instanceOf(mailer.driver, SmtpDriver)
-	})
-
-	test('cache mailer instances for smtp driver', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
-		const config = {
-			mailer: 'marketing',
-			mailers: {
-				marketing: {
-					driver: 'smtp',
-				},
-			},
-		}
-
-		const manager = new MailManager(ioc, config as any, view)
-		const mailer = manager.use()
-		const mailer1 = manager.use()
-
-		assert.deepEqual(mailer, mailer1)
-	})
-
+test.group('Mail Manager | Cache', () => {
 	test('close driver and release it from cache', async (assert) => {
 		const ioc = new Ioc()
 		const view = new Edge()
@@ -227,42 +191,49 @@ test.group('Mail Manager', () => {
 		assert.equal(manager['mappingsCache'].size, 0)
 		assert.isTrue(fakeDriver.closed)
 	})
+})
 
-	test('pass meta options to the driver send method', async (assert) => {
+test.group('Mail Manager | SMTP', () => {
+	test('get mailer instance for smtp driver', (assert) => {
 		const ioc = new Ioc()
 		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
 				marketing: {
-					driver: 'fake',
+					driver: 'smtp',
 				},
 			},
 		}
 
-		class FakeDriver implements MailDriverContract {
-			public message: MessageNode
-			public options: any
-
-			public async send(message, options) {
-				this.message = message
-				this.options = options
-			}
-
-			public async close() {}
-		}
-
-		const fakeDriver = new FakeDriver()
 		const manager = new MailManager(ioc, config as any, view)
+		const mailer = manager.use() as MailerContract<keyof MailersList>
 
-		manager.extend('fake', () => {
-			return fakeDriver
-		})
-
-		await (manager.use() as any).send(() => {}, { foo: 'bar' })
-		assert.deepEqual(fakeDriver.options, { foo: 'bar' })
+		assert.instanceOf(mailer, Mailer)
+		assert.instanceOf(mailer.driver, SmtpDriver)
 	})
 
+	test('cache mailer instances for smtp', (assert) => {
+		const ioc = new Ioc()
+		const view = new Edge()
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'smtp',
+				},
+			},
+		}
+
+		const manager = new MailManager(ioc, config as any, view)
+		const mailer = manager.use()
+		const mailer1 = manager.use()
+
+		assert.deepEqual(mailer, mailer1)
+	})
+})
+
+test.group('Mail Manager | SES', () => {
 	test('get mailer instance for ses driver', (assert) => {
 		const ioc = new Ioc()
 		const view = new Edge()
@@ -299,5 +270,224 @@ test.group('Mail Manager', () => {
 		const mailer1 = manager.use()
 
 		assert.deepEqual(mailer, mailer1)
+	})
+})
+
+test.group('Mail Manager | send', () => {
+	test('invoke send method on the driver instance', async (assert) => {
+		const ioc = new Ioc()
+		const view = new Edge()
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'fake',
+				},
+			},
+		}
+
+		class FakeDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const fakeDriver = new FakeDriver()
+		const manager = new MailManager(ioc, config as any, view)
+
+		manager.extend('fake', () => {
+			return fakeDriver
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+
+		assert.deepEqual(fakeDriver.message, {
+			to: [{ address: 'foo@bar.com' }],
+			from: { address: 'baz@bar.com' },
+			subject: 'Hello world',
+		})
+	})
+
+	test('message should be able to make views', async (assert) => {
+		const ioc = new Ioc()
+		const view = new Edge()
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'fake',
+				},
+			},
+		}
+
+		class FakeDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const fakeDriver = new FakeDriver()
+		const manager = new MailManager(ioc, config as any, view)
+		view.registerTemplate('welcome', { template: 'Hello world' })
+
+		manager.extend('fake', () => {
+			return fakeDriver
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+			message.htmlView('welcome')
+		})
+
+		assert.deepEqual(fakeDriver.message, {
+			to: [{ address: 'foo@bar.com' }],
+			from: { address: 'baz@bar.com' },
+			subject: 'Hello world',
+			html: 'Hello world',
+		})
+	})
+
+	test('pass meta options to the driver send method', async (assert) => {
+		const ioc = new Ioc()
+		const view = new Edge()
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'fake',
+				},
+			},
+		}
+
+		class FakeDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const fakeDriver = new FakeDriver()
+		const manager = new MailManager(ioc, config as any, view)
+
+		manager.extend('fake', () => {
+			return fakeDriver
+		})
+
+		await (manager.use() as any).send(() => {}, { foo: 'bar' })
+		assert.deepEqual(fakeDriver.options, { foo: 'bar' })
+	})
+
+	test('invoke before send hook', async (assert) => {
+		assert.plan(2)
+
+		const ioc = new Ioc()
+		const view = new Edge()
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'fake',
+				},
+			},
+		}
+
+		class FakeDriver implements MailDriverContract {
+			public message: MessageNode
+
+			public async send(message: MessageNode) {
+				this.message = message
+			}
+
+			public async close() {}
+		}
+
+		const fakeDriver = new FakeDriver()
+		const manager = new MailManager(ioc, config as any, view)
+
+		manager.extend('fake', () => {
+			return fakeDriver
+		})
+
+		manager.before('send', (mailer, message) => {
+			assert.equal(mailer.name, 'marketing')
+			assert.deepEqual(message.toJSON(), {
+				to: [{ address: 'foo@bar.com' }],
+				from: { address: 'baz@bar.com' },
+				subject: 'Hello world',
+			})
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+	})
+
+	test('invoke after send hook', async (assert) => {
+		assert.plan(2)
+
+		const ioc = new Ioc()
+		const view = new Edge()
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'fake',
+				},
+			},
+		}
+
+		class FakeDriver implements MailDriverContract {
+			public message: MessageNode
+
+			public async send(message: MessageNode) {
+				this.message = message
+				return { messageId: '1' }
+			}
+
+			public async close() {}
+		}
+
+		const fakeDriver = new FakeDriver()
+		const manager = new MailManager(ioc, config as any, view)
+
+		manager.extend('fake', () => {
+			return fakeDriver
+		})
+
+		manager.after('send', (mailer, response) => {
+			assert.equal(mailer.name, 'marketing')
+			assert.deepEqual(response as any, { messageId: '1' })
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
 	})
 })

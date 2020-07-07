@@ -9,6 +9,7 @@
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
+import { Hooks } from '@poppinss/hooks'
 import { Manager } from '@poppinss/manager'
 import { IocContract } from '@adonisjs/fold'
 import { ManagerConfigValidator } from '@poppinss/utils'
@@ -16,6 +17,8 @@ import { ManagerConfigValidator } from '@poppinss/utils'
 import {
 	MailersList,
 	MailerContract,
+	AfterSendHandler,
+	BeforeSendHandler,
 	MailDriverContract,
 	BaseConfigContract,
 	MailManagerContract,
@@ -47,7 +50,12 @@ export class MailManager
 	 */
 	protected singleton = true
 
-	constructor(container: IocContract, private config: MailerConfigContract, private view: ViewContract) {
+	/**
+	 * Reference to the hooks
+	 */
+	public hooks = new Hooks(this.container.getResolver(undefined, 'mailerHooks', 'App/Mailers/Hooks'))
+
+	constructor(container: IocContract, private config: MailerConfigContract, public view: ViewContract) {
 		super(container)
 		this.validateConfig()
 	}
@@ -69,7 +77,7 @@ export class MailManager
 		mappingName: Name,
 		driver: MailDriverContract
 	): MailerContract<Name> {
-		return new Mailer(mappingName, this.view, driver, ({ name }) => this.release(name))
+		return new Mailer(mappingName, this, driver)
 	}
 
 	/**
@@ -110,6 +118,22 @@ export class MailManager
 	protected createSes(_: string, config: any) {
 		const { SesDriver } = require('../Drivers/Ses')
 		return new SesDriver(config)
+	}
+
+	/**
+	 * Register a before hook
+	 */
+	public before(event: 'send', handler: BeforeSendHandler<keyof MailersList>) {
+		this.hooks.add('before', event, handler)
+		return this
+	}
+
+	/**
+	 * Register an after hook
+	 */
+	public after(event: 'send', handler: AfterSendHandler<keyof MailersList>) {
+		this.hooks.add('after', event, handler)
+		return this
 	}
 
 	/**

@@ -216,13 +216,29 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	export type MessageComposeCallback = (message: MessageContract) => void | Promise<void>
 
 	/**
+	 * Hook handler for `beforeSend`
+	 */
+	export type BeforeSendHandler<Name extends keyof MailersList> =
+		| string
+		| ((mailer: MailerContract<Name>, message: MessageContract) => void | Promise<void>)
+
+	/**
+	 * Hook handler for `afterSend`
+	 */
+	export type AfterSendHandler<Name extends keyof MailersList> =
+		| string
+		| ((
+				mailer: MailerContract<Name>,
+				response: DriverReturnType<MailersList[Name]['implementation']>
+		  ) => void | Promise<void>)
+
+	/**
 	 * Mailer exposes the unified API to send emails by using a given
 	 * driver
 	 */
 	export interface MailerContract<Name extends keyof MailersList> {
 		name: Name
 		driver: MailersList[Name]['implementation']
-		onClose: (mailer: this) => void
 		send(
 			callback: MessageComposeCallback,
 			metaOptions?: MailersList[Name]['config']['meta']
@@ -377,6 +393,8 @@ declare module '@ioc:Adonis/Addons/Mail' {
 			MailerContract<keyof MailersList>,
 			{ [P in keyof MailersList]: MailerContract<P> }
 		> {
+		before(event: 'send', handler: BeforeSendHandler<keyof MailersList>): this
+		after(event: 'send', handler: AfterSendHandler<keyof MailersList>): this
 		send(
 			callback: MessageComposeCallback,
 			metaOptions?: BaseConfigContract['meta']

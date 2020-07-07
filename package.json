@@ -64,6 +64,7 @@
 		"@adonisjs/core": ">=5.0.0-preview-rc"
 	},
 	"dependencies": {
+		"@poppinss/hooks": "^1.0.6",
 		"@poppinss/manager": "^3.0.3",
 		"@poppinss/utils": "^2.2.8",
 		"nodemailer": "^6.4.10"
