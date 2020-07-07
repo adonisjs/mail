@@ -10,7 +10,7 @@
 import test from 'japa'
 import { Edge } from 'edge.js'
 import { Ioc } from '@adonisjs/fold'
-import { MailDriverContract, MailerContract, MessageNode } from '@ioc:Adonis/Addons/Mail'
+import { MailDriverContract, MailerContract, MessageNode, MailersList } from '@ioc:Adonis/Addons/Mail'
 
 import { Mailer } from '../src/Mail/Mailer'
 import { SesDriver } from '../src/Drivers/Ses'
@@ -79,7 +79,7 @@ test.group('Mail Manager', () => {
 		}
 
 		const manager = new MailManager(ioc, config as any, view)
-		const mailer = manager.use() as MailerContract
+		const mailer = manager.use() as MailerContract<keyof MailersList>
 
 		assert.instanceOf(mailer, Mailer)
 		assert.instanceOf(mailer.driver, SmtpDriver)
@@ -136,7 +136,7 @@ test.group('Mail Manager', () => {
 			return fakeDriver
 		})
 
-		const mailer = manager.use() as MailerContract
+		const mailer = manager.use()
 		assert.instanceOf(manager['mappingsCache'].get('marketing')!, Mailer)
 		assert.instanceOf(manager['mappingsCache'].get('marketing')!.driver, FakeDriver)
 
@@ -181,7 +181,7 @@ test.group('Mail Manager', () => {
 		assert.instanceOf(manager['mappingsCache'].get('marketing')!, Mailer)
 		assert.instanceOf(manager['mappingsCache'].get('marketing')!.driver, FakeDriver)
 
-		await manager.close('marketing')
+		await manager.close('marketing' as any)
 		assert.equal(manager['mappingsCache'].size, 0)
 		assert.isTrue(fakeDriver.closed)
 	})
@@ -276,7 +276,7 @@ test.group('Mail Manager', () => {
 		}
 
 		const manager = new MailManager(ioc, config as any, view)
-		const mailer = manager.use() as MailerContract
+		const mailer = manager.use()
 
 		assert.instanceOf(mailer, Mailer)
 		assert.instanceOf(mailer.driver, SesDriver)

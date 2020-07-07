@@ -36,9 +36,9 @@ export class MailManager
 	extends Manager<
 		IocContract,
 		MailDriverContract,
-		MailerContract<MailDriverContract>,
+		MailerContract<keyof MailersList>,
 		{
-			[P in keyof MailersList]: MailerContract<MailersList[P]['implementation'], MailersList[P]['config']>
+			[P in keyof MailersList]: MailerContract<keyof MailersList>
 		}
 	>
 	implements MailManagerContract {
@@ -65,7 +65,10 @@ export class MailManager
 	 * Since we don't expose the drivers instances directly, we wrap them
 	 * inside the mailer instance.
 	 */
-	protected wrapDriverResponse(mappingName: string, driver: MailDriverContract): MailerContract {
+	protected wrapDriverResponse<Name extends keyof MailersList>(
+		mappingName: Name,
+		driver: MailDriverContract
+	): MailerContract<Name> {
 		return new Mailer(mappingName, this.view, driver, ({ name }) => this.release(name))
 	}
 
@@ -113,13 +116,13 @@ export class MailManager
 	 * Sends email using the default `mailer`
 	 */
 	public async send(callback: MessageComposeCallback, metaOptions?: BaseConfigContract['meta']) {
-		return (this.use() as MailerContract<MailDriverContract>).send(callback, metaOptions)
+		return this.use().send(callback, metaOptions)
 	}
 
 	/**
 	 * Closes the mapping instance and removes it from the cache
 	 */
-	public async close(name?: string): Promise<void> {
+	public async close(name?: keyof MailersList): Promise<void> {
 		const mailer = name ? this.use(name) : this.use()
 		await mailer.close()
 	}
@@ -128,6 +131,6 @@ export class MailManager
 	 * Closes the mapping instance and removes it from the cache
 	 */
 	public async closeAll(): Promise<void> {
-		await Promise.all(Array.from(this['mappingsCache'].keys()).map((name: string) => this.close(name)))
+		await Promise.all(Array.from(this['mappingsCache'].keys()).map((name: string) => this.close(name as any)))
 	}
 }

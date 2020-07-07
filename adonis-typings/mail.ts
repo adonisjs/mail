@@ -193,9 +193,21 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * The `MailersList` is extended in the user codebase.
 	 */
 	export type MailerConfigContract = {
-		mailer: string
+		mailer: keyof MailersList
 		mailers: { [P in keyof MailersList]: MailersList[P]['config'] }
 	}
+
+	/**
+	 * Unwraps value of a promise type
+	 */
+	export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? U : T
+
+	/**
+	 * Infers return type of a driver
+	 */
+	export type DriverReturnType<Driver> = Driver extends MailDriverContract
+		? UnwrapPromise<ReturnType<Driver['send']>>
+		: never
 
 	/**
 	 * Shape of the callback passed to the `send` method to compose the
@@ -207,17 +219,14 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Mailer exposes the unified API to send emails by using a given
 	 * driver
 	 */
-	export interface MailerContract<
-		Driver extends any = MailDriverContract,
-		Config extends BaseConfigContract = BaseConfigContract
-	> {
-		name: string
-		driver: Driver
-		onClose: (mailer: MailerContract) => void
+	export interface MailerContract<Name extends keyof MailersList> {
+		name: Name
+		driver: MailersList[Name]['implementation']
+		onClose: (mailer: this) => void
 		send(
 			callback: MessageComposeCallback,
-			metaOptions?: Config['meta']
-		): ReturnType<Driver extends MailDriverContract ? Driver['send'] : never>
+			metaOptions?: MailersList[Name]['config']['meta']
+		): Promise<DriverReturnType<MailersList[Name]['implementation']>>
 		close(): Promise<void>
 	}
 
@@ -365,8 +374,8 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		extends ManagerContract<
 			IocContract,
 			MailDriverContract,
-			MailerContract<MailDriverContract>,
-			{ [P in keyof MailersList]: MailerContract<MailersList[P]['implementation'], MailersList[P]['config']> }
+			MailerContract<keyof MailersList>,
+			{ [P in keyof MailersList]: MailerContract<P> }
 		> {
 		send(
 			callback: MessageComposeCallback,

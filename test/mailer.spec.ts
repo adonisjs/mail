@@ -25,7 +25,7 @@ test.group('Mailer', () => {
 		}
 
 		const fakeDriver = new FakeDriver()
-		const mailer = new Mailer('fake', view, fakeDriver, () => {})
+		const mailer = new Mailer('fake' as any, view, fakeDriver, () => {})
 
 		await mailer.send((message) => {
 			message.to('foo@bar.com')
@@ -52,7 +52,7 @@ test.group('Mailer', () => {
 		}
 
 		const fakeDriver = new FakeDriver()
-		const mailer = new Mailer('fake', view, fakeDriver, () => {})
+		const mailer = new Mailer('fake' as any, view, fakeDriver, () => {})
 		view.registerTemplate('welcome', { template: 'Hello world' })
 
 		await mailer.send((message) => {
@@ -87,7 +87,7 @@ test.group('Mailer', () => {
 		}
 
 		const fakeDriver = new FakeDriver()
-		const mailer = new Mailer('fake', view, fakeDriver, () => {})
+		const mailer = new Mailer('fake' as any, view, fakeDriver, () => {})
 
 		await mailer.close()
 		assert.isTrue(fakeDriver.closed)
