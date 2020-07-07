@@ -118,8 +118,8 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		 */
 		attach(filePath: string, options: AttachmentOptionsNode): this
 		attachData(content: Readable | Buffer, options: AttachmentOptionsNode): this
-		embed(filePath: string, cid: string, options: AttachmentOptionsNode)
-		embedData(content: Readable | Buffer, cid: string, options: AttachmentOptionsNode)
+		embed(filePath: string, cid: string, options: AttachmentOptionsNode): this
+		embedData(content: Readable | Buffer, cid: string, options: AttachmentOptionsNode): this
 
 		header(key: string, value: string | string[]): this
 		preparedHeader(key: string, value: string | string[]): this
@@ -128,9 +128,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	}
 
 	/**
-	 * A shortcut someone to define `config` and `implementation` keys on the
-	 * `MailersList` interface. Using this type is not mandatory and one can
-	 * define the underlying keys by themselves. For example:
+	 * A shortcut to define `config` and `implementation` keys on the
+	 * `MailersList` interface. Using this type is not mandatory and
+	 * one can define the underlying keys by themselves.
+	 * For example:
 	 *
 	 * ```
 	 * MailersList: {
