@@ -121,6 +121,7 @@ test.group('Message', () => {
 		const message = new Message(edge)
 		message.htmlView('welcome', { name: 'virk' })
 		assert.deepEqual(message.toJSON(), { html: '<p> Hello virk </p>' })
+		assert.deepEqual(message.contentViews.html, 'welcome')
 	})
 
 	test('define textView', (assert) => {
@@ -130,6 +131,7 @@ test.group('Message', () => {
 		const message = new Message(edge)
 		message.textView('welcome', { name: 'virk' })
 		assert.deepEqual(message.toJSON(), { text: 'Hello virk' })
+		assert.deepEqual(message.contentViews.text, 'welcome')
 	})
 
 	test('define watchView', (assert) => {
@@ -139,6 +141,7 @@ test.group('Message', () => {
 		const message = new Message(edge)
 		message.watchView('welcome', { name: 'virk' })
 		assert.deepEqual(message.toJSON(), { watch: 'Hello virk' })
+		assert.deepEqual(message.contentViews.watch, 'welcome')
 	})
 
 	test('define html from raw content', (assert) => {

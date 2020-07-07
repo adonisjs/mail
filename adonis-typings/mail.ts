@@ -84,6 +84,25 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export interface MessageContract {
 		/**
+		 * The content for the message.
+		 */
+		content: {
+			html?: string
+			text?: string
+			watch?: string
+		}
+
+		/**
+		 * Path to the views used to generate content for the
+		 * message
+		 */
+		contentViews: {
+			html?: string
+			text?: string
+			watch?: string
+		}
+
+		/**
 		 * Common fields
 		 */
 		to(address: string, name?: string): this
