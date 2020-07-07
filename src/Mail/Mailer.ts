@@ -5,18 +5,12 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
-*/
+ */
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import { ViewContract } from '@ioc:Adonis/Core/View'
-
-import {
-  MailerContract,
-  MailDriverContract,
-  BaseConfigContract,
-  MessageComposeCallback,
-} from '@ioc:Adonis/Addons/Mail'
+import { MailerContract, MailDriverContract, BaseConfigContract, MessageComposeCallback } from '@ioc:Adonis/Addons/Mail'
 
 import { Message } from '../Message'
 
@@ -25,28 +19,27 @@ import { Message } from '../Message'
  * driver
  */
 export class Mailer implements MailerContract {
-  constructor (
-    public name: string,
-    private view: ViewContract,
-    public driver: MailDriverContract,
-    public onClose: (mailer: MailerContract) => void,
-  ) {
-  }
+	constructor(
+		public name: string,
+		private view: ViewContract,
+		public driver: MailDriverContract,
+		public onClose: (mailer: MailerContract) => void
+	) {}
 
-  /**
-   * Sends email
-   */
-  public async send (callback: MessageComposeCallback, metaOptions?: BaseConfigContract['meta']) {
-    const message = new Message(this.view)
-    await callback(message)
-    return this.driver.send(message.toJSON(), metaOptions)
-  }
+	/**
+	 * Sends email
+	 */
+	public async send(callback: MessageComposeCallback, metaOptions?: BaseConfigContract['meta']) {
+		const message = new Message(this.view)
+		await callback(message)
+		return this.driver.send(message.toJSON(), metaOptions)
+	}
 
-  /**
-   * Invokes `close` method on the driver
-   */
-  public async close () {
-    await this.driver.close()
-    this.onClose(this)
-  }
+	/**
+	 * Invokes `close` method on the driver
+	 */
+	public async close() {
+		await this.driver.close()
+		this.onClose(this)
+	}
 }

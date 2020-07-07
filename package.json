@@ -1,123 +1,127 @@
 {
-  "name": "@adonisjs/mail",
-  "version": "4.0.2",
-  "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
-  "main": "build/providers/MailProvider.js",
-  "files": [
-    "build/adonis-typings",
-    "build/providers",
-    "build/src",
-    "build/templates"
-  ],
-  "scripts": {
-    "mrm": "mrm --preset=@adonisjs/mrm-preset",
-    "pretest": "npm run lint",
-    "test": "node japaFile.js",
-    "lint": "eslint . --ext=.ts",
-    "clean": "del build",
-    "copyfiles": "copyfiles \"templates/**/*.txt\" build",
-    "compile": "npm run lint && npm run clean && tsc",
-    "build": "npm run compile && npm run copyfiles",
-    "commit": "git-cz",
-    "release": "np",
-    "version": "npm run build"
-  },
-  "keywords": [
-    "adonis",
-    "mailer",
-    "node-mailer"
-  ],
-  "author": "virk",
-  "license": "MIT",
-  "devDependencies": {
-    "@adonisjs/core": "^5.0.0-preview-rc-1.9",
-    "@adonisjs/fold": "^6.3.5",
-    "@adonisjs/mrm-preset": "^2.3.7",
-    "@adonisjs/view": "^2.0.7",
-    "@types/node": "^14.0.14",
-    "aws-sdk": "^2.709.0",
-    "commitizen": "^4.1.2",
-    "copyfiles": "^2.3.0",
-    "cz-conventional-changelog": "^3.2.0",
-    "del-cli": "^3.0.1",
-    "dotenv": "^8.2.0",
-    "eslint": "^7.4.0",
-    "eslint-plugin-adonis": "^1.0.14",
-    "husky": "^4.2.5",
-    "japa": "^3.1.1",
-    "mrm": "^2.3.3",
-    "np": "^6.3.0",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.6"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  },
-  "peerDependencies": {
-    "@adonisjs/view": "^2.x.x",
-    "@adonisjs/core": ">=5.0.0-preview-rc"
-  },
-  "dependencies": {
-    "@poppinss/manager": "^3.0.1",
-    "@poppinss/utils": "^2.2.8",
-    "nodemailer": "^6.4.10"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/adonisjs/adonis-mail.git"
-  },
-  "bugs": {
-    "url": "https://github.com/adonisjs/adonis-mail/issues"
-  },
-  "homepage": "https://github.com/adonisjs/adonis-mail#readme",
-  "nyc": {
-    "exclude": [
-      "test"
-    ],
-    "extension": [
-      ".ts"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
-    }
-  },
-  "np": {
-    "contents": ".",
-    "anyBranch": false
-  },
-  "publishConfig": {
-    "tag": "alpha",
-    "access": "public"
-  },
-  "adonisjs": {
-    "templates": {
-      "config": [
-        {
-          "src": "config.txt",
-          "dest": "mail"
-        }
-      ],
-      "contracts": [
-        {
-          "src": "contract.txt",
-          "dest": "mail"
-        }
-      ]
-    },
-    "types": "@adonisjs/mail",
-    "providers": [
-      "@adonisjs/mail"
-    ],
-    "env": {
-      "SMTP_HOST": "smtp.ethereal.email",
-      "SMTP_PORT": "587",
-      "SES_ACCESS_KEY": "",
-      "SES_ACCESS_SECRET": "",
-      "SES_REGION": "us-east-1"
-    }
-  }
+	"name": "@adonisjs/mail",
+	"version": "4.0.2",
+	"description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
+	"main": "build/providers/MailProvider.js",
+	"files": [
+		"build/adonis-typings",
+		"build/providers",
+		"build/src",
+		"build/templates"
+	],
+	"scripts": {
+		"mrm": "mrm --preset=@adonisjs/mrm-preset",
+		"pretest": "npm run lint",
+		"test": "node japaFile.js",
+		"lint": "eslint . --ext=.ts",
+		"clean": "del build",
+		"copyfiles": "copyfiles \"templates/**/*.txt\" build",
+		"compile": "npm run lint && npm run clean && tsc",
+		"build": "npm run compile && npm run copyfiles",
+		"commit": "git-cz",
+		"release": "np",
+		"version": "npm run build",
+		"format": "prettier --write ."
+	},
+	"keywords": [
+		"adonis",
+		"mailer",
+		"node-mailer"
+	],
+	"author": "virk",
+	"license": "MIT",
+	"devDependencies": {
+		"@adonisjs/core": "^5.0.0-preview-rc-1.7",
+		"@adonisjs/fold": "^6.3.5",
+		"@adonisjs/mrm-preset": "^2.3.7",
+		"@adonisjs/view": "^2.0.7",
+		"@types/node": "^14.0.14",
+		"aws-sdk": "^2.709.0",
+		"commitizen": "^4.1.2",
+		"copyfiles": "^2.3.0",
+		"cz-conventional-changelog": "^3.2.0",
+		"del-cli": "^3.0.1",
+		"dotenv": "^8.2.0",
+		"eslint": "^7.4.0",
+		"eslint-config-prettier": "^6.11.0",
+		"eslint-plugin-adonis": "^1.0.14",
+		"eslint-plugin-prettier": "^3.1.4",
+		"husky": "^4.2.5",
+		"japa": "^3.1.1",
+		"mrm": "^2.3.3",
+		"np": "^6.3.0",
+		"prettier": "^2.0.5",
+		"ts-node": "^8.10.2",
+		"typescript": "^3.9.6"
+	},
+	"config": {
+		"commitizen": {
+			"path": "cz-conventional-changelog"
+		}
+	},
+	"peerDependencies": {
+		"@adonisjs/view": "^2.x.x",
+		"@adonisjs/core": ">=5.0.0-preview-rc"
+	},
+	"dependencies": {
+		"@poppinss/manager": "^3.0.1",
+		"@poppinss/utils": "^2.2.8",
+		"nodemailer": "^6.4.10"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/adonisjs/adonis-mail.git"
+	},
+	"bugs": {
+		"url": "https://github.com/adonisjs/adonis-mail/issues"
+	},
+	"homepage": "https://github.com/adonisjs/adonis-mail#readme",
+	"nyc": {
+		"exclude": [
+			"test"
+		],
+		"extension": [
+			".ts"
+		]
+	},
+	"husky": {
+		"hooks": {
+			"commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
+		}
+	},
+	"np": {
+		"contents": ".",
+		"anyBranch": false
+	},
+	"publishConfig": {
+		"tag": "alpha",
+		"access": "public"
+	},
+	"adonisjs": {
+		"templates": {
+			"config": [
+				{
+					"src": "config.txt",
+					"dest": "mail"
+				}
+			],
+			"contracts": [
+				{
+					"src": "contract.txt",
+					"dest": "mail"
+				}
+			]
+		},
+		"types": "@adonisjs/mail",
+		"providers": [
+			"@adonisjs/mail"
+		],
+		"env": {
+			"SMTP_HOST": "smtp.ethereal.email",
+			"SMTP_PORT": "587",
+			"SES_ACCESS_KEY": "",
+			"SES_ACCESS_SECRET": "",
+			"SES_REGION": "us-east-1"
+		}
+	}
 }

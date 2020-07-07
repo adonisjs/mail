@@ -1,6 +1,4 @@
 {
-  "extends": "./node_modules/@adonisjs/mrm-preset/_tsconfig",
-  "files": [
-    "./node_modules/@adonisjs/view/build/adonis-typings/index.d.ts"
-  ]
+	"extends": "./node_modules/@adonisjs/mrm-preset/_tsconfig",
+	"files": ["./node_modules/@adonisjs/view/build/adonis-typings/index.d.ts"]
 }
