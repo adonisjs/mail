@@ -9,6 +9,7 @@
 		"build/src",
 		"build/templates"
 	],
+	"typings": "./build/adonis-typings/index.d.ts",
 	"scripts": {
 		"mrm": "mrm --preset=@adonisjs/mrm-preset",
 		"pretest": "npm run lint",
@@ -124,7 +125,7 @@
 			"@adonisjs/mail"
 		],
 		"env": {
-			"SMTP_HOST": "smtp.ethereal.email",
+			"SMTP_HOST": "",
 			"SMTP_PORT": "587",
 			"SES_ACCESS_KEY": "",
 			"SES_ACCESS_SECRET": "",
