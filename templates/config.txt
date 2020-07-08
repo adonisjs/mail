@@ -71,6 +71,20 @@ const mailConfig: MailerConfigContract = {
       sendingRate: 10,
       maxConnections: 5,
     },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mailgun
+    |--------------------------------------------------------------------------
+    |
+		| Uses Mailgun service for sending emails.
+    |
+    */
+    mailgun: {
+      driver: 'mailgun',
+			baseUrl: 'https://api.mailgun.net/v3',
+			key: Env.get('MAILGUN_API_KEY') as string,
+    },
   },
 }
 

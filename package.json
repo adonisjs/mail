@@ -125,7 +125,8 @@
 			"SMTP_PORT": "587",
 			"SES_ACCESS_KEY": "",
 			"SES_ACCESS_SECRET": "",
-			"SES_REGION": "us-east-1"
+			"SES_REGION": "us-east-1",
+			"MAILGUN_API_KEY": ""
 		}
 	}
 }
