@@ -488,6 +488,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		after(event: 'send', handler: AfterSendHandler<keyof MailersList>): this
 		send(callback: MessageComposeCallback): ReturnType<MailDriverContract['send']>
 		close(name?: string): Promise<void>
+		preview(callback: MessageComposeCallback): Promise<SmtpMailResponse & { account: { user: string; pass: string } }>
 		closeAll(): Promise<void>
 	}
 

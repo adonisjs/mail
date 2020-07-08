@@ -9,6 +9,7 @@
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
+import nodemailer from 'nodemailer'
 import { Hooks } from '@poppinss/hooks'
 import { Manager } from '@poppinss/manager'
 import { IocContract } from '@adonisjs/fold'
@@ -72,6 +73,23 @@ export class MailManager
 		const validator = new ManagerConfigValidator(this.config, 'mail', 'config/mail')
 		validator.validateDefault('mailer')
 		validator.validateList('mailers', 'mailer')
+	}
+
+	/**
+	 * Creates and returns an ethereal email account. Node mailer internally
+	 * ensures only a single email account is created and hence we don't
+	 * have to worry about caching credentials.
+	 */
+	private getEtherealAccount(): Promise<any> {
+		return new Promise((resolve, reject) => {
+			nodemailer.createTestAccount((error: Error, account: any) => {
+				if (error) {
+					reject(error)
+				} else {
+					resolve(account)
+				}
+			})
+		})
 	}
 
 	/**
@@ -199,5 +217,35 @@ export class MailManager
 	 */
 	public async closeAll(): Promise<void> {
 		await Promise.all(Array.from(this['mappingsCache'].keys()).map((name: string) => this.close(name as any)))
+	}
+
+	/**
+	 * Sends email to the ethereal email account. This is great
+	 * for previewing emails
+	 */
+	public async preview(callback: MessageComposeCallback) {
+		const account = await this.getEtherealAccount()
+		const mappingName: any = 'ethereal'
+
+		const smtpDriver = this.createSmtp(mappingName, {
+			host: account.smtp.host,
+			port: account.smtp.port,
+			secure: account.smtp.secure,
+			auth: {
+				user: account.user,
+				pass: account.pass,
+			},
+		})
+
+		const mailer = this.wrapDriverResponse(mappingName, smtpDriver)
+		const response = await mailer.send(callback)
+
+		return {
+			...response,
+			account: {
+				user: account.user,
+				pass: account.pass,
+			},
+		}
 	}
 }
