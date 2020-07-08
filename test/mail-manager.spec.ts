@@ -10,6 +10,9 @@
 import test from 'japa'
 import { Edge } from 'edge.js'
 import { Ioc } from '@adonisjs/fold'
+import { Logger } from '@adonisjs/logger/build/standalone'
+import { Emitter } from '@adonisjs/events/build/standalone'
+import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { MailDriverContract, MailerContract, MessageNode, MailersList } from '@ioc:Adonis/Addons/Mail'
 
 import { Mailer } from '../src/Mail/Mailer'
@@ -17,10 +20,14 @@ import { SesDriver } from '../src/Drivers/Ses'
 import { SmtpDriver } from '../src/Drivers/Smtp'
 import { MailManager } from '../src/Mail/MailManager'
 
+const ioc = new Ioc()
+const logger = new Logger({ enabled: true, name: 'adonis', level: 'info' })
+ioc.singleton('Adonis/Core/View', () => new Edge())
+ioc.singleton('Adonis/Core/Profiler', () => new Profiler(__dirname, logger, {}))
+ioc.singleton('Adonis/Core/Event', () => new Emitter(ioc))
+
 test.group('Mail Manager', () => {
 	test('return driver for a given mapping', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -30,13 +37,11 @@ test.group('Mail Manager', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 		assert.equal(manager['getMappingDriver']('marketing'), 'smtp')
 	})
 
 	test('return default mapping name', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -46,13 +51,11 @@ test.group('Mail Manager', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 		assert.equal(manager['getDefaultMappingName'](), 'marketing')
 	})
 
 	test('return config for a mapping name', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -62,15 +65,13 @@ test.group('Mail Manager', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 		assert.deepEqual(manager['getMappingConfig']('marketing'), { driver: 'smtp' })
 	})
 })
 
 test.group('Mail Manager | Cache', () => {
 	test('close driver and release it from cache', async (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -94,7 +95,7 @@ test.group('Mail Manager | Cache', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -110,8 +111,6 @@ test.group('Mail Manager | Cache', () => {
 	})
 
 	test('close driver by invoking close on manager instance', async (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -135,7 +134,7 @@ test.group('Mail Manager | Cache', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -151,8 +150,6 @@ test.group('Mail Manager | Cache', () => {
 	})
 
 	test('close all mappings and clear cache', async (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -176,7 +173,7 @@ test.group('Mail Manager | Cache', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -195,8 +192,6 @@ test.group('Mail Manager | Cache', () => {
 
 test.group('Mail Manager | SMTP', () => {
 	test('get mailer instance for smtp driver', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -206,7 +201,7 @@ test.group('Mail Manager | SMTP', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 		const mailer = manager.use() as MailerContract<keyof MailersList>
 
 		assert.instanceOf(mailer, Mailer)
@@ -214,8 +209,6 @@ test.group('Mail Manager | SMTP', () => {
 	})
 
 	test('cache mailer instances for smtp', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -225,7 +218,7 @@ test.group('Mail Manager | SMTP', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 		const mailer = manager.use()
 		const mailer1 = manager.use()
 
@@ -235,8 +228,6 @@ test.group('Mail Manager | SMTP', () => {
 
 test.group('Mail Manager | SES', () => {
 	test('get mailer instance for ses driver', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -246,7 +237,7 @@ test.group('Mail Manager | SES', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 		const mailer = manager.use()
 
 		assert.instanceOf(mailer, Mailer)
@@ -254,8 +245,6 @@ test.group('Mail Manager | SES', () => {
 	})
 
 	test('cache mailer instances for ses driver', (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -265,7 +254,7 @@ test.group('Mail Manager | SES', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 		const mailer = manager.use()
 		const mailer1 = manager.use()
 
@@ -275,8 +264,6 @@ test.group('Mail Manager | SES', () => {
 
 test.group('Mail Manager | send', () => {
 	test('invoke send method on the driver instance', async (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -299,7 +286,7 @@ test.group('Mail Manager | send', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -319,8 +306,6 @@ test.group('Mail Manager | send', () => {
 	})
 
 	test('message should be able to make views', async (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -343,8 +328,8 @@ test.group('Mail Manager | send', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
-		view.registerTemplate('welcome', { template: 'Hello world' })
+		const manager = new MailManager(ioc, config as any)
+		ioc.use('Adonis/Core/View').registerTemplate('welcome', { template: 'Hello world' })
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -366,8 +351,6 @@ test.group('Mail Manager | send', () => {
 	})
 
 	test('pass meta options to the driver send method', async (assert) => {
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -390,7 +373,7 @@ test.group('Mail Manager | send', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -403,8 +386,6 @@ test.group('Mail Manager | send', () => {
 	test('invoke before send hook', async (assert) => {
 		assert.plan(2)
 
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -425,7 +406,7 @@ test.group('Mail Manager | send', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -450,8 +431,6 @@ test.group('Mail Manager | send', () => {
 	test('invoke after send hook', async (assert) => {
 		assert.plan(2)
 
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -473,7 +452,7 @@ test.group('Mail Manager | send', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -496,8 +475,6 @@ test.group('Mail Manager | trap', () => {
 	test('trap mail send call', async (assert) => {
 		assert.plan(2)
 
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -520,7 +497,7 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -546,8 +523,6 @@ test.group('Mail Manager | trap', () => {
 	test('remove trap after restore', async (assert) => {
 		assert.plan(2)
 
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -570,7 +545,7 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -608,8 +583,6 @@ test.group('Mail Manager | trap', () => {
 	test('trap multiple mail send calls', async (assert) => {
 		assert.plan(3)
 
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -632,7 +605,7 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -677,8 +650,6 @@ test.group('Mail Manager | trap', () => {
 	test('trap should when calling send on mail manager', async (assert) => {
 		assert.plan(2)
 
-		const ioc = new Ioc()
-		const view = new Edge()
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -701,7 +672,7 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any, view)
+		const manager = new MailManager(ioc, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver

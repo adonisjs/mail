@@ -28,6 +28,8 @@ import {
 } from '@ioc:Adonis/Addons/Mail'
 
 import { ViewContract } from '@ioc:Adonis/Core/View'
+import { EmitterContract } from '@ioc:Adonis/Core/Event'
+import { ProfilerContract } from '@ioc:Adonis/Core/Profiler'
 
 import { Mailer } from './Mailer'
 
@@ -61,7 +63,16 @@ export class MailManager
 	 */
 	public hooks = new Hooks(this.container.getResolver(undefined, 'mailerHooks', 'App/Mailers/Hooks'))
 
-	constructor(container: IocContract, private config: MailConfig, public view: ViewContract) {
+	/**
+	 * Dependencies from the "@adonisjs/core" and "@adonisjs/view". The manager classes
+	 * in AdonisJS codebase heavily relies on the container and hence we can pull
+	 * container bindings directly here.
+	 */
+	public view: ViewContract = this.container.use('Adonis/Core/View')
+	public emitter: EmitterContract = this.container.use('Adonis/Core/Event')
+	public profiler: ProfilerContract = this.container.use('Adonis/Core/Profiler')
+
+	constructor(container: IocContract, private config: MailConfig) {
 		super(container)
 		this.validateConfig()
 	}

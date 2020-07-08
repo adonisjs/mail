@@ -10,12 +10,13 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import {
-	MailerContract,
-	MessageComposeCallback,
 	MailersList,
+	MailerContract,
 	DriverReturnType,
 	DriverOptionsType,
+	MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
+import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
 import { Message } from '../Message'
 import { MailManager } from './MailManager'
@@ -28,17 +29,48 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 	constructor(public name: Name, private manager: MailManager, public driver: MailersList[Name]['implementation']) {}
 
 	/**
+	 * Exposing profile, so that a custom one can be defined (if needed)
+	 */
+	public profiler: ProfilerContract | ProfilerRowContract = this.manager.profiler
+
+	/**
 	 * Sends email
 	 */
 	public async send(callback: MessageComposeCallback, config?: DriverOptionsType<MailersList[Name]>) {
 		const message = new Message(this.manager.view)
 		await callback(message)
 
-		await this.manager.hooks.exec('before', 'send', this, message)
-		const response = await this.driver.send(message.toJSON(), config)
+		const mail = this.manager.profiler.create('mail:send', { mailer: this.name, subject: message.subject })
 
-		await this.manager.hooks.exec('after', 'send', this, response)
-		return (response as unknown) as Promise<DriverReturnType<MailersList[Name]['implementation']>>
+		try {
+			/**
+			 * Execute before hooks
+			 */
+			await mail.profileAsync('mail:before:hooks', undefined, async () => {
+				await this.manager.hooks.exec('before', 'send', this, message)
+			})
+
+			/**
+			 * Send email
+			 */
+			const response = await mail.profileAsync('mail:send', undefined, async () => {
+				return this.driver.send(message.toJSON(), config)
+			})
+
+			/**
+			 * Execute after hooks
+			 */
+			await mail.profileAsync('mail:after:hooks', undefined, async () => {
+				await this.manager.hooks.exec('after', 'send', this, response)
+			})
+
+			mail.end()
+			this.manager.emitter.emit('adonis:mail:sent', { message, mailer: this.name })
+			return (response as unknown) as Promise<DriverReturnType<MailersList[Name]['implementation']>>
+		} catch (error) {
+			mail.end({ error })
+			throw error
+		}
 	}
 
 	/**

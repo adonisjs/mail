@@ -12,6 +12,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	import { Readable } from 'stream'
 	import { IocContract } from '@adonisjs/fold'
 	import { ManagerContract } from '@poppinss/manager'
+	import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
 	/*
   |--------------------------------------------------------------------------
@@ -435,6 +436,14 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	export type TrapCallback = (message: MessageNode) => any
 
 	/**
+	 * Data emitted by the `adonis:mail:sent` event
+	 */
+	export type MailEventData = {
+		message: MessageContract
+		mailer: keyof MailersList | 'fake' | 'ethereal'
+	}
+
+	/**
 	 * Shape of the callback passed to the `send` method to compose the
 	 * message
 	 */
@@ -463,6 +472,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export interface MailerContract<Name extends keyof MailersList> {
 		name: Name
+		profiler: ProfilerContract | ProfilerRowContract
 		driver: MailersList[Name]['implementation']
 		send(
 			callback: MessageComposeCallback,
