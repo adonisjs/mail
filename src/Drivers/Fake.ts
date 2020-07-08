@@ -10,7 +10,7 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import nodemailer from 'nodemailer'
-import { MessageNode, FakeDriverContract, FakeMailResponse, BaseConfig, TrapCallback } from '@ioc:Adonis/Addons/Mail'
+import { MessageNode, FakeDriverContract, FakeMailResponse, TrapCallback } from '@ioc:Adonis/Addons/Mail'
 
 /**
  * Smtp driver to send email using smtp
@@ -27,12 +27,12 @@ export class FakeDriver implements FakeDriverContract {
 	/**
 	 * Send message
 	 */
-	public async send(message: MessageNode, options?: BaseConfig['meta']): Promise<FakeMailResponse> {
+	public async send(message: MessageNode): Promise<FakeMailResponse> {
 		if (!this.transporter) {
 			throw new Error('Driver transport has been closed and cannot be used for sending emails')
 		}
 
-		const listenerResponse = this.listener(message, options)
+		const listenerResponse = this.listener(message)
 		const response = await this.transporter.sendMail(message)
 		return { ...response, ...listenerResponse }
 	}

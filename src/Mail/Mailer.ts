@@ -9,7 +9,13 @@
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
-import { MailerContract, MessageComposeCallback, MailersList, DriverReturnType } from '@ioc:Adonis/Addons/Mail'
+import {
+	MailerContract,
+	MessageComposeCallback,
+	MailersList,
+	DriverReturnType,
+	DriverOptionsType,
+} from '@ioc:Adonis/Addons/Mail'
 
 import { Message } from '../Message'
 import { MailManager } from './MailManager'
@@ -24,12 +30,12 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 	/**
 	 * Sends email
 	 */
-	public async send(callback: MessageComposeCallback, metaOptions?: MailersList[Name]['config']['meta']) {
+	public async send(callback: MessageComposeCallback, config?: DriverOptionsType<MailersList[Name]>) {
 		const message = new Message(this.manager.view)
 		await callback(message)
 
 		await this.manager.hooks.exec('before', 'send', this, message)
-		const response = await this.driver.send(message.toJSON(), metaOptions)
+		const response = await this.driver.send(message.toJSON(), config)
 
 		await this.manager.hooks.exec('after', 'send', this, response)
 		return (response as unknown) as Promise<DriverReturnType<MailersList[Name]['implementation']>>

@@ -32,13 +32,9 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		: never
 
 	/**
-	 * Shape of base config contract
+	 * Infers the 2nd argument accepted by the driver send method
 	 */
-	export type BaseConfig = {
-		meta?: {
-			[key: string]: any
-		}
-	}
+	export type DriverOptionsType<Driver> = Driver extends MailDriverContract ? Parameters<Driver['send']>[1] : never
 
 	/*
   |--------------------------------------------------------------------------
@@ -64,18 +60,19 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export type EnvolpeNode = { from?: string; to?: string; cc?: string; bcc?: string }
 	export type PostSendEnvolpeNode = { from: string; to: string[] }
+	export type RecipientNode = { address: string; name?: string }
 
 	/**
 	 * Message node is compatible with nodemailer `sendMail` method
 	 */
 	export type MessageNode = {
-		from?: { address: string; name?: string }
-		to?: { address: string; name?: string }[]
-		cc?: { address: string; name?: string }[]
-		bcc?: { address: string; name?: string }[]
+		from?: RecipientNode
+		to?: RecipientNode[]
+		cc?: RecipientNode[]
+		bcc?: RecipientNode[]
 		messageId?: string
 		subject?: string
-		replyTo?: { address: string; name?: string }
+		replyTo?: RecipientNode
 		inReplyTo?: string
 		references?: string[]
 		encoding?: string
@@ -215,6 +212,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
 			config: SesConfig
 			implementation: SesDriverContract
 		}
+		mailgun: {
+			config: MailgunConfig
+			implementation: MailgunDriverContract
+		}
 	}
 
 	/**
@@ -272,7 +273,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	/**
 	 * Smtp driver config
 	 */
-	export type SmtpConfig = BaseConfig & {
+	export type SmtpConfig = {
 		host: string
 		driver: 'smtp'
 		port?: number | string
@@ -320,7 +321,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of the smtp driver
 	 */
 	export interface SmtpDriverContract extends MailDriverContract {
-		send(message: MessageNode, metaOptions?: SmtpConfig['meta']): Promise<SmtpMailResponse>
+		send(message: MessageNode): Promise<SmtpMailResponse>
 	}
 
 	/*
@@ -332,7 +333,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	/**
 	 * Ses driver config
 	 */
-	export type SesConfig = BaseConfig & {
+	export type SesConfig = {
 		driver: 'ses'
 		apiVersion: string
 		key: string
@@ -358,7 +359,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of the ses driver
 	 */
 	export interface SesDriverContract extends MailDriverContract {
-		send(message: MessageNode, metaOptions?: SesConfig['meta']): Promise<SesMailResponse>
+		send(message: MessageNode): Promise<SesMailResponse>
 	}
 
 	/*
@@ -370,19 +371,22 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	/**
 	 * Ses driver config
 	 */
-	export type MailgunConfig = BaseConfig & {
-		driver: 'mailgun'
-		baseUrl: string
-		key: string
-		domain?: string
+	export type MailgunRuntimeConfig = {
 		oTags?: string[]
 		oDeliverytime?: Date
-		oDkim?: boolean
 		oTestMode?: boolean
 		oTracking?: boolean
 		oTrackingClick?: boolean
 		oTrackingOpens?: boolean
 		headers?: { [key: string]: string }
+	}
+
+	export type MailgunConfig = MailgunRuntimeConfig & {
+		driver: 'mailgun'
+		baseUrl: string
+		key: string
+		domain?: string
+		oDkim?: boolean
 	}
 
 	/**
@@ -397,7 +401,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of the mailgun driver
 	 */
 	export interface MailgunDriverContract extends MailDriverContract {
-		send(message: MessageNode, config?: MailgunConfig): Promise<SesMailResponse>
+		send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse>
 	}
 
 	/*
@@ -428,7 +432,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
   |--------------------------------------------------------------------------
   */
 
-	export type TrapCallback = (message: MessageNode, options?: BaseConfig['meta']) => any
+	export type TrapCallback = (message: MessageNode) => any
 
 	/**
 	 * Shape of the callback passed to the `send` method to compose the
@@ -462,7 +466,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		driver: MailersList[Name]['implementation']
 		send(
 			callback: MessageComposeCallback,
-			metaOptions?: MailersList[Name]['config']['meta']
+			config?: DriverOptionsType<MailersList[Name]['implementation']>
 		): Promise<DriverReturnType<MailersList[Name]['implementation']>>
 		close(): Promise<void>
 	}
@@ -482,7 +486,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 
 		before(event: 'send', handler: BeforeSendHandler<keyof MailersList>): this
 		after(event: 'send', handler: AfterSendHandler<keyof MailersList>): this
-		send(callback: MessageComposeCallback, metaOptions?: BaseConfig['meta']): ReturnType<MailDriverContract['send']>
+		send(callback: MessageComposeCallback): ReturnType<MailDriverContract['send']>
 		close(name?: string): Promise<void>
 		closeAll(): Promise<void>
 	}

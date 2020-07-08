@@ -15,7 +15,6 @@ import { IocContract } from '@adonisjs/fold'
 import { ManagerConfigValidator } from '@poppinss/utils'
 
 import {
-	BaseConfig,
 	MailConfig,
 	MailersList,
 	TrapCallback,
@@ -169,11 +168,11 @@ export class MailManager
 	/**
 	 * Sends email using the default `mailer`
 	 */
-	public async send(callback: MessageComposeCallback, metaOptions?: BaseConfig['meta']) {
+	public async send(callback: MessageComposeCallback) {
 		if (this.fakeMailer) {
-			return this.fakeMailer.send(callback, metaOptions)
+			return this.fakeMailer.send(callback)
 		}
-		return this.use().send(callback, metaOptions)
+		return this.use().send(callback)
 	}
 
 	/**

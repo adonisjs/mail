@@ -12,34 +12,33 @@
 import nodemailer from 'nodemailer'
 import { MailgunTransport } from '../Transports/Mailgun'
 
-import { MessageNode, MailgunResponse, MailgunConfig, MailDriverContract } from '@ioc:Adonis/Addons/Mail'
+import {
+	MessageNode,
+	MailgunResponse,
+	MailgunConfig,
+	MailDriverContract,
+	MailgunRuntimeConfig,
+} from '@ioc:Adonis/Addons/Mail'
 
 /**
  * Ses driver to send email using ses
  */
 export class MailgunDriver implements MailDriverContract {
-	private transporter: any
-
-	constructor(config: MailgunConfig) {
-		this.transporter = nodemailer.createTransport(new MailgunTransport(config))
-	}
+	constructor(private config: MailgunConfig) {}
 
 	/**
 	 * Send message
 	 */
-	public async send(message: MessageNode): Promise<MailgunResponse> {
-		if (!this.transporter) {
-			throw new Error('Driver transport has been closed and cannot be used for sending emails')
-		}
+	public async send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse> {
+		const transporter = nodemailer.createTransport(
+			new MailgunTransport({
+				...this.config,
+				...config,
+			})
+		)
 
-		return this.transporter.sendMail(message)
+		return transporter.sendMail(message)
 	}
 
-	/**
-	 * Close transporter connection, helpful when using connections pool
-	 */
-	public async close() {
-		this.transporter.close()
-		this.transporter = null
-	}
+	public async close() {}
 }

@@ -71,7 +71,6 @@ test.group('Mailgun Driver', (group) => {
 			key: process.env.MAILGUN_ACCESS_KEY!,
 			baseUrl: 'https://api.mailgun.net/v3',
 			domain: 'adonisjs.com',
-			oTags: ['newsletter', 'test'],
 		})
 
 		const message = new Message(new Edge())
@@ -81,7 +80,9 @@ test.group('Mailgun Driver', (group) => {
 		message.subject('Adonisv5')
 		message.html('<p> Hello Adonis </p>')
 
-		const response = await mailgun.send(message.toJSON())
+		const response = await mailgun.send(message.toJSON(), {
+			oTags: ['newsletter', 'test'],
+		})
 		assert.exists(response.messageId)
 		assert.equal(response.envelope!.from, process.env.FROM_EMAIL)
 		assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
