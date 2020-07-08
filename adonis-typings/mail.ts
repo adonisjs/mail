@@ -13,23 +13,38 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	import { IocContract } from '@adonisjs/fold'
 	import { ManagerContract } from '@poppinss/manager'
 
+	/*
+  |--------------------------------------------------------------------------
+  | Helpers
+  |--------------------------------------------------------------------------
+  */
+
+	/**
+	 * Unwraps value of a promise type
+	 */
+	export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? U : T
+
+	/**
+	 * Infers return type of a driver
+	 */
+	export type DriverReturnType<Driver> = Driver extends MailDriverContract
+		? UnwrapPromise<ReturnType<Driver['send']>>
+		: never
+
 	/**
 	 * Shape of base config contract
 	 */
-	export type BaseConfigContract = {
+	export type BaseConfig = {
 		meta?: {
 			[key: string]: any
 		}
 	}
 
-	/**
-	 * Shape of the driver contract. Each driver must adhere to
-	 * this interface
-	 */
-	export interface MailDriverContract {
-		send(message: MessageNode, config?: any): Promise<any>
-		close(): void | Promise<void>
-	}
+	/*
+  |--------------------------------------------------------------------------
+  | Message
+  |--------------------------------------------------------------------------
+  */
 
 	/**
 	 * Attachment options
@@ -48,6 +63,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of envolpe
 	 */
 	export type EnvolpeNode = { from?: string; to?: string; cc?: string; bcc?: string }
+	export type PostSendEnvolpeNode = { from: string; to: string[] }
 
 	/**
 	 * Message node is compatible with nodemailer `sendMail` method
@@ -146,6 +162,27 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		toJSON(): MessageNode
 	}
 
+	/*
+  |--------------------------------------------------------------------------
+  | Drivers Interface
+  |--------------------------------------------------------------------------
+  */
+
+	/**
+	 * Shape of the driver contract. Each driver must adhere to
+	 * this interface
+	 */
+	export interface MailDriverContract {
+		send(message: MessageNode, config?: any): Promise<any>
+		close(): void | Promise<void>
+	}
+
+	/*
+  |--------------------------------------------------------------------------
+  | Config Helpers
+  |--------------------------------------------------------------------------
+  */
+
 	/**
 	 * A shortcut to define `config` and `implementation` keys on the
 	 * `MailersList` interface. Using this type is not mandatory and
@@ -155,7 +192,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * ```
 	 * MailersList: {
 	 *   transactional: {
-	 *     config: SmtpConfigContract,
+	 *     config: SmtpConfig,
 	 *     implementation: SmtpDriverContract,
 	 *   }
 	 * }
@@ -171,11 +208,11 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export type MailDrivers = {
 		smtp: {
-			config: SmtpConfigContract
+			config: SmtpConfig
 			implementation: SmtpDriverContract
 		}
 		ses: {
-			config: SesConfigContract
+			config: SesConfig
 			implementation: SesDriverContract
 		}
 	}
@@ -188,71 +225,25 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export interface MailersList {}
 
+	/*
+  |--------------------------------------------------------------------------
+  | Mailer Config
+  |--------------------------------------------------------------------------
+  */
+
 	/**
 	 * Shape of the mailer config computed from the `MailersList` interface.
 	 * The `MailersList` is extended in the user codebase.
 	 */
-	export type MailerConfigContract = {
+	export type MailConfig = {
 		mailer: keyof MailersList
 		mailers: { [P in keyof MailersList]: MailersList[P]['config'] }
-	}
-
-	/**
-	 * Unwraps value of a promise type
-	 */
-	export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? U : T
-
-	/**
-	 * Infers return type of a driver
-	 */
-	export type DriverReturnType<Driver> = Driver extends MailDriverContract
-		? UnwrapPromise<ReturnType<Driver['send']>>
-		: never
-
-	/**
-	 * Shape of the callback passed to the `send` method to compose the
-	 * message
-	 */
-	export type MessageComposeCallback = (message: MessageContract) => void | Promise<void>
-
-	/**
-	 * Hook handler for `beforeSend`
-	 */
-	export type BeforeSendHandler<Name extends keyof MailersList> =
-		| string
-		| ((mailer: MailerContract<Name>, message: MessageContract) => void | Promise<void>)
-
-	/**
-	 * Hook handler for `afterSend`
-	 */
-	export type AfterSendHandler<Name extends keyof MailersList> =
-		| string
-		| ((
-				mailer: MailerContract<Name>,
-				response: DriverReturnType<MailersList[Name]['implementation']>
-		  ) => void | Promise<void>)
-
-	/**
-	 * Mailer exposes the unified API to send emails by using a given
-	 * driver
-	 */
-	export interface MailerContract<Name extends keyof MailersList> {
-		name: Name
-		driver: MailersList[Name]['implementation']
-		send(
-			callback: MessageComposeCallback,
-			metaOptions?: MailersList[Name]['config']['meta']
-		): Promise<DriverReturnType<MailersList[Name]['implementation']>>
-		close(): Promise<void>
 	}
 
 	/*
   |--------------------------------------------------------------------------
   | SMTP driver
   |--------------------------------------------------------------------------
-  |
-  | Interfaces and types for the SMTP Driver
-  |
   */
 
 	/**
@@ -281,7 +272,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	/**
 	 * Smtp driver config
 	 */
-	export type SmtpConfigContract = BaseConfigContract & {
+	export type SmtpConfig = BaseConfig & {
 		host: string
 		driver: 'smtp'
 		port?: number | string
@@ -321,12 +312,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		response: string
 		accepted: string[]
 		rejected: string[]
-		envelope: {
-			from: string
-			to: string[]
-			cc?: string[]
-			bcc?: string[]
-		}
+		envelope: PostSendEnvolpeNode
 		messageId: string
 	}
 
@@ -334,22 +320,19 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of the smtp driver
 	 */
 	export interface SmtpDriverContract extends MailDriverContract {
-		send(message: MessageNode, metaOptions?: SmtpConfigContract['meta']): Promise<SmtpMailResponse>
+		send(message: MessageNode, metaOptions?: SmtpConfig['meta']): Promise<SmtpMailResponse>
 	}
 
 	/*
   |--------------------------------------------------------------------------
   | SES driver
   |--------------------------------------------------------------------------
-  |
-  | Interfaces and types for the SES Driver
-  |
   */
 
 	/**
 	 * Ses driver config
 	 */
-	export type SesConfigContract = BaseConfigContract & {
+	export type SesConfig = BaseConfig & {
 		driver: string
 		apiVersion: string
 		key: string
@@ -367,12 +350,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		response: string
 		accepted: string[]
 		rejected: string[]
-		envelope: {
-			from: string
-			to: string[]
-			cc?: string[]
-			bcc?: string[]
-		}
+		envelope: PostSendEnvolpeNode
 		messageId: string
 	}
 
@@ -380,7 +358,74 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of the ses driver
 	 */
 	export interface SesDriverContract extends MailDriverContract {
-		send(message: MessageNode, metaOptions?: SesConfigContract['meta']): Promise<SesMailResponse>
+		send(message: MessageNode, metaOptions?: SesConfig['meta']): Promise<SesMailResponse>
+	}
+
+	/*
+  |--------------------------------------------------------------------------
+  | Fake driver
+  |--------------------------------------------------------------------------
+  */
+
+	/**
+	 * Shape of mail response for the fake driver
+	 */
+	export type FakeMailResponse = {
+		messageId: string
+		message: MessageNode
+		envelope: PostSendEnvolpeNode
+	}
+
+	/**
+	 * Shape of the faker driver
+	 */
+	export interface FakeDriverContract extends MailDriverContract {
+		send(message: MessageNode): Promise<FakeMailResponse>
+	}
+
+	/*
+  |--------------------------------------------------------------------------
+  | Mailer & Manager
+  |--------------------------------------------------------------------------
+  */
+
+	export type TrapCallback = (message: MessageNode, options?: BaseConfig['meta']) => any
+
+	/**
+	 * Shape of the callback passed to the `send` method to compose the
+	 * message
+	 */
+	export type MessageComposeCallback = (message: MessageContract) => void | Promise<void>
+
+	/**
+	 * Hook handler for `beforeSend`
+	 */
+	export type BeforeSendHandler<Name extends keyof MailersList> =
+		| string
+		| ((mailer: MailerContract<Name>, message: MessageContract) => void | Promise<void>)
+
+	/**
+	 * Hook handler for `afterSend`
+	 */
+	export type AfterSendHandler<Name extends keyof MailersList> =
+		| string
+		| ((
+				mailer: MailerContract<Name>,
+				response: DriverReturnType<MailersList[Name]['implementation']>
+		  ) => void | Promise<void>)
+
+	/**
+	 * Mailer exposes the unified API to send emails by using a given
+	 * driver
+	 */
+	export interface MailerContract<Name extends keyof MailersList> {
+		name: Name
+		driver: MailersList[Name]['implementation']
+		send(
+			callback: MessageComposeCallback,
+			metaOptions?: MailersList[Name]['config']['meta']
+		): Promise<DriverReturnType<MailersList[Name]['implementation']>>
+		close(): Promise<void>
 	}
 
 	/**
@@ -393,12 +438,12 @@ declare module '@ioc:Adonis/Addons/Mail' {
 			MailerContract<keyof MailersList>,
 			{ [P in keyof MailersList]: MailerContract<P> }
 		> {
+		trap(callback: TrapCallback): void
+		restore(): void
+
 		before(event: 'send', handler: BeforeSendHandler<keyof MailersList>): this
 		after(event: 'send', handler: AfterSendHandler<keyof MailersList>): this
-		send(
-			callback: MessageComposeCallback,
-			metaOptions?: BaseConfigContract['meta']
-		): ReturnType<MailDriverContract['send']>
+		send(callback: MessageComposeCallback, metaOptions?: BaseConfig['meta']): ReturnType<MailDriverContract['send']>
 		close(name?: string): Promise<void>
 		closeAll(): Promise<void>
 	}

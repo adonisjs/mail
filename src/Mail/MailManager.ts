@@ -15,14 +15,15 @@ import { IocContract } from '@adonisjs/fold'
 import { ManagerConfigValidator } from '@poppinss/utils'
 
 import {
+	BaseConfig,
+	MailConfig,
 	MailersList,
+	TrapCallback,
 	MailerContract,
 	AfterSendHandler,
 	BeforeSendHandler,
 	MailDriverContract,
-	BaseConfigContract,
 	MailManagerContract,
-	MailerConfigContract,
 	MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
 
@@ -51,11 +52,16 @@ export class MailManager
 	protected singleton = true
 
 	/**
+	 * Reference to the fake driver
+	 */
+	private fakeMailer?: MailerContract<any>
+
+	/**
 	 * Reference to the hooks
 	 */
 	public hooks = new Hooks(this.container.getResolver(undefined, 'mailerHooks', 'App/Mailers/Hooks'))
 
-	constructor(container: IocContract, private config: MailerConfigContract, public view: ViewContract) {
+	constructor(container: IocContract, private config: MailConfig, public view: ViewContract) {
 		super(container)
 		this.validateConfig()
 	}
@@ -121,6 +127,21 @@ export class MailManager
 	}
 
 	/**
+	 * Fake email calls
+	 */
+	public trap(callback: TrapCallback) {
+		const { FakeDriver } = require('../Drivers/Fake')
+		this.fakeMailer = this.wrapDriverResponse('fake' as any, new FakeDriver(callback))
+	}
+
+	/**
+	 * Restore previously fake driver
+	 */
+	public restore() {
+		this.fakeMailer = undefined
+	}
+
+	/**
 	 * Register a before hook
 	 */
 	public before(event: 'send', handler: BeforeSendHandler<keyof MailersList>) {
@@ -139,8 +160,22 @@ export class MailManager
 	/**
 	 * Sends email using the default `mailer`
 	 */
-	public async send(callback: MessageComposeCallback, metaOptions?: BaseConfigContract['meta']) {
+	public async send(callback: MessageComposeCallback, metaOptions?: BaseConfig['meta']) {
+		if (this.fakeMailer) {
+			return this.fakeMailer.send(callback, metaOptions)
+		}
 		return this.use().send(callback, metaOptions)
+	}
+
+	/**
+	 * Use a named or the default mailer
+	 */
+	public use(name?: keyof MailersList) {
+		if (this.fakeMailer) {
+			return this.fakeMailer
+		}
+
+		return name ? super.use(name) : super.use()
 	}
 
 	/**

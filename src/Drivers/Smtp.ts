@@ -10,7 +10,7 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import nodemailer from 'nodemailer'
-import { MessageNode, SmtpMailResponse, SmtpDriverContract, SmtpConfigContract } from '@ioc:Adonis/Addons/Mail'
+import { MessageNode, SmtpMailResponse, SmtpDriverContract, SmtpConfig } from '@ioc:Adonis/Addons/Mail'
 
 /**
  * Smtp driver to send email using smtp
@@ -18,7 +18,7 @@ import { MessageNode, SmtpMailResponse, SmtpDriverContract, SmtpConfigContract }
 export class SmtpDriver implements SmtpDriverContract {
 	private transporter: any
 
-	constructor(config: SmtpConfigContract) {
+	constructor(config: SmtpConfig) {
 		this.transporter = nodemailer.createTransport(config)
 	}
 

@@ -34,6 +34,7 @@ test.group('Smtp Driver', (group) => {
 		const message = new Message(new Edge())
 		message.from(process.env.MAILTRAP_EMAIL!)
 		message.to('virk@adonisjs.com')
+		message.cc('info@adonisjs.com')
 		message.subject('Adonisv5')
 		message.html('<p> Hello Adonis </p>')
 
@@ -42,6 +43,6 @@ test.group('Smtp Driver', (group) => {
 		assert.exists(response.response)
 		assert.exists(response.messageId)
 		assert.equal(response.envelope!.from, process.env.MAILTRAP_EMAIL!)
-		assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com'])
+		assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
 	}).timeout(1000 * 10)
 })
