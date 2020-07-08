@@ -67,6 +67,9 @@
 		"@poppinss/hooks": "^1.0.6",
 		"@poppinss/manager": "^3.0.3",
 		"@poppinss/utils": "^2.2.8",
+		"form-data": "^3.0.0",
+		"got": "^11.3.0",
+		"multi-part": "^3.0.0",
 		"nodemailer": "^6.4.10"
 	},
 	"repository": {

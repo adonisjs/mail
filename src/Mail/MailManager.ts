@@ -127,6 +127,15 @@ export class MailManager
 	}
 
 	/**
+	 * Creates an instance of `mailgun` driver by lazy loading. This method
+	 * is invoked internally when a new driver instance is required
+	 */
+	protected createMailgun(_: string, config: any) {
+		const { MailgunDriver } = require('../Drivers/Mailgun')
+		return new MailgunDriver(config)
+	}
+
+	/**
 	 * Fake email calls
 	 */
 	public trap(callback: TrapCallback) {

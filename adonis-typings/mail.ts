@@ -8,8 +8,8 @@
  */
 
 declare module '@ioc:Adonis/Addons/Mail' {
-	import { Readable } from 'stream'
 	import { TlsOptions } from 'tls'
+	import { Readable } from 'stream'
 	import { IocContract } from '@adonisjs/fold'
 	import { ManagerContract } from '@poppinss/manager'
 
@@ -333,7 +333,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Ses driver config
 	 */
 	export type SesConfig = BaseConfig & {
-		driver: string
+		driver: 'ses'
 		apiVersion: string
 		key: string
 		secret: string
@@ -359,6 +359,45 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export interface SesDriverContract extends MailDriverContract {
 		send(message: MessageNode, metaOptions?: SesConfig['meta']): Promise<SesMailResponse>
+	}
+
+	/*
+  |--------------------------------------------------------------------------
+  | Mailgun driver
+  |--------------------------------------------------------------------------
+  */
+
+	/**
+	 * Ses driver config
+	 */
+	export type MailgunConfig = BaseConfig & {
+		driver: 'mailgun'
+		baseUrl: string
+		key: string
+		domain?: string
+		oTags?: string[]
+		oDeliverytime?: Date
+		oDkim?: boolean
+		oTestMode?: boolean
+		oTracking?: boolean
+		oTrackingClick?: boolean
+		oTrackingOpens?: boolean
+		headers?: { [key: string]: string }
+	}
+
+	/**
+	 * Shape of mail response for the mailgun driver
+	 */
+	export type MailgunResponse = {
+		envelope: PostSendEnvolpeNode
+		messageId: string
+	}
+
+	/**
+	 * Shape of the mailgun driver
+	 */
+	export interface MailgunDriverContract extends MailDriverContract {
+		send(message: MessageNode, config?: MailgunConfig): Promise<SesMailResponse>
 	}
 
 	/*
