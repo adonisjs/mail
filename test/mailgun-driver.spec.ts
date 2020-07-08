@@ -87,7 +87,7 @@ test.group('Mailgun Driver', (group) => {
 		assert.equal(response.envelope!.from, process.env.FROM_EMAIL)
 		assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
 
-		await sleep(2000)
+		await sleep(4000)
 
 		const { body } = await got.get<{ items: any }>(
 			`${process.env.MAILGUN_BASE_URL}/adonisjs.com/events?message-id=${response.messageId.replace(/<|>/g, '')}`,
