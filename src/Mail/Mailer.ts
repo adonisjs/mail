@@ -19,6 +19,7 @@ import {
 import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
 import { Message } from '../Message'
+import { prettyPrint } from '../Helpers/prettyPrint'
 import { MailManager } from './MailManager'
 
 /**
@@ -32,6 +33,11 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 	 * Exposing profile, so that a custom one can be defined (if needed)
 	 */
 	public profiler: ProfilerContract | ProfilerRowContract = this.manager.profiler
+
+	/**
+	 * Method to pretty print sent emails
+	 */
+	public prettyPrint = prettyPrint
 
 	/**
 	 * Sends email

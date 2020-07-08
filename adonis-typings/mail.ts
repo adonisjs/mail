@@ -493,6 +493,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		> {
 		trap(callback: TrapCallback): void
 		restore(): void
+		prettyPrint: (mail: MailEventData) => void
 
 		before(event: 'send', handler: BeforeSendHandler<keyof MailersList>): this
 		after(event: 'send', handler: AfterSendHandler<keyof MailersList>): this
