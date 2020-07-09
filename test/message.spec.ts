@@ -235,4 +235,16 @@ test.group('Message', () => {
 			headers: [{ 'x-my-key': { prepared: true, value: ['1234', '5678'] } }],
 		})
 	})
+
+	test('raise exception when attaching raw data in deferred mode', (assert) => {
+		const message = new Message(true)
+		const fn = () => message.attachData(Buffer.from('hello-world'), { filename: 'foo-file' })
+		assert.throw(fn, 'Cannot attach raw data when using "Mail.sendLater" method')
+	})
+
+	test('raise exception when embedding raw data in deferred mode', (assert) => {
+		const message = new Message(true)
+		const fn = () => message.embedData(Buffer.from('hello-world'), '1', { filename: 'foo-file' })
+		assert.throw(fn, 'Cannot attach raw data when using "Mail.sendLater" method')
+	})
 })

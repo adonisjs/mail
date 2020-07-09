@@ -9,6 +9,7 @@
 
 /// <reference path="../../adonis-typings/mail.ts" />
 
+import fastq from 'fastq'
 import nodemailer from 'nodemailer'
 import { Manager } from '@poppinss/manager'
 import { IocContract } from '@adonisjs/fold'
@@ -19,12 +20,15 @@ import {
 	MailersList,
 	TrapCallback,
 	MailerContract,
+	CompiledMailNode,
 	MailDriverContract,
+	QueueMonitorCallback,
 	MailManagerContract,
 	MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
 
 import { ViewContract } from '@ioc:Adonis/Core/View'
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { EmitterContract } from '@ioc:Adonis/Core/Event'
 import { ProfilerContract } from '@ioc:Adonis/Core/Profiler'
 
@@ -62,6 +66,26 @@ export class MailManager
 	public prettyPrint = prettyPrint
 
 	/**
+	 * Emails queue to scheduling emails to be delivered later
+	 */
+	private emailsQueue = fastq(this, this.sendQueuedEmail, 10)
+
+	/**
+	 * Method to monitor in-memory email queue
+	 */
+	private queueMonitor: QueueMonitorCallback = (error) => {
+		if (error) {
+			this.logger.error(
+				{
+					subject: error.subject,
+					message: error.message,
+				},
+				'Unable to deliver email'
+			)
+		}
+	}
+
+	/**
 	 * Dependencies from the "@adonisjs/core" and "@adonisjs/view". The manager classes
 	 * in AdonisJS codebase heavily relies on the container and hence we can pull
 	 * container bindings directly here.
@@ -69,6 +93,7 @@ export class MailManager
 	public view: ViewContract = this.container.use('Adonis/Core/View')
 	public emitter: EmitterContract = this.container.use('Adonis/Core/Event')
 	public profiler: ProfilerContract = this.container.use('Adonis/Core/Profiler')
+	public logger: LoggerContract = this.container.use('Adonis/Core/Logger')
 
 	constructor(container: IocContract, private config: MailConfig) {
 		super(container)
@@ -82,6 +107,22 @@ export class MailManager
 		const validator = new ManagerConfigValidator(this.config, 'mail', 'config/mail')
 		validator.validateDefault('mailer')
 		validator.validateList('mailers', 'mailer')
+	}
+
+	/**
+	 * Sends the email by pulling it from the queue
+	 */
+	private async sendQueuedEmail(
+		mail: CompiledMailNode,
+		cb: (error: null | any, response?: any) => void
+	) {
+		try {
+			const response = await this.use(mail.mailer).sendCompiled(mail)
+			cb(null, response)
+		} catch (error) {
+			error.subject = mail.message.subject
+			cb(error)
+		}
 	}
 
 	/**
@@ -109,7 +150,7 @@ export class MailManager
 		mappingName: Name,
 		driver: MailDriverContract
 	): MailerContract<Name> {
-		return new Mailer(mappingName, this, driver)
+		return new Mailer(mappingName, this, true, driver)
 	}
 
 	/**
@@ -162,11 +203,27 @@ export class MailManager
 	}
 
 	/**
-	 * Fake email calls
+	 * Method to schedule email for sending. This method is invoked by
+	 * the mailer when `sendLater` method is called
+	 */
+	public scheduleEmail(mail: CompiledMailNode) {
+		this.emailsQueue.push(mail, this.queueMonitor)
+	}
+
+	/**
+	 * Fake email calls. The "sendLater" emails will be invoked right
+	 * away as well
 	 */
 	public trap(callback: TrapCallback) {
 		const { FakeDriver } = require('../Drivers/Fake')
-		this.fakeMailer = this.wrapDriverResponse('fake' as any, new FakeDriver(callback))
+		this.fakeMailer = new Mailer('fake' as any, this, false, new FakeDriver(callback))
+	}
+
+	/**
+	 * Define a callback to monitor emails queue
+	 */
+	public monitorQueue(callback: QueueMonitorCallback): void {
+		this.queueMonitor = callback
 	}
 
 	/**

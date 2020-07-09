@@ -452,13 +452,29 @@ declare module '@ioc:Adonis/Addons/Mail' {
   */
 
 	export type TrapCallback = (message: MessageNode) => any
+	export type QueueMonitorCallback = (
+		error?: any,
+		response?: MailerResponseType<keyof MailersList>
+	) => void
 
 	/**
-	 * Data emitted by the `adonis:mail:sent` event
+	 * Shape of the compiled mail.
+	 */
+	export type CompiledMailNode = {
+		message: MessageNode
+		views: MessageContentViewsNode
+		mailer: keyof MailersList
+		config?: any
+	}
+
+	/**
+	 * Packet emitted by the `adonis:mail:sent` event
 	 */
 	export type MailEventData = {
-		message: { message: MessageNode; views: MessageContentViewsNode }
+		message: MessageNode
+		views: string[]
 		mailer: keyof MailersList | 'fake' | 'ethereal'
+		response: MailerResponseType<keyof MailersList>
 	}
 
 	/**
@@ -483,12 +499,27 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		readonly driver: MailersList[Name]['implementation']
 
 		/**
+		 * Sends email using a pre-compiled message. You should use [[MailerContract.send]]
+		 * or [[MailerContract.sendLater]], unless you are pre-compiling messages
+		 * yourself.
+		 */
+		sendCompiled(mail: CompiledMailNode): Promise<MailerResponseType<Name>>
+
+		/**
 		 * Send email
 		 */
 		send(
 			callback: MessageComposeCallback,
 			config?: DriverOptionsType<MailersList[Name]['implementation']>
 		): Promise<MailerResponseType<Name>>
+
+		/**
+		 * Send email by pushing it to the in-memory queue
+		 */
+		sendLater(
+			callback: MessageComposeCallback,
+			config?: DriverOptionsType<MailersList[Name]['implementation']>
+		): Promise<void>
 
 		/**
 		 * Close mailer
@@ -510,6 +541,11 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		 * Trap emails
 		 */
 		trap(callback: TrapCallback): void
+
+		/**
+		 * Define a callback to monitor queued emails
+		 */
+		monitorQueue(callback: QueueMonitorCallback): void
 
 		/**
 		 * Restore trap

@@ -24,12 +24,15 @@ import { Mailer } from '../src/Mail/Mailer'
 import { SesDriver } from '../src/Drivers/Ses'
 import { SmtpDriver } from '../src/Drivers/Smtp'
 import { MailManager } from '../src/Mail/MailManager'
+import { MailgunDriver } from '../src/Drivers/Mailgun'
 
 const ioc = new Ioc()
 const logger = new Logger({ enabled: true, name: 'adonis', level: 'info' })
-ioc.singleton('Adonis/Core/View', () => new Edge())
-ioc.singleton('Adonis/Core/Profiler', () => new Profiler(__dirname, logger, {}))
+
+ioc.bind('Adonis/Core/View', () => new Edge())
+ioc.singleton('Adonis/Core/Logger', () => logger)
 ioc.singleton('Adonis/Core/Event', () => new Emitter(ioc))
+ioc.singleton('Adonis/Core/Profiler', () => new Profiler(__dirname, logger, {}))
 
 test.group('Mail Manager', () => {
 	test('return driver for a given mapping', (assert) => {
@@ -267,8 +270,320 @@ test.group('Mail Manager | SES', () => {
 	})
 })
 
+test.group('Mail Manager | Mailgun', () => {
+	test('get mailer instance for mailgun driver', (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'mailgun',
+				},
+			},
+		}
+
+		const manager = new MailManager(ioc, config as any)
+		const mailer = manager.use()
+
+		assert.instanceOf(mailer, Mailer)
+		assert.instanceOf(mailer.driver, MailgunDriver)
+	})
+
+	test('cache mailer instances for mailgun driver', (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'mailgun',
+				},
+			},
+		}
+
+		const manager = new MailManager(ioc, config as any)
+		const mailer = manager.use()
+		const mailer1 = manager.use()
+
+		assert.deepEqual(mailer, mailer1)
+	})
+})
+
+test.group('Mail Manager | Views', () => {
+	test('make html view before sending the email', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+
+		manager.view.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Greetings')
+			message.htmlView('welcome', { username: 'virk' })
+		})
+
+		assert.deepEqual(customDriver.message, {
+			to: [{ address: 'foo@bar.com' }],
+			from: { address: 'baz@bar.com' },
+			subject: 'Greetings',
+			html: '<p>Hello virk</p>',
+		})
+	})
+
+	test('do not make html view when inline html is defined', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+		manager.view.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Greetings')
+			message.htmlView('welcome', { username: 'virk' })
+			message.html('<p>Hello everyone</p>')
+		})
+
+		assert.deepEqual(customDriver.message, {
+			to: [{ address: 'foo@bar.com' }],
+			from: { address: 'baz@bar.com' },
+			subject: 'Greetings',
+			html: '<p>Hello everyone</p>',
+		})
+	})
+
+	test('make text view before sending the email', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Greetings')
+			message.textView('welcome', { username: 'virk' })
+		})
+
+		assert.deepEqual(customDriver.message, {
+			to: [{ address: 'foo@bar.com' }],
+			from: { address: 'baz@bar.com' },
+			subject: 'Greetings',
+			text: 'Hello virk',
+		})
+	})
+
+	test('do not make text view when inline text is defined', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Greetings')
+			message.textView('welcome', { username: 'virk' })
+			message.text('Hello everyone')
+		})
+
+		assert.deepEqual(customDriver.message, {
+			to: [{ address: 'foo@bar.com' }],
+			from: { address: 'baz@bar.com' },
+			subject: 'Greetings',
+			text: 'Hello everyone',
+		})
+	})
+
+	test('make watch view before sending the email', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Greetings')
+			message.watchView('welcome', { username: 'virk' })
+		})
+
+		assert.deepEqual(customDriver.message, {
+			to: [{ address: 'foo@bar.com' }],
+			from: { address: 'baz@bar.com' },
+			subject: 'Greetings',
+			watch: 'Hello virk',
+		})
+	})
+
+	test('do not make watch view when inline text is defined', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Greetings')
+			message.watchView('welcome', { username: 'virk' })
+			message.watch('Hello everyone')
+		})
+
+		assert.deepEqual(customDriver.message, {
+			to: [{ address: 'foo@bar.com' }],
+			from: { address: 'baz@bar.com' },
+			subject: 'Greetings',
+			watch: 'Hello everyone',
+		})
+	})
+})
+
 test.group('Mail Manager | send', () => {
-	test('invoke send method on the driver instance', async (assert) => {
+	test('send email', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -310,52 +625,7 @@ test.group('Mail Manager | send', () => {
 		})
 	})
 
-	test('message should be able to make views', async (assert) => {
-		const config = {
-			mailer: 'marketing',
-			mailers: {
-				marketing: {
-					driver: 'custom',
-				},
-			},
-		}
-
-		class CustomDriver implements MailDriverContract {
-			public message: MessageNode
-			public options: any
-
-			public async send(message, options) {
-				this.message = message
-				this.options = options
-			}
-
-			public async close() {}
-		}
-
-		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
-		ioc.use('Adonis/Core/View').registerTemplate('welcome', { template: 'Hello world' })
-
-		manager.extend('custom', () => {
-			return customDriver
-		})
-
-		await manager.use().send((message) => {
-			message.to('foo@bar.com')
-			message.from('baz@bar.com')
-			message.subject('Hello world')
-			message.htmlView('welcome')
-		})
-
-		assert.deepEqual(customDriver.message, {
-			to: [{ address: 'foo@bar.com' }],
-			from: { address: 'baz@bar.com' },
-			subject: 'Hello world',
-			html: 'Hello world',
-		})
-	})
-
-	test('pass meta options to the driver send method', async (assert) => {
+	test('pass config all the way to the driver send method', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -386,6 +656,100 @@ test.group('Mail Manager | send', () => {
 
 		await (manager.use() as any).send(() => {}, { foo: 'bar' })
 		assert.deepEqual(customDriver.options, { foo: 'bar' })
+	})
+})
+
+test.group('Mail Manager | sendLater', () => {
+	test('schedule emails for sending', async (assert, done) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				return new Promise((resolve) => {
+					setTimeout(() => {
+						this.message = message
+						this.options = options
+						resolve()
+					}, 1000)
+				})
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		manager.monitorQueue(() => {
+			assert.deepEqual(customDriver.message, {
+				to: [{ address: 'foo@bar.com' }],
+				from: { address: 'baz@bar.com' },
+				subject: 'Hello world',
+			})
+			done()
+		})
+
+		await manager.use().sendLater((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+	})
+
+	test('pass config all the way to the driver send method', async (assert, done) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				return new Promise((resolve) => {
+					setTimeout(() => {
+						this.message = message
+						this.options = options
+						resolve()
+					}, 1000)
+				})
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		manager.monitorQueue(() => {
+			assert.deepEqual(customDriver.options, { foo: 'bar' })
+			done()
+		})
+
+		await (manager.use() as any).sendLater(() => {}, { foo: 'bar' })
 	})
 })
 
@@ -565,7 +929,7 @@ test.group('Mail Manager | trap', () => {
 		assert.isUndefined(customDriver.message)
 	})
 
-	test('trap should when calling send on mail manager', async (assert) => {
+	test('trap when calling send on mail manager directly', async (assert) => {
 		assert.plan(2)
 
 		const config = {

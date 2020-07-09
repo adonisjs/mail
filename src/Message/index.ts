@@ -23,7 +23,7 @@ import {
  */
 export class Message implements MessageContract {
 	private nodeMailerMessage: MessageNode = {}
-	constructor() {}
+	constructor(private deferred: boolean = false) {}
 
 	/**
 	 * Path to the views used to generate content for the
@@ -215,6 +215,10 @@ export class Message implements MessageContract {
 	 * Define attachment from raw data
 	 */
 	public attachData(content: Readable | Buffer, options?: AttachmentOptionsNode): this {
+		if (this.deferred) {
+			throw new Error('Cannot attach raw data when using "Mail.sendLater" method')
+		}
+
 		this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
 		this.nodeMailerMessage.attachments.push({
 			content,
@@ -242,6 +246,10 @@ export class Message implements MessageContract {
 	 * Embed attachment from raw data inside content using `cid`
 	 */
 	public embedData(content: Readable | Buffer, cid: string, options?: AttachmentOptionsNode): this {
+		if (this.deferred) {
+			throw new Error('Cannot attach raw data when using "Mail.sendLater" method')
+		}
+
 		this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
 		this.nodeMailerMessage.attachments.push({
 			content,

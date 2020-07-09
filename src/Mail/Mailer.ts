@@ -11,12 +11,11 @@
 
 import {
 	MailersList,
-	MessageNode,
 	MailerContract,
 	DriverOptionsType,
+	CompiledMailNode,
 	MailerResponseType,
 	MessageComposeCallback,
-	MessageContentViewsNode,
 } from '@ioc:Adonis/Addons/Mail'
 
 import { Message } from '../Message'
@@ -30,6 +29,7 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 	constructor(
 		public name: Name,
 		private manager: MailManager,
+		private useQueue: boolean,
 		public driver: MailersList[Name]['implementation']
 	) {}
 
@@ -37,13 +37,7 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 	 * Set the email contents by rendering the views. Views are only
 	 * rendered when inline values are not defined.
 	 */
-	private setEmailContent({
-		message,
-		views,
-	}: {
-		message: MessageNode
-		views: MessageContentViewsNode
-	}) {
+	private setEmailContent({ message, views }: CompiledMailNode) {
 		if (!message.html && views.html) {
 			message.html = this.manager.view.render(views.html.template, views.html.data)
 		}
@@ -58,27 +52,29 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 	}
 
 	/**
-	 * Sends compiled message as email. You must be using [[this.send]] most of the times. This
-	 * method is mainly to send messages that were compiled ahead of time.
+	 * Sends email using a pre-compiled message. You should use [[MailerContract.send]], unless
+	 * you are pre-compiling messages yourself
 	 */
-	public async sendCompiled(
-		message: { message: MessageNode; views: MessageContentViewsNode },
-		config?: DriverOptionsType<MailersList[Name]>
-	) {
+	public async sendCompiled(mail: CompiledMailNode) {
 		/**
 		 * Set content by rendering views
 		 */
-		this.setEmailContent(message)
+		this.setEmailContent(mail)
 
 		/**
 		 * Send email for real
 		 */
-		const response = await this.driver.send(message.message, config)
+		const response = await this.driver.send(mail.message, mail.config)
 
 		/**
 		 * Emit event
 		 */
-		this.manager.emitter.emit('adonis:mail:sent', { message, mailer: this.name })
+		this.manager.emitter.emit('adonis:mail:sent', {
+			message: mail.message,
+			views: Object.keys(mail.views).map((view) => mail.views[view].template),
+			mailer: mail.mailer,
+			response: response,
+		})
 
 		return (response as unknown) as Promise<MailerResponseType<Name>>
 	}
@@ -90,9 +86,40 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 		callback: MessageComposeCallback,
 		config?: DriverOptionsType<MailersList[Name]>
 	) {
-		const message = new Message()
+		const message = new Message(false)
 		await callback(message)
-		return this.sendCompiled(message.toJSON(), config)
+
+		const compiledMessage = message.toJSON()
+		return this.sendCompiled({
+			message: compiledMessage.message,
+			views: compiledMessage.views,
+			mailer: this.name,
+			config: config,
+		})
+	}
+
+	/**
+	 * Send email later by queuing it inside an in-memory queue
+	 */
+	public async sendLater(
+		callback: MessageComposeCallback,
+		config?: DriverOptionsType<MailersList[Name]>
+	) {
+		if (!this.useQueue) {
+			await this.send(callback, config)
+			return
+		}
+
+		const message = new Message(false)
+		await callback(message)
+
+		const compiledMessage = message.toJSON()
+		return this.manager.scheduleEmail({
+			message: compiledMessage.message,
+			views: compiledMessage.views,
+			mailer: this.name,
+			config: config,
+		})
 	}
 
 	/**
