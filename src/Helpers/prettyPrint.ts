@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import nodemailer from 'nodemailer'
 import { MailEventData } from '@ioc:Adonis/Addons/Mail'
 
 /**
@@ -95,6 +96,14 @@ export function prettyPrint(mail: MailEventData) {
 	 */
 	const attachments = (mail.message.attachments || []).length
 	output += `\n${color.dim('│')}  ${color.dim('attachments:')} ${attachments} attachment(s)`
+
+	/**
+	 * Preview url (if any)
+	 */
+	const previewUrl = nodemailer.getTestMessageUrl(mail.response)
+	if (previewUrl) {
+		output += `\n${color.dim('│')}  ${color.dim('url:')} ${previewUrl}`
+	}
 
 	/**
 	 * End
