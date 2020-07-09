@@ -10,7 +10,7 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import nodemailer from 'nodemailer'
-import { MailgunTransport } from '../Transports/Mailgun'
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 
 import {
 	MessageNode,
@@ -20,21 +20,26 @@ import {
 	MailgunRuntimeConfig,
 } from '@ioc:Adonis/Addons/Mail'
 
+import { MailgunTransport } from '../Transports/Mailgun'
+
 /**
  * Ses driver to send email using ses
  */
 export class MailgunDriver implements MailDriverContract {
-	constructor(private config: MailgunConfig) {}
+	constructor(private config: MailgunConfig, private logger: LoggerContract) {}
 
 	/**
 	 * Send message
 	 */
 	public async send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse> {
 		const transporter = nodemailer.createTransport(
-			new MailgunTransport({
-				...this.config,
-				...config,
-			})
+			new MailgunTransport(
+				{
+					...this.config,
+					...config,
+				},
+				this.logger
+			)
 		)
 
 		return transporter.sendMail(message)

@@ -200,7 +200,7 @@ export class MailManager
 	 */
 	protected createMailgun(_: string, config: any) {
 		const { MailgunDriver } = require('../Drivers/Mailgun')
-		return new MailgunDriver(config)
+		return new MailgunDriver(config, this.logger)
 	}
 
 	/**

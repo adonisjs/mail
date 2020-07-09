@@ -11,6 +11,8 @@ import got from 'got'
 import FormData from 'multi-part'
 
 import { MailgunConfig } from '@ioc:Adonis/Addons/Mail'
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
+
 import { ObjectBuilder } from '../utils'
 
 /**
@@ -21,7 +23,7 @@ export class MailgunTransport {
 	public name = 'mailgun'
 	public version = '1.0.0'
 
-	constructor(private config: MailgunConfig) {}
+	constructor(private config: MailgunConfig, private logger: LoggerContract) {}
 
 	/**
 	 * Converts a boolean flag to a yes/no string.
@@ -102,14 +104,24 @@ export class MailgunTransport {
 		const envelope = mail.message.getEnvelope()
 
 		const form = new FormData()
+		const url = `${this.getBaseUrl()}/messages.mime`
 
 		Object.keys(tags).forEach((key) => form.append(key, tags[key]))
 		Object.keys(headers).forEach((key) => form.append(key, headers[key]))
 		Object.keys(recipients).forEach((key) => form.append(key, recipients[key]))
 		form.append('message', mail.message.createReadStream(), { filename: 'message.mime' })
 
+		this.logger.trace(
+			{
+				url,
+				tags,
+				headers,
+			},
+			'mailgun email'
+		)
+
 		got
-			.post(`${this.getBaseUrl()}/messages.mime`, {
+			.post(url, {
 				body: form.stream(),
 				username: 'api',
 				password: this.config.key,

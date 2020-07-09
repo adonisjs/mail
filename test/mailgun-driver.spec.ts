@@ -11,10 +11,12 @@ import got from 'got'
 import test from 'japa'
 import dotenv from 'dotenv'
 import { join } from 'path'
+import { Logger } from '@adonisjs/logger/build/standalone'
 
 import { Message } from '../src/Message'
 import { MailgunDriver } from '../src/Drivers/Mailgun'
 
+const logger = new Logger({ enabled: true, name: 'adonis', level: 'info' })
 const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))
 
 test.group('Mailgun Driver', (group) => {
@@ -23,12 +25,15 @@ test.group('Mailgun Driver', (group) => {
 	})
 
 	test('send email using mailgun driver', async (assert) => {
-		const mailgun = new MailgunDriver({
-			driver: 'mailgun',
-			key: process.env.MAILGUN_ACCESS_KEY!,
-			baseUrl: 'https://api.mailgun.net/v3',
-			domain: 'adonisjs.com',
-		})
+		const mailgun = new MailgunDriver(
+			{
+				driver: 'mailgun',
+				key: process.env.MAILGUN_ACCESS_KEY!,
+				baseUrl: 'https://api.mailgun.net/v3',
+				domain: 'adonisjs.com',
+			},
+			logger
+		)
 
 		const message = new Message()
 		message.from(process.env.FROM_EMAIL!)
@@ -44,13 +49,16 @@ test.group('Mailgun Driver', (group) => {
 	}).timeout(1000 * 10)
 
 	test('enable tracking', async (assert) => {
-		const mailgun = new MailgunDriver({
-			driver: 'mailgun',
-			key: process.env.MAILGUN_ACCESS_KEY!,
-			baseUrl: process.env.MAILGUN_BASE_URL!,
-			domain: 'adonisjs.com',
-			oTracking: true,
-		})
+		const mailgun = new MailgunDriver(
+			{
+				driver: 'mailgun',
+				key: process.env.MAILGUN_ACCESS_KEY!,
+				baseUrl: process.env.MAILGUN_BASE_URL!,
+				domain: 'adonisjs.com',
+				oTracking: true,
+			},
+			logger
+		)
 
 		const message = new Message()
 		message.from(process.env.FROM_EMAIL!)
@@ -66,12 +74,15 @@ test.group('Mailgun Driver', (group) => {
 	}).timeout(1000 * 10)
 
 	test('attach tags', async (assert) => {
-		const mailgun = new MailgunDriver({
-			driver: 'mailgun',
-			key: process.env.MAILGUN_ACCESS_KEY!,
-			baseUrl: 'https://api.mailgun.net/v3',
-			domain: 'adonisjs.com',
-		})
+		const mailgun = new MailgunDriver(
+			{
+				driver: 'mailgun',
+				key: process.env.MAILGUN_ACCESS_KEY!,
+				baseUrl: 'https://api.mailgun.net/v3',
+				domain: 'adonisjs.com',
+			},
+			logger
+		)
 
 		const message = new Message()
 		message.from(process.env.FROM_EMAIL!)
