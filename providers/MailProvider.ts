@@ -10,20 +10,26 @@
 import { IocContract } from '@adonisjs/fold'
 import { MailManager } from '../src/Mail/MailManager'
 
+/**
+ * Mail provider to register mail specific bindings
+ */
 export default class MailProvider {
 	constructor(protected container: IocContract) {}
 
 	public register() {
 		this.container.singleton('Adonis/Addons/Mail', () => {
 			const config = this.container.use('Adonis/Core/Config').get('mail', {})
-			const view = this.container.use('Adonis/Core/View')
-			return new MailManager(this.container, config, view)
+			return new MailManager(this.container, config)
 		})
 	}
 
 	public boot() {
 		if (!this.container.hasBinding('Adonis/Core/View')) {
 			throw new Error('"@adonisjs/mail" requires "@adonisjs/view" to render mail templates')
+		}
+
+		if (!this.container.hasBinding('Adonis/Core/Logger')) {
+			throw new Error('"@adonisjs/mail" requires "@adonisjs/core" to send emails')
 		}
 	}
 }

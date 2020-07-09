@@ -802,6 +802,110 @@ test.group('Mail Manager | trap', () => {
 		assert.isUndefined(customDriver.message)
 	})
 
+	test('get rendered view content inside the trap callback', async (assert) => {
+		assert.plan(2)
+
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		manager.trap((message) => {
+			assert.deepEqual(message, {
+				to: [{ address: 'foo@bar.com' }],
+				from: { address: 'baz@bar.com' },
+				subject: 'Hello world',
+				html: '<p> Hello virk </p>',
+			})
+		})
+
+		manager.view.registerTemplate('welcome', { template: '<p> Hello {{ name }} </p>' })
+
+		await manager.use().send((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+			message.htmlView('welcome', { name: 'virk' })
+		})
+
+		assert.isUndefined(customDriver.message)
+	})
+
+	test('trap sendLater calls without hitting the queue', async (assert) => {
+		assert.plan(2)
+
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				this.message = message
+				this.options = options
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		manager.trap((message) => {
+			assert.deepEqual(message, {
+				to: [{ address: 'foo@bar.com' }],
+				from: { address: 'baz@bar.com' },
+				subject: 'Hello world',
+			})
+		})
+
+		manager.monitorQueue(() => {
+			throw new Error('Never expected to reach here')
+		})
+
+		await manager.use().sendLater((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+
+		assert.isUndefined(customDriver.message)
+	})
+
 	test('remove trap after restore', async (assert) => {
 		assert.plan(2)
 
@@ -976,4 +1080,53 @@ test.group('Mail Manager | trap', () => {
 
 		assert.isUndefined(customDriver.message)
 	})
+})
+
+test.group('Mail Manager | preview', () => {
+	test('Mail.preview should return the preview url', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'smtp',
+				},
+			},
+		}
+
+		const manager = new MailManager(ioc, config as any)
+		const response = await manager.preview((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+
+		assert.exists(response.url)
+	}).timeout(1000 * 10)
+
+	test('multiple calls to preview should use one account', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'smtp',
+				},
+			},
+		}
+
+		const manager = new MailManager(ioc, config as any)
+		const response = await manager.preview((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+
+		const response1 = await manager.preview((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+
+		assert.deepEqual(response.account, response1.account)
+		assert.notEqual(response.url, response1.url)
+	}).timeout(1000 * 10)
 })

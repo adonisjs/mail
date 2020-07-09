@@ -12,8 +12,8 @@
 import {
 	MailersList,
 	MailerContract,
-	DriverOptionsType,
 	CompiledMailNode,
+	DriverOptionsType,
 	MailerResponseType,
 	MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
@@ -110,7 +110,7 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 			return
 		}
 
-		const message = new Message(false)
+		const message = new Message(true)
 		await callback(message)
 
 		const compiledMessage = message.toJSON()

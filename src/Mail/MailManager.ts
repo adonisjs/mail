@@ -110,7 +110,8 @@ export class MailManager
 	}
 
 	/**
-	 * Sends the email by pulling it from the queue
+	 * Sends the email by pulling it from the queue. This method is invoked
+	 * automatically by fastq.
 	 */
 	private async sendQueuedEmail(
 		mail: CompiledMailNode,
@@ -227,7 +228,7 @@ export class MailManager
 	}
 
 	/**
-	 * Restore previously fake driver
+	 * Restore previously created trap.
 	 */
 	public restore() {
 		this.fakeMailer = undefined
@@ -294,6 +295,7 @@ export class MailManager
 
 		return {
 			...response,
+			url: nodemailer.getTestMessageUrl(response),
 			account: {
 				user: account.user,
 				pass: account.pass,

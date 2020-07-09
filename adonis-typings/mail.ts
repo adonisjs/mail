@@ -68,7 +68,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of envolpe
 	 */
 	export type EnvolpeNode = { from?: string; to?: string; cc?: string; bcc?: string }
-	export type PostSendEnvolpeNode = { from: string; to: string[] }
+	export type PostSentEnvolpeNode = { from: string; to: string[] }
 
 	/**
 	 * Shape of the recipient
@@ -332,7 +332,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		response: string
 		accepted: string[]
 		rejected: string[]
-		envelope: PostSendEnvolpeNode
+		envelope: PostSentEnvolpeNode
 		messageId: string
 	}
 
@@ -370,7 +370,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		response: string
 		accepted: string[]
 		rejected: string[]
-		envelope: PostSendEnvolpeNode
+		envelope: PostSentEnvolpeNode
 		messageId: string
 	}
 
@@ -412,7 +412,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of mail response for the mailgun driver
 	 */
 	export type MailgunResponse = {
-		envelope: PostSendEnvolpeNode
+		envelope: PostSentEnvolpeNode
 		messageId: string
 	}
 
@@ -435,7 +435,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	export type FakeMailResponse = {
 		messageId: string
 		message: MessageNode
-		envelope: PostSendEnvolpeNode
+		envelope: PostSentEnvolpeNode
 	}
 
 	/**
@@ -451,7 +451,20 @@ declare module '@ioc:Adonis/Addons/Mail' {
   |--------------------------------------------------------------------------
   */
 
+	/**
+	 * Shape of the callback passed to the `send` method to compose the
+	 * message
+	 */
+	export type MessageComposeCallback = (message: MessageContract) => void | Promise<void>
+
+	/**
+	 * Callback to wrap emails
+	 */
 	export type TrapCallback = (message: MessageNode) => any
+
+	/**
+	 * Callback to monitor queues response
+	 */
 	export type QueueMonitorCallback = (
 		error?: any,
 		response?: MailerResponseType<keyof MailersList>
@@ -476,12 +489,6 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		mailer: keyof MailersList | 'fake' | 'ethereal'
 		response: MailerResponseType<keyof MailersList>
 	}
-
-	/**
-	 * Shape of the callback passed to the `send` method to compose the
-	 * message
-	 */
-	export type MessageComposeCallback = (message: MessageContract) => void | Promise<void>
 
 	/**
 	 * Mailer exposes the unified API to send emails by using a given
@@ -567,7 +574,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		 */
 		preview(
 			callback: MessageComposeCallback
-		): Promise<SmtpMailResponse & { account: { user: string; pass: string } }>
+		): Promise<SmtpMailResponse & { url: string; account: { user: string; pass: string } }>
 
 		/**
 		 * Close mailer
