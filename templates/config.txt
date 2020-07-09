@@ -6,9 +6,9 @@
  */
 
 import Env from '@ioc:Adonis/Core/Env'
-import { MailerConfigContract } from '@ioc:Adonis/Addons/Mail'
+import { MailConfig } from '@ioc:Adonis/Addons/Mail'
 
-const mailConfig: MailerConfigContract = {
+const mailConfig: MailConfig = {
   /*
   |--------------------------------------------------------------------------
   | Default mailer
@@ -45,7 +45,7 @@ const mailConfig: MailerConfigContract = {
     smtp: {
       driver: 'smtp',
       host: Env.get('SMTP_HOST') as string,
-      port: Env.get('SMTP_PORT') as number,
+      port: Env.get('SMTP_PORT') as string,
     },
 
     /*
@@ -82,8 +82,8 @@ const mailConfig: MailerConfigContract = {
     */
     mailgun: {
       driver: 'mailgun',
-			baseUrl: 'https://api.mailgun.net/v3',
-			key: Env.get('MAILGUN_API_KEY') as string,
+      baseUrl: 'https://api.mailgun.net/v3',
+      key: Env.get('MAILGUN_API_KEY') as string,
     },
   },
 }
