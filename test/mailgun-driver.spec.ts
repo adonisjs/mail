@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
 import got from 'got'
-import { join } from 'path'
+import test from 'japa'
 import dotenv from 'dotenv'
-import { Edge } from 'edge.js'
+import { join } from 'path'
+
 import { Message } from '../src/Message'
 import { MailgunDriver } from '../src/Drivers/Mailgun'
 
@@ -30,14 +30,14 @@ test.group('Mailgun Driver', (group) => {
 			domain: 'adonisjs.com',
 		})
 
-		const message = new Message(new Edge())
+		const message = new Message()
 		message.from(process.env.FROM_EMAIL!)
 		message.to('virk@adonisjs.com')
 		message.cc('info@adonisjs.com')
 		message.subject('Adonisv5')
 		message.html('<p> Hello Adonis </p>')
 
-		const response = await mailgun.send(message.toJSON())
+		const response = await mailgun.send(message.toJSON().message)
 		assert.exists(response.messageId)
 		assert.equal(response.envelope!.from, process.env.FROM_EMAIL)
 		assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
@@ -52,14 +52,14 @@ test.group('Mailgun Driver', (group) => {
 			oTracking: true,
 		})
 
-		const message = new Message(new Edge())
+		const message = new Message()
 		message.from(process.env.FROM_EMAIL!)
 		message.to('virk@adonisjs.com')
 		message.cc('info@adonisjs.com')
 		message.subject('Adonisv5')
 		message.html('<p> Hello Adonis </p>')
 
-		const response = await mailgun.send(message.toJSON())
+		const response = await mailgun.send(message.toJSON().message)
 		assert.exists(response.messageId)
 		assert.equal(response.envelope!.from, process.env.FROM_EMAIL)
 		assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
@@ -73,14 +73,14 @@ test.group('Mailgun Driver', (group) => {
 			domain: 'adonisjs.com',
 		})
 
-		const message = new Message(new Edge())
+		const message = new Message()
 		message.from(process.env.FROM_EMAIL!)
 		message.to('virk@adonisjs.com')
 		message.cc('info@adonisjs.com')
 		message.subject('Adonisv5')
 		message.html('<p> Hello Adonis </p>')
 
-		const response = await mailgun.send(message.toJSON(), {
+		const response = await mailgun.send(message.toJSON().message, {
 			oTags: ['newsletter', 'test'],
 		})
 		assert.exists(response.messageId)
@@ -89,8 +89,9 @@ test.group('Mailgun Driver', (group) => {
 
 		await sleep(4000)
 
+		const messageId = response.messageId.replace(/<|>/g, '')
 		const { body } = await got.get<{ items: any }>(
-			`${process.env.MAILGUN_BASE_URL}/adonisjs.com/events?message-id=${response.messageId.replace(/<|>/g, '')}`,
+			`${process.env.MAILGUN_BASE_URL}/adonisjs.com/events?message-id=${messageId}`,
 			{
 				responseType: 'json',
 				username: 'api',

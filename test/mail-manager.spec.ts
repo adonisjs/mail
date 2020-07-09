@@ -13,7 +13,12 @@ import { Ioc } from '@adonisjs/fold'
 import { Logger } from '@adonisjs/logger/build/standalone'
 import { Emitter } from '@adonisjs/events/build/standalone'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
-import { MailDriverContract, MailerContract, MessageNode, MailersList } from '@ioc:Adonis/Addons/Mail'
+import {
+	MailDriverContract,
+	MailerContract,
+	MessageNode,
+	MailersList,
+} from '@ioc:Adonis/Addons/Mail'
 
 import { Mailer } from '../src/Mail/Mailer'
 import { SesDriver } from '../src/Drivers/Ses'

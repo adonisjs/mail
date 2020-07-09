@@ -10,7 +10,12 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import nodemailer from 'nodemailer'
-import { MessageNode, FakeDriverContract, FakeMailResponse, TrapCallback } from '@ioc:Adonis/Addons/Mail'
+import {
+	MessageNode,
+	FakeDriverContract,
+	FakeMailResponse,
+	TrapCallback,
+} from '@ioc:Adonis/Addons/Mail'
 
 /**
  * Smtp driver to send email using smtp

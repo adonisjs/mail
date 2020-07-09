@@ -26,7 +26,7 @@ import {
 
 import { ViewContract } from '@ioc:Adonis/Core/View'
 import { EmitterContract } from '@ioc:Adonis/Core/Event'
-import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
+import { ProfilerContract } from '@ioc:Adonis/Core/Profiler'
 
 import { Mailer } from './Mailer'
 import { prettyPrint } from '../Helpers/prettyPrint'
@@ -179,11 +179,11 @@ export class MailManager
 	/**
 	 * Sends email using the default `mailer`
 	 */
-	public async send(callback: MessageComposeCallback, profiler?: ProfilerContract | ProfilerRowContract) {
+	public async send(callback: MessageComposeCallback) {
 		if (this.fakeMailer) {
-			return this.fakeMailer.send(callback, undefined, profiler)
+			return this.fakeMailer.send(callback)
 		}
-		return this.use().send(callback, undefined, profiler)
+		return this.use().send(callback)
 	}
 
 	/**
@@ -209,14 +209,16 @@ export class MailManager
 	 * Closes the mapping instance and removes it from the cache
 	 */
 	public async closeAll(): Promise<void> {
-		await Promise.all(Array.from(this['mappingsCache'].keys()).map((name: string) => this.close(name as any)))
+		await Promise.all(
+			Array.from(this['mappingsCache'].keys()).map((name: string) => this.close(name as any))
+		)
 	}
 
 	/**
 	 * Sends email to the ethereal email account. This is great
 	 * for previewing emails
 	 */
-	public async preview(callback: MessageComposeCallback, profiler?: ProfilerContract | ProfilerRowContract) {
+	public async preview(callback: MessageComposeCallback) {
 		const account = await this.getEtherealAccount()
 		const mappingName: any = 'ethereal'
 
@@ -231,7 +233,7 @@ export class MailManager
 		})
 
 		const mailer = this.wrapDriverResponse(mappingName, smtpDriver)
-		const response = await mailer.send(callback, undefined, profiler)
+		const response = await mailer.send(callback)
 
 		return {
 			...response,

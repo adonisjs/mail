@@ -17,7 +17,11 @@ export function prettyPrint(mail: MailEventData) {
 	 * Lazy loading pretty printed dependencies
 	 */
 	const color = require('kleur')
-	const views = [mail.message.contentViews.html, mail.message.contentViews.text, mail.message.contentViews.watch]
+	const views = [
+		mail.message.views.html?.template,
+		mail.message.views.text?.template,
+		mail.message.views.watch?.template,
+	]
 		.filter((view) => !!view)
 		.join(',')
 
@@ -26,12 +30,12 @@ export function prettyPrint(mail: MailEventData) {
 	/**
 	 * Concatenate the mail subject
 	 */
-	output += `${mail.message.subject || 'No Subject'} `
+	output += `${mail.message.message.subject || 'No Subject'} `
 
 	/**
 	 * Colorize query and bindings
 	 */
-	output += color.cyan().underline(`To: ${mail.message.to}`)
+	output += color.cyan().underline(`To: ${mail.message.message.to}`)
 	output += color.gray(` (${views})`)
 
 	/**

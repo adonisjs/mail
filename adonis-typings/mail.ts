@@ -12,7 +12,6 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	import { Readable } from 'stream'
 	import { IocContract } from '@adonisjs/fold'
 	import { ManagerContract } from '@poppinss/manager'
-	import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
 	/*
   |--------------------------------------------------------------------------
@@ -42,7 +41,9 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	/**
 	 * Infers the 2nd argument accepted by the driver send method
 	 */
-	export type DriverOptionsType<Driver> = Driver extends MailDriverContract ? Parameters<Driver['send']>[1] : never
+	export type DriverOptionsType<Driver> = Driver extends MailDriverContract
+		? Parameters<Driver['send']>[1]
+		: never
 
 	/*
   |--------------------------------------------------------------------------
@@ -68,7 +69,29 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export type EnvolpeNode = { from?: string; to?: string; cc?: string; bcc?: string }
 	export type PostSendEnvolpeNode = { from: string; to: string[] }
+
+	/**
+	 * Shape of the recipient
+	 */
 	export type RecipientNode = { address: string; name?: string }
+
+	/**
+	 * Shape of data view defined on the message
+	 */
+	export type MessageContentViewsNode = {
+		html?: {
+			template: string
+			data?: any
+		}
+		text?: {
+			template: string
+			data?: any
+		}
+		watch?: {
+			template: string
+			data?: any
+		}
+	}
 
 	/**
 	 * Message node is compatible with nodemailer `sendMail` method
@@ -86,7 +109,11 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		encoding?: string
 		priority?: 'low' | 'normal' | 'high'
 		envelope?: EnvolpeNode
-		attachments?: (AttachmentOptionsNode & { path?: string; cid?: string; content?: Buffer | Readable })[]
+		attachments?: (AttachmentOptionsNode & {
+			path?: string
+			cid?: string
+			content?: Buffer | Readable
+		})[]
 		headers?: (
 			| {
 					[key: string]: string | string[]
@@ -96,33 +123,14 @@ declare module '@ioc:Adonis/Addons/Mail' {
 			  }
 		)[]
 		html?: string
-		watch?: string
 		text?: string
+		watch?: string
 	}
 
 	/**
 	 * Shape of the message instance passed to `send` method callback
 	 */
 	export interface MessageContract {
-		/**
-		 * The content for the message.
-		 */
-		content: {
-			html?: string
-			text?: string
-			watch?: string
-		}
-
-		/**
-		 * Path to the views used to generate content for the
-		 * message
-		 */
-		contentViews: {
-			html?: string
-			text?: string
-			watch?: string
-		}
-
 		/**
 		 * Common fields
 		 */
@@ -164,7 +172,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		header(key: string, value: string | string[]): this
 		preparedHeader(key: string, value: string | string[]): this
 
-		toJSON(): MessageNode
+		toJSON(): {
+			message: MessageNode
+			views: MessageContentViewsNode
+		}
 	}
 
 	/*
@@ -446,7 +457,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Data emitted by the `adonis:mail:sent` event
 	 */
 	export type MailEventData = {
-		message: MessageContract
+		message: { message: MessageNode; views: MessageContentViewsNode }
 		mailer: keyof MailersList | 'fake' | 'ethereal'
 	}
 
@@ -476,8 +487,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		 */
 		send(
 			callback: MessageComposeCallback,
-			config?: DriverOptionsType<MailersList[Name]['implementation']>,
-			profiler?: ProfilerContract | ProfilerRowContract
+			config?: DriverOptionsType<MailersList[Name]['implementation']>
 		): Promise<MailerResponseType<Name>>
 
 		/**
@@ -514,17 +524,13 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		/**
 		 * Send email using the default mailer
 		 */
-		send(
-			callback: MessageComposeCallback,
-			profiler?: ProfilerContract | ProfilerRowContract
-		): ReturnType<MailDriverContract['send']>
+		send(callback: MessageComposeCallback): ReturnType<MailDriverContract['send']>
 
 		/**
 		 * Preview email using ethereal.email
 		 */
 		preview(
-			callback: MessageComposeCallback,
-			profiler?: ProfilerContract | ProfilerRowContract
+			callback: MessageComposeCallback
 		): Promise<SmtpMailResponse & { account: { user: string; pass: string } }>
 
 		/**

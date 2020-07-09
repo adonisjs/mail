@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import dotenv from 'dotenv'
-import { Edge } from 'edge.js'
 import test from 'japa'
 import { join } from 'path'
-import { SesDriver } from '../src/Drivers/Ses'
+import dotenv from 'dotenv'
+
 import { Message } from '../src/Message'
+import { SesDriver } from '../src/Drivers/Ses'
 
 test.group('Ses Driver', (group) => {
 	group.before(() => {
@@ -29,14 +29,14 @@ test.group('Ses Driver', (group) => {
 			sslEnabled: true,
 		})
 
-		const message = new Message(new Edge())
+		const message = new Message()
 		message.from(process.env.FROM_EMAIL!)
 		message.to('virk@adonisjs.com')
 		message.cc('info@adonisjs.com')
 		message.subject('Adonisv5')
 		message.html('<p> Hello Adonis </p>')
 
-		const response = await ses.send(message.toJSON())
+		const response = await ses.send(message.toJSON().message)
 
 		assert.exists(response.response)
 		assert.exists(response.messageId)

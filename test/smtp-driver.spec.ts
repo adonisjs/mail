@@ -10,10 +10,9 @@
 import test from 'japa'
 import dotenv from 'dotenv'
 import { join } from 'path'
-import { Edge } from 'edge.js'
 
-import { SmtpDriver } from '../src/Drivers/Smtp'
 import { Message } from '../src/Message'
+import { SmtpDriver } from '../src/Drivers/Smtp'
 
 test.group('Smtp Driver', (group) => {
 	group.before(() => {
@@ -31,14 +30,14 @@ test.group('Smtp Driver', (group) => {
 			},
 		})
 
-		const message = new Message(new Edge())
+		const message = new Message()
 		message.from(process.env.MAILTRAP_EMAIL!)
 		message.to('virk@adonisjs.com')
 		message.cc('info@adonisjs.com')
 		message.subject('Adonisv5')
 		message.html('<p> Hello Adonis </p>')
 
-		const response = await smtp.send(message.toJSON())
+		const response = await smtp.send(message.toJSON().message)
 
 		assert.exists(response.response)
 		assert.exists(response.messageId)
