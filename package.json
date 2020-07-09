@@ -36,8 +36,8 @@
 		"@adonisjs/fold": "^6.3.5",
 		"@adonisjs/mrm-preset": "^2.3.7",
 		"@adonisjs/view": "^2.0.7",
-		"@types/node": "^14.0.19",
-		"aws-sdk": "^2.711.0",
+		"@types/node": "^14.0.20",
+		"aws-sdk": "^2.712.0",
 		"commitizen": "^4.1.2",
 		"copyfiles": "^2.3.0",
 		"cz-conventional-changelog": "^3.2.0",
@@ -66,11 +66,10 @@
 		"@adonisjs/core": ">=5.0.0-preview-rc"
 	},
 	"dependencies": {
-		"@poppinss/hooks": "^1.0.6",
 		"@poppinss/manager": "^3.0.3",
 		"@poppinss/utils": "^2.2.8",
 		"form-data": "^3.0.0",
-		"got": "^11.3.0",
+		"got": "^11.5.0",
 		"kleur": "^4.0.2",
 		"multi-part": "^3.0.0",
 		"nodemailer": "^6.4.10"

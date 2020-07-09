@@ -26,11 +26,18 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? U : T
 
 	/**
-	 * Infers return type of a driver
+	 * Infers the response type of a driver
 	 */
-	export type DriverReturnType<Driver> = Driver extends MailDriverContract
+	export type DriverResponseType<Driver> = Driver extends MailDriverContract
 		? UnwrapPromise<ReturnType<Driver['send']>>
 		: never
+
+	/**
+	 * Infers the response type of a mailer
+	 */
+	export type MailerResponseType<Name extends keyof MailersList> = DriverResponseType<
+		MailersList[Name]['implementation']
+	>
 
 	/**
 	 * Infers the 2nd argument accepted by the driver send method
@@ -450,34 +457,32 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	export type MessageComposeCallback = (message: MessageContract) => void | Promise<void>
 
 	/**
-	 * Hook handler for `beforeSend`
-	 */
-	export type BeforeSendHandler<Name extends keyof MailersList> =
-		| string
-		| ((mailer: MailerContract<Name>, message: MessageContract) => void | Promise<void>)
-
-	/**
-	 * Hook handler for `afterSend`
-	 */
-	export type AfterSendHandler<Name extends keyof MailersList> =
-		| string
-		| ((
-				mailer: MailerContract<Name>,
-				response: DriverReturnType<MailersList[Name]['implementation']>
-		  ) => void | Promise<void>)
-
-	/**
 	 * Mailer exposes the unified API to send emails by using a given
 	 * driver
 	 */
 	export interface MailerContract<Name extends keyof MailersList> {
-		name: Name
-		profiler: ProfilerContract | ProfilerRowContract
-		driver: MailersList[Name]['implementation']
+		/**
+		 * Mailer name
+		 */
+		readonly name: Name
+
+		/**
+		 * The driver in use
+		 */
+		readonly driver: MailersList[Name]['implementation']
+
+		/**
+		 * Send email
+		 */
 		send(
 			callback: MessageComposeCallback,
-			config?: DriverOptionsType<MailersList[Name]['implementation']>
-		): Promise<DriverReturnType<MailersList[Name]['implementation']>>
+			config?: DriverOptionsType<MailersList[Name]['implementation']>,
+			profiler?: ProfilerContract | ProfilerRowContract
+		): Promise<MailerResponseType<Name>>
+
+		/**
+		 * Close mailer
+		 */
 		close(): Promise<void>
 	}
 
@@ -491,15 +496,45 @@ declare module '@ioc:Adonis/Addons/Mail' {
 			MailerContract<keyof MailersList>,
 			{ [P in keyof MailersList]: MailerContract<P> }
 		> {
+		/**
+		 * Trap emails
+		 */
 		trap(callback: TrapCallback): void
+
+		/**
+		 * Restore trap
+		 */
 		restore(): void
+
+		/**
+		 * Pretty print mailer event data
+		 */
 		prettyPrint: (mail: MailEventData) => void
 
-		before(event: 'send', handler: BeforeSendHandler<keyof MailersList>): this
-		after(event: 'send', handler: AfterSendHandler<keyof MailersList>): this
-		send(callback: MessageComposeCallback): ReturnType<MailDriverContract['send']>
+		/**
+		 * Send email using the default mailer
+		 */
+		send(
+			callback: MessageComposeCallback,
+			profiler?: ProfilerContract | ProfilerRowContract
+		): ReturnType<MailDriverContract['send']>
+
+		/**
+		 * Preview email using ethereal.email
+		 */
+		preview(
+			callback: MessageComposeCallback,
+			profiler?: ProfilerContract | ProfilerRowContract
+		): Promise<SmtpMailResponse & { account: { user: string; pass: string } }>
+
+		/**
+		 * Close mailer
+		 */
 		close(name?: string): Promise<void>
-		preview(callback: MessageComposeCallback): Promise<SmtpMailResponse & { account: { user: string; pass: string } }>
+
+		/**
+		 * Close all mailers
+		 */
 		closeAll(): Promise<void>
 	}
 

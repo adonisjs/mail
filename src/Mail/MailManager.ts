@@ -10,7 +10,6 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import nodemailer from 'nodemailer'
-import { Hooks } from '@poppinss/hooks'
 import { Manager } from '@poppinss/manager'
 import { IocContract } from '@adonisjs/fold'
 import { ManagerConfigValidator } from '@poppinss/utils'
@@ -20,8 +19,6 @@ import {
 	MailersList,
 	TrapCallback,
 	MailerContract,
-	AfterSendHandler,
-	BeforeSendHandler,
 	MailDriverContract,
 	MailManagerContract,
 	MessageComposeCallback,
@@ -29,9 +26,10 @@ import {
 
 import { ViewContract } from '@ioc:Adonis/Core/View'
 import { EmitterContract } from '@ioc:Adonis/Core/Event'
-import { ProfilerContract } from '@ioc:Adonis/Core/Profiler'
+import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
 import { Mailer } from './Mailer'
+import { prettyPrint } from '../Helpers/prettyPrint'
 
 /**
  * The manager exposes the API to pull instance of [[Mailer]] class for pre-defined mappings
@@ -59,9 +57,9 @@ export class MailManager
 	private fakeMailer?: MailerContract<any>
 
 	/**
-	 * Reference to the hooks
+	 * Method to pretty print sent emails
 	 */
-	public hooks = new Hooks(this.container.getResolver(undefined, 'mailerHooks', 'App/Mailers/Hooks'))
+	public prettyPrint = prettyPrint
 
 	/**
 	 * Dependencies from the "@adonisjs/core" and "@adonisjs/view". The manager classes
@@ -179,29 +177,13 @@ export class MailManager
 	}
 
 	/**
-	 * Register a before hook
-	 */
-	public before(event: 'send', handler: BeforeSendHandler<keyof MailersList>) {
-		this.hooks.add('before', event, handler)
-		return this
-	}
-
-	/**
-	 * Register an after hook
-	 */
-	public after(event: 'send', handler: AfterSendHandler<keyof MailersList>) {
-		this.hooks.add('after', event, handler)
-		return this
-	}
-
-	/**
 	 * Sends email using the default `mailer`
 	 */
-	public async send(callback: MessageComposeCallback) {
+	public async send(callback: MessageComposeCallback, profiler?: ProfilerContract | ProfilerRowContract) {
 		if (this.fakeMailer) {
-			return this.fakeMailer.send(callback)
+			return this.fakeMailer.send(callback, undefined, profiler)
 		}
-		return this.use().send(callback)
+		return this.use().send(callback, undefined, profiler)
 	}
 
 	/**
@@ -234,7 +216,7 @@ export class MailManager
 	 * Sends email to the ethereal email account. This is great
 	 * for previewing emails
 	 */
-	public async preview(callback: MessageComposeCallback) {
+	public async preview(callback: MessageComposeCallback, profiler?: ProfilerContract | ProfilerRowContract) {
 		const account = await this.getEtherealAccount()
 		const mappingName: any = 'ethereal'
 
@@ -249,7 +231,7 @@ export class MailManager
 		})
 
 		const mailer = this.wrapDriverResponse(mappingName, smtpDriver)
-		const response = await mailer.send(callback)
+		const response = await mailer.send(callback, undefined, profiler)
 
 		return {
 			...response,
