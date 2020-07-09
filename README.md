@@ -19,16 +19,20 @@
 
 <div align="center">
   <h3>
-    <a href="https://adonisjs.com">
+    <a href="https://preview.adonisjs.com">
       Website
     </a>
     <span> | </span>
-    <a href="https://adonisjs.com/guides/quick-start">
+    <a href="https://preview.adonisjs.com/guides/mail/introduction">
       Guides
     </a>
     <span> | </span>
     <a href="CONTRIBUTING.md">
       Contributing
+    </a>
+    <span> | </span>
+    <a href="https://htmlpreview.github.io/?https://github.com/adonisjs/mail/blob/develop/npm-audit.html">
+      Audit Report
     </a>
   </h3>
 </div>
