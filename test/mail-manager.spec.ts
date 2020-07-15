@@ -25,6 +25,7 @@ import { SesDriver } from '../src/Drivers/Ses'
 import { SmtpDriver } from '../src/Drivers/Smtp'
 import { MailManager } from '../src/Mail/MailManager'
 import { MailgunDriver } from '../src/Drivers/Mailgun'
+import { SparkPostDriver } from '../src/Drivers/SparkPost'
 
 const ioc = new Ioc()
 const logger = new Logger({ enabled: true, name: 'adonis', level: 'info' })
@@ -294,6 +295,42 @@ test.group('Mail Manager | Mailgun', () => {
 			mailers: {
 				marketing: {
 					driver: 'mailgun',
+				},
+			},
+		}
+
+		const manager = new MailManager(ioc, config as any)
+		const mailer = manager.use()
+		const mailer1 = manager.use()
+
+		assert.deepEqual(mailer, mailer1)
+	})
+})
+
+test.group('Mail Manager | SparkPost', () => {
+	test('get mailer instance for sparkpost driver', (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'sparkpost',
+				},
+			},
+		}
+
+		const manager = new MailManager(ioc, config as any)
+		const mailer = manager.use()
+
+		assert.instanceOf(mailer, Mailer)
+		assert.instanceOf(mailer.driver, SparkPostDriver)
+	})
+
+	test('cache mailer instances for sparkpost driver', (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'sparkpost',
 				},
 			},
 		}

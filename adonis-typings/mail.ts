@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import { bool } from 'aws-sdk/clients/signer'
+
 declare module '@ioc:Adonis/Addons/Mail' {
 	import { TlsOptions } from 'tls'
 	import { Readable } from 'stream'
@@ -235,6 +237,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
 			config: MailgunConfig
 			implementation: MailgunDriverContract
 		}
+		sparkpost: {
+			config: SparkPostConfig
+			implementation: SparkPostDriverContract
+		}
 	}
 
 	/**
@@ -388,7 +394,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
   */
 
 	/**
-	 * Ses driver config
+	 * Mailgun driver config
 	 */
 	export type MailgunRuntimeConfig = {
 		oTags?: string[]
@@ -421,6 +427,49 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export interface MailgunDriverContract extends MailDriverContract {
 		send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse>
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| SparkPost Driver
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Following options can be defined during the `Mail.send` call
+	 */
+	export type SparkPostRuntimeConfig = {
+		startTime?: Date
+		openTracking?: boolean
+		clickTracking?: boolean
+		transactional?: boolean
+		sandbox?: boolean
+		skipSuppression?: boolean
+		ipPool?: string
+	}
+
+	/**
+	 * Spark post config
+	 */
+	export type SparkPostConfig = SparkPostRuntimeConfig & {
+		driver: 'sparkpost'
+		baseUrl: string
+		key: string
+	}
+
+	/**
+	 * Shape of mail response for the sparkpost driver
+	 */
+	export type SparkPostResponse = {
+		envelope: PostSentEnvolpeNode
+		messageId: string
+	}
+
+	/**
+	 * Shape of the sparkpost driver
+	 */
+	export interface SparkPostDriverContract extends MailDriverContract {
+		send(message: MessageNode, config?: SparkPostRuntimeConfig): Promise<SparkPostResponse>
 	}
 
 	/*

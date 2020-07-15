@@ -14,26 +14,29 @@ import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 
 import {
 	MessageNode,
-	MailgunConfig,
-	MailgunResponse,
-	MailgunRuntimeConfig,
-	MailgunDriverContract,
+	SparkPostConfig,
+	SparkPostResponse,
+	SparkPostRuntimeConfig,
+	SparkPostDriverContract,
 } from '@ioc:Adonis/Addons/Mail'
 
-import { MailgunTransport } from '../Transports/Mailgun'
+import { SparkPostTransport } from '../Transports/SparkPost'
 
 /**
  * Ses driver to send email using ses
  */
-export class MailgunDriver implements MailgunDriverContract {
-	constructor(private config: MailgunConfig, private logger: LoggerContract) {}
+export class SparkPostDriver implements SparkPostDriverContract {
+	constructor(private config: SparkPostConfig, private logger: LoggerContract) {}
 
 	/**
 	 * Send message
 	 */
-	public async send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse> {
+	public async send(
+		message: MessageNode,
+		config?: SparkPostRuntimeConfig
+	): Promise<SparkPostResponse> {
 		const transporter = nodemailer.createTransport(
-			new MailgunTransport(
+			new SparkPostTransport(
 				{
 					...this.config,
 					...config,

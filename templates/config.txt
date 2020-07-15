@@ -85,6 +85,20 @@ const mailConfig: MailConfig = {
       baseUrl: 'https://api.mailgun.net/v3',
       key: Env.get('MAILGUN_API_KEY') as string,
     },
+
+    /*
+    |--------------------------------------------------------------------------
+    | SparkPost
+    |--------------------------------------------------------------------------
+    |
+		| Uses Sparkpost service for sending emails.
+    |
+    */
+    sparkpost: {
+      driver: 'sparkpost',
+      baseUrl: 'https://api.sparkpost.com/api/v1',
+      key: Env.get('SPARKPOST_API_KEY') as string,
+    },
   },
 }
 

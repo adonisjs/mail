@@ -14,6 +14,7 @@ import { MailgunConfig } from '@ioc:Adonis/Addons/Mail'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 
 import { ObjectBuilder } from '../utils'
+import { EmailTransportException } from '../Exceptions/EmailTransportException'
 
 /**
  * Mailgun transport for node mailer. Uses the `/message.mime` to send MIME
@@ -95,7 +96,7 @@ export class MailgunTransport {
 	/**
 	 * Send email
 	 */
-	public send(mail: any, callback: any) {
+	public async send(mail: any, callback: any) {
 		const tags = this.getOTags(this.config)
 		const headers = this.getHeaders(this.config)
 		const recipients = this.getRecipients(mail)
@@ -119,21 +120,20 @@ export class MailgunTransport {
 			'mailgun email'
 		)
 
-		got
-			.post<{ id: string }>(url, {
+		try {
+			const response = await got.post<{ id: string }>(url, {
 				body: form.stream(),
 				username: 'api',
 				password: this.config.key,
+				responseType: 'json',
 				headers: {
 					...form.getHeaders(),
 				},
 			})
-			.then((response) => {
-				const messageId = response.body?.id || mail.message.messageId()
-				callback(null, { messageId, envelope })
-			})
-			.catch((error) => {
-				callback(error.response || error)
-			})
+			const messageId = (response.body?.id || mail.message.messageId()).replace(/^<|>$/g, '')
+			callback(null, { messageId, envelope })
+		} catch (error) {
+			callback(EmailTransportException.apiFailure(error))
+		}
 	}
 }

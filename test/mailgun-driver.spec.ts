@@ -100,9 +100,8 @@ test.group('Mailgun Driver', (group) => {
 
 		await sleep(4000)
 
-		const messageId = response.messageId.replace(/<|>/g, '')
 		const { body } = await got.get<{ items: any }>(
-			`${process.env.MAILGUN_BASE_URL}/adonisjs.com/events?message-id=${messageId}`,
+			`${process.env.MAILGUN_BASE_URL}/adonisjs.com/events?message-id=${response.messageId}`,
 			{
 				responseType: 'json',
 				username: 'api',

@@ -69,6 +69,7 @@
 		"@poppinss/manager": "^3.0.3",
 		"@poppinss/utils": "^2.2.8",
 		"fastq": "^1.8.0",
+		"get-stream": "^5.1.0",
 		"got": "11.3.0",
 		"kleur": "^4.0.2",
 		"multi-part": "^3.0.0",
@@ -129,7 +130,8 @@
 			"SES_ACCESS_KEY": "",
 			"SES_ACCESS_SECRET": "",
 			"SES_REGION": "us-east-1",
-			"MAILGUN_API_KEY": ""
+			"MAILGUN_API_KEY": "",
+			"SPARKPOST_API_KEY": ""
 		}
 	}
 }

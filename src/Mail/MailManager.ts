@@ -204,6 +204,15 @@ export class MailManager
 	}
 
 	/**
+	 * Creates an instance of `sparkpost` driver by lazy loading. This method
+	 * is invoked internally when a new driver instance is required
+	 */
+	protected createSparkpost(_: string, config: any) {
+		const { SparkPostDriver } = require('../Drivers/SparkPost')
+		return new SparkPostDriver(config, this.logger)
+	}
+
+	/**
 	 * Method to schedule email for sending. This method is invoked by
 	 * the mailer when `sendLater` method is called
 	 */
