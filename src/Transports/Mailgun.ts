@@ -100,7 +100,6 @@ export class MailgunTransport {
 		const headers = this.getHeaders(this.config)
 		const recipients = this.getRecipients(mail)
 
-		const messageId = mail.message.messageId()
 		const envelope = mail.message.getEnvelope()
 
 		const form = new FormData()
@@ -121,16 +120,16 @@ export class MailgunTransport {
 		)
 
 		got
-			.post(url, {
+			.post<{ id: string }>(url, {
 				body: form.stream(),
 				username: 'api',
 				password: this.config.key,
 				headers: {
 					...form.getHeaders(),
-					'X-Mailgun-Message-ID': messageId,
 				},
 			})
-			.then(() => {
+			.then((response) => {
+				const messageId = response.body?.id || mail.message.messageId()
 				callback(null, { messageId, envelope })
 			})
 			.catch((error) => {
