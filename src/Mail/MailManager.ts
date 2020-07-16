@@ -77,7 +77,7 @@ export class MailManager
 		if (error) {
 			this.logger.error(
 				{
-					subject: error.subject,
+					subject: error.mail.message.subject,
 					message: error.message,
 				},
 				'Unable to deliver email'
@@ -119,9 +119,9 @@ export class MailManager
 	) {
 		try {
 			const response = await this.use(mail.mailer).sendCompiled(mail)
-			cb(null, response)
+			cb(null, { mail, response })
 		} catch (error) {
-			error.subject = mail.message.subject
+			error.mail = mail
 			cb(error)
 		}
 	}
@@ -217,7 +217,7 @@ export class MailManager
 	 * the mailer when `sendLater` method is called
 	 */
 	public scheduleEmail(mail: CompiledMailNode) {
-		this.emailsQueue.push(mail, this.queueMonitor)
+		this.emailsQueue.push(mail, this.queueMonitor as any)
 	}
 
 	/**

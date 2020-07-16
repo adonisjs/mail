@@ -1167,3 +1167,100 @@ test.group('Mail Manager | preview', () => {
 		assert.notEqual(response.url, response1.url)
 	}).timeout(1000 * 10)
 })
+
+test.group('Mail Manager | queue', () => {
+	test('pass mail and response to the queue monitor function', async (assert, done) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				return new Promise((resolve) => {
+					setTimeout(() => {
+						this.message = message
+						this.options = options
+						resolve({ messageId: '1' })
+					}, 1000)
+				})
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		manager.monitorQueue((error, response) => {
+			assert.isNull(error)
+			assert.equal(response?.mail.message.subject, 'Hello world')
+			assert.equal(response?.response.messageId, '1')
+			done()
+		})
+
+		await manager.use().sendLater((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+	})
+
+	test('attach mail to the queue error object', async (assert, done) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'custom',
+				},
+			},
+		}
+
+		class CustomDriver implements MailDriverContract {
+			public message: MessageNode
+			public options: any
+
+			public async send(message, options) {
+				return new Promise((_, reject) => {
+					setTimeout(() => {
+						this.message = message
+						this.options = options
+						reject(new Error('Something went wrong'))
+					}, 1000)
+				})
+			}
+
+			public async close() {}
+		}
+
+		const customDriver = new CustomDriver()
+		const manager = new MailManager(ioc, config as any)
+
+		manager.extend('custom', () => {
+			return customDriver
+		})
+
+		manager.monitorQueue((error) => {
+			assert.equal(error?.mail.message.subject, 'Hello world')
+			assert.equal(error?.message, 'Something went wrong')
+			done()
+		})
+
+		await manager.use().sendLater((message) => {
+			message.to('foo@bar.com')
+			message.from('baz@bar.com')
+			message.subject('Hello world')
+		})
+	})
+})

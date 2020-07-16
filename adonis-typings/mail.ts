@@ -513,8 +513,11 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Callback to monitor queues response
 	 */
 	export type QueueMonitorCallback = (
-		error?: any,
-		response?: MailerResponseType<keyof MailersList>
+		error?: Error & { mail: CompiledMailNode },
+		response?: {
+			mail: CompiledMailNode
+			response: MailerResponseType<keyof MailersList>
+		}
 	) => void
 
 	/**
