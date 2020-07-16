@@ -7,8 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import { bool } from 'aws-sdk/clients/signer'
-
 declare module '@ioc:Adonis/Addons/Mail' {
 	import { TlsOptions } from 'tls'
 	import { Readable } from 'stream'
