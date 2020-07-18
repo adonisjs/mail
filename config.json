@@ -2,6 +2,12 @@
 	"core": true,
 	"ts": true,
 	"license": "MIT",
-	"services": ["circleci"],
-	"minNodeVersion": "10.15.3"
+	"services": [
+		"circleci"
+	],
+	"minNodeVersion": "12.18.2",
+	"probotApps": [
+		"stale",
+		"lock"
+	]
 }

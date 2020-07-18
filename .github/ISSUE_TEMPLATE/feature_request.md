@@ -16,16 +16,13 @@ Please create an [RFC](https://github.com/adonisjs/rfcs) instead, if
 - Feature introduces a breaking change
 - Demands lots of time and changes in the current code base.
 
-_Delete the above section and the instructions in the sections below before submitting_
+*Delete the above section and the instructions in the sections below before submitting*
 
 ## Why this feature is required (specific use-cases will be appreciated)?
-
 <!-- YOUR ANSWER -->
 
 ## Have you tried any other work arounds?
-
 <!-- YOUR ANSWER -->
 
 ## Are you willing to work on it with little guidance?
-
 <!-- YOUR ANSWER -->

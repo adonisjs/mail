@@ -14,7 +14,6 @@
 		"mrm": "mrm --preset=@adonisjs/mrm-preset",
 		"pretest": "npm run lint",
 		"test": "node japaFile.js",
-		"lint": "eslint . --ext=.ts",
 		"clean": "del build",
 		"copyfiles": "copyfiles \"templates/**/*.txt\" build",
 		"compile": "npm run lint && npm run clean && tsc",
@@ -22,7 +21,10 @@
 		"commit": "git-cz",
 		"release": "np",
 		"version": "npm run build",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"prepublishOnly": "npm run build",
+		"sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json adonisjs/mail",
+		"lint": "eslint . --ext=.ts"
 	},
 	"keywords": [
 		"adonis",
@@ -34,27 +36,29 @@
 	"devDependencies": {
 		"@adonisjs/core": "^5.0.0-preview-rc-1.7",
 		"@adonisjs/fold": "^6.3.5",
-		"@adonisjs/mrm-preset": "^2.3.7",
+		"@adonisjs/mrm-preset": "^2.4.0",
 		"@adonisjs/view": "^2.0.7",
-		"@types/node": "^14.0.20",
-		"aws-sdk": "^2.712.0",
+		"@types/node": "^14.0.23",
+		"aws-sdk": "^2.715.0",
 		"commitizen": "^4.1.2",
 		"copyfiles": "^2.3.0",
 		"cz-conventional-changelog": "^3.2.0",
 		"del-cli": "^3.0.1",
+		"doctoc": "^1.4.0",
 		"dotenv": "^8.2.0",
 		"eslint": "^7.4.0",
 		"eslint-config-prettier": "^6.11.0",
 		"eslint-plugin-adonis": "^1.0.14",
 		"eslint-plugin-prettier": "^3.1.4",
+		"github-label-sync": "^2.0.0",
 		"husky": "^4.2.5",
 		"japa": "^3.1.1",
 		"mrm": "^2.3.3",
-		"np": "^6.3.1",
+		"np": "^6.3.2",
 		"npm-audit-html": "^1.4.1",
 		"prettier": "^2.0.5",
 		"ts-node": "^8.10.2",
-		"typescript": "^3.9.6"
+		"typescript": "^3.9.7"
 	},
 	"config": {
 		"commitizen": {
@@ -70,7 +74,7 @@
 		"@poppinss/utils": "^2.2.8",
 		"fastq": "^1.8.0",
 		"get-stream": "^5.1.0",
-		"got": "11.3.0",
+		"got": "^11.5.1",
 		"kleur": "^4.0.2",
 		"multi-part": "^3.0.0",
 		"nodemailer": "^6.4.10"
