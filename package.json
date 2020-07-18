@@ -44,7 +44,6 @@
 		"copyfiles": "^2.3.0",
 		"cz-conventional-changelog": "^3.2.0",
 		"del-cli": "^3.0.1",
-		"doctoc": "^1.4.0",
 		"dotenv": "^8.2.0",
 		"eslint": "^7.4.0",
 		"eslint-config-prettier": "^6.11.0",
