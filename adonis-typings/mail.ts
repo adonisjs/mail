@@ -618,6 +618,14 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		 * Send email using the default mailer
 		 */
 		send(callback: MessageComposeCallback): ReturnType<MailDriverContract['send']>
+																											 
+		/**
+		 * Send email by pushing it to the in-memory queue
+		 */
+		sendLater(
+			callback: MessageComposeCallback,
+			config?: DriverOptionsType<MailersList[Name]['implementation']>
+		): Promise<void>
 
 		/**
 		 * Preview email using ethereal.email
