@@ -35,7 +35,7 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@adonisjs/application": "^2.0.0",
-		"@adonisjs/core": "^5.0.0-preview-rc-1.7",
+		"@adonisjs/core": "^5.0.0-preview-rc-1.11",
 		"@adonisjs/fold": "^6.3.5",
 		"@adonisjs/mrm-preset": "^2.4.0",
 		"@adonisjs/view": "^2.0.7",
