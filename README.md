@@ -13,7 +13,7 @@
 
 <div align="center">
 
-[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]
+[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]  [![audit-report-image]][audit-report-url]
 
 </div>
 
@@ -30,15 +30,11 @@
     <a href="CONTRIBUTING.md">
       Contributing
     </a>
-    <span> | </span>
-    <a href="https://htmlpreview.github.io/?https://github.com/adonisjs/mail/blob/develop/npm-audit.html">
-      Audit Report
-    </a>
   </h3>
 </div>
 
 <div align="center">
-  <sub>Built with ❤︎ by <a href="https://github.com/thetutlage">Harminder Virk</a>
+  <sub>Built with ❤︎ by <a href="https://twitter.com/AmanVirk1">Harminder Virk</a>
 </div>
 
 [circleci-image]: https://img.shields.io/circleci/build/github/adonisjs/mail/master.svg?style=for-the-badge&logo=circleci
@@ -52,3 +48,6 @@
 
 [license-image]: https://img.shields.io/npm/l/@adonisjs/mail?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
+
+[audit-report-image]: https://img.shields.io/badge/-Audit%20Report-blueviolet?style=for-the-badge
+[audit-report-url]: https://htmlpreview.github.io/?https://github.com/adonisjs/mail/blob/develop/npm-audit.html "audit-report"
