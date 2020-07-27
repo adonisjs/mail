@@ -8,7 +8,6 @@
  */
 
 import { IocContract } from '@adonisjs/fold'
-import { MailManager } from '../src/Mail/MailManager'
 
 /**
  * Mail provider to register mail specific bindings
@@ -19,6 +18,8 @@ export default class MailProvider {
 	public register() {
 		this.container.singleton('Adonis/Addons/Mail', () => {
 			const config = this.container.use('Adonis/Core/Config').get('mail', {})
+
+			const { MailManager } = require('../src/Mail/MailManager')
 			return new MailManager(this.container, config)
 		})
 	}
@@ -31,5 +32,9 @@ export default class MailProvider {
 		if (!this.container.hasBinding('Adonis/Core/Logger')) {
 			throw new Error('"@adonisjs/mail" requires "@adonisjs/core" to send emails')
 		}
+	}
+
+	public async shutdown() {
+		await this.container.use('Adonis/Addons/Mail').closeAll()
 	}
 }
