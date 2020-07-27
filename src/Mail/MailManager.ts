@@ -254,6 +254,16 @@ export class MailManager
 	}
 
 	/**
+	 * Send email by pushing it to the in-memory queue
+	 */
+	public async sendLater(callback: MessageComposeCallback) {
+		if (this.fakeMailer) {
+			return this.fakeMailer.sendLater(callback)
+		}
+		return this.use().sendLater(callback)
+	}
+
+	/**
 	 * Use a named or the default mailer
 	 */
 	public use(name?: keyof MailersList) {
