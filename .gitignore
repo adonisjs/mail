@@ -12,3 +12,4 @@ dist
 yarn.lock
 shrinkwrap.yaml
 .env
+!test/fixtures/.env
