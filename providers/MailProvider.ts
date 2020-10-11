@@ -28,6 +28,15 @@ export default class MailProvider {
 	}
 
 	/**
+	 * Setup REPL bindings
+	 */
+	public boot() {
+		if (this.app.environment === 'repl') {
+			require('../src/Bindings/Repl').default(this.app)
+		}
+	}
+
+	/**
 	 * On start check if we have everything in place to send emails
 	 */
 	public start() {
