@@ -10,8 +10,8 @@
 declare module '@ioc:Adonis/Addons/Mail' {
 	import { TlsOptions } from 'tls'
 	import { Readable } from 'stream'
-	import { IocContract } from '@adonisjs/fold'
 	import { ManagerContract } from '@poppinss/manager'
+	import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 	/*
   |--------------------------------------------------------------------------
@@ -589,7 +589,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 */
 	export interface MailManagerContract
 		extends ManagerContract<
-			IocContract,
+			ApplicationContract,
 			MailDriverContract,
 			MailerContract<keyof MailersList>,
 			{ [P in keyof MailersList]: MailerContract<P> }

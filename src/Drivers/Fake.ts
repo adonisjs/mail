@@ -12,9 +12,9 @@
 import nodemailer from 'nodemailer'
 import {
 	MessageNode,
+	TrapCallback,
 	FakeDriverContract,
 	FakeMailResponse,
-	TrapCallback,
 } from '@ioc:Adonis/Addons/Mail'
 
 /**

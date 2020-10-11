@@ -1,5 +1,5 @@
 process.env.TS_NODE_FILES = true
-require('ts-node/register')
+require('@adonisjs/require-ts/build/register')
 
 const { configure } = require('japa')
 configure({

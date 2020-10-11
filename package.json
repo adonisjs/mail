@@ -34,31 +34,30 @@
 	"author": "virk",
 	"license": "MIT",
 	"devDependencies": {
-		"@adonisjs/application": "^2.0.0",
-		"@adonisjs/core": "^5.0.0-preview-rc-1.11",
-		"@adonisjs/fold": "^6.3.5",
+		"@adonisjs/core": "^5.0.2-beta-rc-5",
 		"@adonisjs/mrm-preset": "^2.4.0",
-		"@adonisjs/view": "^2.0.7",
-		"@types/node": "^14.0.26",
-		"aws-sdk": "^2.721.0",
-		"commitizen": "^4.1.2",
-		"copyfiles": "^2.3.0",
-		"cz-conventional-changelog": "^3.2.0",
+		"@adonisjs/require-ts": "^1.0.4",
+		"@adonisjs/view": "^3.0.2",
+		"@poppinss/dev-utils": "^1.0.11",
+		"@types/node": "^14.11.8",
+		"aws-sdk": "^2.771.0",
+		"commitizen": "^4.2.1",
+		"copyfiles": "^2.4.0",
+		"cz-conventional-changelog": "^3.3.0",
 		"del-cli": "^3.0.1",
 		"dotenv": "^8.2.0",
-		"eslint": "^7.5.0",
-		"eslint-config-prettier": "^6.11.0",
-		"eslint-plugin-adonis": "^1.0.14",
+		"eslint": "^7.11.0",
+		"eslint-config-prettier": "^6.12.0",
+		"eslint-plugin-adonis": "^1.0.15",
 		"eslint-plugin-prettier": "^3.1.4",
 		"github-label-sync": "^2.0.0",
-		"husky": "^4.2.5",
+		"husky": "^4.3.0",
 		"japa": "^3.1.1",
-		"mrm": "^2.3.3",
-		"np": "^6.3.2",
-		"npm-audit-html": "^1.4.1",
-		"prettier": "^2.0.5",
-		"ts-node": "^8.10.2",
-		"typescript": "^3.9.7"
+		"mrm": "^2.5.2",
+		"np": "^6.5.0",
+		"npm-audit-html": "^1.4.3",
+		"prettier": "^2.1.2",
+		"typescript": "^4.0.3"
 	},
 	"config": {
 		"commitizen": {
@@ -66,18 +65,18 @@
 		}
 	},
 	"peerDependencies": {
-		"@adonisjs/view": "^2.x.x",
-		"@adonisjs/core": ">=5.0.0-preview-rc"
+		"@adonisjs/view": "^3.0.0",
+		"@adonisjs/core": "^5.0.2-beta-rc"
 	},
 	"dependencies": {
-		"@poppinss/manager": "^3.0.4",
-		"@poppinss/utils": "^2.5.2",
+		"@poppinss/colors": "^2.0.3",
+		"@poppinss/manager": "^3.0.7",
+		"@poppinss/utils": "^2.5.7",
 		"fastq": "^1.8.0",
-		"get-stream": "^5.1.0",
-		"got": "^11.5.1",
-		"kleur": "^4.0.2",
+		"get-stream": "^6.0.0",
+		"got": "^11.7.0",
 		"multi-part": "^3.0.0",
-		"nodemailer": "^6.4.10"
+		"nodemailer": "^6.4.13"
 	},
 	"repository": {
 		"type": "git",
@@ -106,7 +105,7 @@
 		"anyBranch": false
 	},
 	"publishConfig": {
-		"tag": "alpha",
+		"tag": "next",
 		"access": "public"
 	},
 	"adonisjs": {
@@ -131,8 +130,8 @@
 		"env": {
 			"SMTP_HOST": "",
 			"SMTP_PORT": "587",
-			"SMTP_USERNAME":"",
-			"SMTP_PASSWORD":"",
+			"SMTP_USERNAME": "",
+			"SMTP_PASSWORD": "",
 			"SES_ACCESS_KEY": "",
 			"SES_ACCESS_SECRET": "",
 			"SES_REGION": "us-east-1",

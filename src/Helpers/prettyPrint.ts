@@ -49,38 +49,39 @@ export function prettyPrint(mail: MailEventData) {
 	/**
 	 * Lazy loading pretty printed dependencies
 	 */
-	const color = require('kleur')
+	const { Colors } = require('@poppinss/colors')
+	const colors = new Colors()
 
 	/**
 	 * Begin
 	 */
-	let output: string = color.dim(`┌ "${mail.mailer}" `)
+	let output: string = colors.dim(`┌ "${mail.mailer}" `)
 
 	/**
 	 * Concatenate the mail subject
 	 */
-	output += color.underline(`Subject: ${mail.message.subject || 'No Subject'} `)
+	output += colors.underline(`Subject: ${mail.message.subject || 'No Subject'} `)
 
 	/**
 	 * Show views (if used)
 	 */
 	if (mail.views.length) {
-		output += color.dim(` (${mail.views.join(',')})`)
+		output += colors.dim(` (${mail.views.join(',')})`)
 	}
 
 	/**
 	 * Show from address
 	 */
-	output += `\n${color.dim('│')}  ${color.dim('from:')} ${mail.message.from?.address}`
+	output += `\n${colors.dim('│')}  ${colors.dim('from:')} ${mail.message.from?.address}`
 
 	/**
 	 * Show accepted or to recipients
 	 */
 	const acceptedRecipients = getAcceptedRecipients(mail.response)
 	if (acceptedRecipients) {
-		output += `\n${color.dim('│')}  ${color.dim('accepted:')} ${acceptedRecipients}`
+		output += `\n${colors.dim('│')}  ${colors.dim('accepted:')} ${acceptedRecipients}`
 	} else {
-		output += `\n${color.dim('│')}  ${color.dim('to:')} ${getMessageRecipients(mail.message)}`
+		output += `\n${colors.dim('│')}  ${colors.dim('to:')} ${getMessageRecipients(mail.message)}`
 	}
 
 	/**
@@ -88,27 +89,27 @@ export function prettyPrint(mail: MailEventData) {
 	 */
 	const rejectedRecipients = getRejectedRecipients(mail.response)
 	if (rejectedRecipients) {
-		output += `\n${color.dim('│')}  ${color.red().dim('rejected:')} ${rejectedRecipients}`
+		output += `\n${colors.dim('│')}  ${colors.red().dim('rejected:')} ${rejectedRecipients}`
 	}
 
 	/**
 	 * Show total attachments
 	 */
 	const attachments = (mail.message.attachments || []).length
-	output += `\n${color.dim('│')}  ${color.dim('attachments:')} ${attachments} attachment(s)`
+	output += `\n${colors.dim('│')}  ${colors.dim('attachments:')} ${attachments} attachment(s)`
 
 	/**
 	 * Preview url (if any)
 	 */
 	const previewUrl = nodemailer.getTestMessageUrl(mail.response)
 	if (previewUrl) {
-		output += `\n${color.dim('│')}  ${color.dim('url:')} ${previewUrl}`
+		output += `\n${colors.dim('│')}  ${colors.dim('url:')} ${previewUrl}`
 	}
 
 	/**
 	 * End
 	 */
-	output += `\n${color.dim('└')}  sent`
+	output += `\n${colors.dim('└')}  sent`
 
 	/**
 	 * Print it to the console

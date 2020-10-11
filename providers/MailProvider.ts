@@ -7,34 +7,39 @@
  * file that was distributed with this source code.
  */
 
-import { IocContract } from '@adonisjs/fold'
+import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 /**
  * Mail provider to register mail specific bindings
  */
 export default class MailProvider {
-	constructor(protected container: IocContract) {}
+	constructor(protected app: ApplicationContract) {}
+	public static needsApplication = true
 
+	/**
+	 * Register bindings with the container
+	 */
 	public register() {
-		this.container.singleton('Adonis/Addons/Mail', () => {
-			const config = this.container.use('Adonis/Core/Config').get('mail', {})
-
+		this.app.container.singleton('Adonis/Addons/Mail', () => {
+			const config = this.app.container.use('Adonis/Core/Config').get('mail', {})
 			const { MailManager } = require('../src/Mail/MailManager')
-			return new MailManager(this.container, config)
+			return new MailManager(this.app, config)
 		})
 	}
 
-	public boot() {
-		if (!this.container.hasBinding('Adonis/Core/View')) {
+	/**
+	 * On start check if we have everything in place to send emails
+	 */
+	public start() {
+		if (!this.app.container.hasBinding('Adonis/Core/View')) {
 			throw new Error('"@adonisjs/mail" requires "@adonisjs/view" to render mail templates')
-		}
-
-		if (!this.container.hasBinding('Adonis/Core/Logger')) {
-			throw new Error('"@adonisjs/mail" requires "@adonisjs/core" to send emails')
 		}
 	}
 
+	/**
+	 * Close all drivers when shutting down the app
+	 */
 	public async shutdown() {
-		await this.container.use('Adonis/Addons/Mail').closeAll()
+		await this.app.container.use('Adonis/Addons/Mail').closeAll()
 	}
 }

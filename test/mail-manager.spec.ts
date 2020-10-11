@@ -8,16 +8,12 @@
  */
 
 import test from 'japa'
-import { Edge } from 'edge.js'
-import { Ioc } from '@adonisjs/fold'
-import { Logger } from '@adonisjs/logger/build/standalone'
-import { Emitter } from '@adonisjs/events/build/standalone'
-import { Profiler } from '@adonisjs/profiler/build/standalone'
+
 import {
-	MailDriverContract,
-	MailerContract,
-	MessageNode,
 	MailersList,
+	MessageNode,
+	MailerContract,
+	MailDriverContract,
 } from '@ioc:Adonis/Addons/Mail'
 
 import { Mailer } from '../src/Mail/Mailer'
@@ -27,16 +23,14 @@ import { MailManager } from '../src/Mail/MailManager'
 import { MailgunDriver } from '../src/Drivers/Mailgun'
 import { SparkPostDriver } from '../src/Drivers/SparkPost'
 
-const ioc = new Ioc()
-const logger = new Logger({ enabled: true, name: 'adonis', level: 'info' })
+import { fs, setup } from '../test-helpers'
 
-ioc.bind('Adonis/Core/View', () => new Edge())
-ioc.singleton('Adonis/Core/Logger', () => logger)
-ioc.singleton('Adonis/Core/Event', () => new Emitter(ioc))
-ioc.singleton('Adonis/Core/Profiler', () => new Profiler(__dirname, logger, {}))
+test.group('Mail Manager', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
 
-test.group('Mail Manager', () => {
-	test('return driver for a given mapping', (assert) => {
+	test('return driver for a given mapping', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -46,11 +40,12 @@ test.group('Mail Manager', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		assert.equal(manager['getMappingDriver']('marketing'), 'smtp')
 	})
 
-	test('return default mapping name', (assert) => {
+	test('return default mapping name', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -60,11 +55,12 @@ test.group('Mail Manager', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		assert.equal(manager['getDefaultMappingName'](), 'marketing')
 	})
 
-	test('return config for a mapping name', (assert) => {
+	test('return config for a mapping name', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -74,12 +70,17 @@ test.group('Mail Manager', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		assert.deepEqual(manager['getMappingConfig']('marketing'), { driver: 'smtp' })
 	})
 })
 
-test.group('Mail Manager | Cache', () => {
+test.group('Mail Manager | Cache', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('close driver and release it from cache', async (assert) => {
 		const config = {
 			mailer: 'marketing',
@@ -104,7 +105,9 @@ test.group('Mail Manager | Cache', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -143,7 +146,9 @@ test.group('Mail Manager | Cache', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -182,7 +187,8 @@ test.group('Mail Manager | Cache', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -199,8 +205,12 @@ test.group('Mail Manager | Cache', () => {
 	})
 })
 
-test.group('Mail Manager | SMTP', () => {
-	test('get mailer instance for smtp driver', (assert) => {
+test.group('Mail Manager | SMTP', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
+	test('get mailer instance for smtp driver', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -210,14 +220,15 @@ test.group('Mail Manager | SMTP', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const mailer = manager.use() as MailerContract<keyof MailersList>
 
 		assert.instanceOf(mailer, Mailer)
 		assert.instanceOf(mailer.driver, SmtpDriver)
 	})
 
-	test('cache mailer instances for smtp', (assert) => {
+	test('cache mailer instances for smtp', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -227,7 +238,8 @@ test.group('Mail Manager | SMTP', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const mailer = manager.use()
 		const mailer1 = manager.use()
 
@@ -235,8 +247,12 @@ test.group('Mail Manager | SMTP', () => {
 	})
 })
 
-test.group('Mail Manager | SES', () => {
-	test('get mailer instance for ses driver', (assert) => {
+test.group('Mail Manager | SES', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
+	test('get mailer instance for ses driver', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -246,14 +262,15 @@ test.group('Mail Manager | SES', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const mailer = manager.use()
 
 		assert.instanceOf(mailer, Mailer)
 		assert.instanceOf(mailer.driver, SesDriver)
 	})
 
-	test('cache mailer instances for ses driver', (assert) => {
+	test('cache mailer instances for ses driver', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -263,7 +280,8 @@ test.group('Mail Manager | SES', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const mailer = manager.use()
 		const mailer1 = manager.use()
 
@@ -271,8 +289,12 @@ test.group('Mail Manager | SES', () => {
 	})
 })
 
-test.group('Mail Manager | Mailgun', () => {
-	test('get mailer instance for mailgun driver', (assert) => {
+test.group('Mail Manager | Mailgun', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
+	test('get mailer instance for mailgun driver', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -282,14 +304,15 @@ test.group('Mail Manager | Mailgun', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const mailer = manager.use()
 
 		assert.instanceOf(mailer, Mailer)
 		assert.instanceOf(mailer.driver, MailgunDriver)
 	})
 
-	test('cache mailer instances for mailgun driver', (assert) => {
+	test('cache mailer instances for mailgun driver', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -299,7 +322,8 @@ test.group('Mail Manager | Mailgun', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const mailer = manager.use()
 		const mailer1 = manager.use()
 
@@ -307,8 +331,12 @@ test.group('Mail Manager | Mailgun', () => {
 	})
 })
 
-test.group('Mail Manager | SparkPost', () => {
-	test('get mailer instance for sparkpost driver', (assert) => {
+test.group('Mail Manager | SparkPost', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
+	test('get mailer instance for sparkpost driver', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -318,14 +346,15 @@ test.group('Mail Manager | SparkPost', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const mailer = manager.use()
 
 		assert.instanceOf(mailer, Mailer)
 		assert.instanceOf(mailer.driver, SparkPostDriver)
 	})
 
-	test('cache mailer instances for sparkpost driver', (assert) => {
+	test('cache mailer instances for sparkpost driver', async (assert) => {
 		const config = {
 			mailer: 'marketing',
 			mailers: {
@@ -335,7 +364,8 @@ test.group('Mail Manager | SparkPost', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const mailer = manager.use()
 		const mailer1 = manager.use()
 
@@ -343,7 +373,11 @@ test.group('Mail Manager | SparkPost', () => {
 	})
 })
 
-test.group('Mail Manager | Views', () => {
+test.group('Mail Manager | Views', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('make html view before sending the email', async (assert) => {
 		const config = {
 			mailer: 'marketing',
@@ -367,7 +401,9 @@ test.group('Mail Manager | Views', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.view.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
 
@@ -413,7 +449,9 @@ test.group('Mail Manager | Views', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		manager.view.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
 
 		manager.extend('custom', () => {
@@ -459,7 +497,9 @@ test.group('Mail Manager | Views', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
+
 		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
 		manager.extend('custom', () => {
@@ -504,7 +544,9 @@ test.group('Mail Manager | Views', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
+
 		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
 		manager.extend('custom', () => {
@@ -550,7 +592,9 @@ test.group('Mail Manager | Views', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
+
 		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
 		manager.extend('custom', () => {
@@ -595,7 +639,9 @@ test.group('Mail Manager | Views', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
+
 		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
 		manager.extend('custom', () => {
@@ -619,7 +665,11 @@ test.group('Mail Manager | Views', () => {
 	})
 })
 
-test.group('Mail Manager | send', () => {
+test.group('Mail Manager | send', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('send email', async (assert) => {
 		const config = {
 			mailer: 'marketing',
@@ -643,7 +693,8 @@ test.group('Mail Manager | send', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -685,7 +736,8 @@ test.group('Mail Manager | send', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -696,7 +748,11 @@ test.group('Mail Manager | send', () => {
 	})
 })
 
-test.group('Mail Manager | sendLater', () => {
+test.group('Mail Manager | sendLater', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('schedule emails for sending', async (assert, done) => {
 		const config = {
 			mailer: 'marketing',
@@ -725,7 +781,8 @@ test.group('Mail Manager | sendLater', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -775,7 +832,8 @@ test.group('Mail Manager | sendLater', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -790,7 +848,11 @@ test.group('Mail Manager | sendLater', () => {
 	})
 })
 
-test.group('Mail Manager | trap', () => {
+test.group('Mail Manager | trap', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('trap mail send call', async (assert) => {
 		assert.plan(2)
 
@@ -816,7 +878,8 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -864,7 +927,8 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -916,7 +980,8 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -968,7 +1033,8 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -1028,7 +1094,8 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -1095,7 +1162,8 @@ test.group('Mail Manager | trap', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -1119,7 +1187,11 @@ test.group('Mail Manager | trap', () => {
 	})
 })
 
-test.group('Mail Manager | preview', () => {
+test.group('Mail Manager | preview', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('Mail.preview should return the preview url', async (assert) => {
 		const config = {
 			mailer: 'marketing',
@@ -1130,7 +1202,8 @@ test.group('Mail Manager | preview', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const response = await manager.preview((message) => {
 			message.to('foo@bar.com')
 			message.from('baz@bar.com')
@@ -1150,7 +1223,8 @@ test.group('Mail Manager | preview', () => {
 			},
 		}
 
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 		const response = await manager.preview((message) => {
 			message.to('foo@bar.com')
 			message.from('baz@bar.com')
@@ -1168,7 +1242,11 @@ test.group('Mail Manager | preview', () => {
 	}).timeout(1000 * 10)
 })
 
-test.group('Mail Manager | queue', () => {
+test.group('Mail Manager | queue', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('pass mail and response to the queue monitor function', async (assert, done) => {
 		const config = {
 			mailer: 'marketing',
@@ -1197,7 +1275,8 @@ test.group('Mail Manager | queue', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -1245,7 +1324,8 @@ test.group('Mail Manager | queue', () => {
 		}
 
 		const customDriver = new CustomDriver()
-		const manager = new MailManager(ioc, config as any)
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
 
 		manager.extend('custom', () => {
 			return customDriver

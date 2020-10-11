@@ -11,12 +11,11 @@ import got from 'got'
 import test from 'japa'
 import dotenv from 'dotenv'
 import { join } from 'path'
-import { Logger } from '@adonisjs/logger/build/standalone'
 
 import { Message } from '../src/Message'
+import { setup, fs } from '../test-helpers'
 import { MailgunDriver } from '../src/Drivers/Mailgun'
 
-const logger = new Logger({ enabled: true, name: 'adonis', level: 'info' })
 const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))
 
 test.group('Mailgun Driver', (group) => {
@@ -24,7 +23,13 @@ test.group('Mailgun Driver', (group) => {
 		dotenv.config({ path: join(__dirname, '..', '.env') })
 	})
 
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('send email using mailgun driver', async (assert) => {
+		const app = await setup()
+
 		const mailgun = new MailgunDriver(
 			{
 				driver: 'mailgun',
@@ -32,7 +37,7 @@ test.group('Mailgun Driver', (group) => {
 				baseUrl: 'https://api.mailgun.net/v3',
 				domain: 'adonisjs.com',
 			},
-			logger
+			app.logger
 		)
 
 		const message = new Message()
@@ -49,6 +54,8 @@ test.group('Mailgun Driver', (group) => {
 	}).timeout(1000 * 10)
 
 	test('enable tracking', async (assert) => {
+		const app = await setup()
+
 		const mailgun = new MailgunDriver(
 			{
 				driver: 'mailgun',
@@ -57,7 +64,7 @@ test.group('Mailgun Driver', (group) => {
 				domain: 'adonisjs.com',
 				oTracking: true,
 			},
-			logger
+			app.logger
 		)
 
 		const message = new Message()
@@ -74,6 +81,8 @@ test.group('Mailgun Driver', (group) => {
 	}).timeout(1000 * 10)
 
 	test('attach tags', async (assert) => {
+		const app = await setup()
+
 		const mailgun = new MailgunDriver(
 			{
 				driver: 'mailgun',
@@ -81,7 +90,7 @@ test.group('Mailgun Driver', (group) => {
 				baseUrl: 'https://api.mailgun.net/v3',
 				domain: 'adonisjs.com',
 			},
-			logger
+			app.logger
 		)
 
 		const message = new Message()

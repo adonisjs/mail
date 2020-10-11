@@ -12,8 +12,8 @@
 import fastq from 'fastq'
 import nodemailer from 'nodemailer'
 import { Manager } from '@poppinss/manager'
-import { IocContract } from '@adonisjs/fold'
 import { ManagerConfigValidator } from '@poppinss/utils'
+import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 import {
 	MailConfig,
@@ -27,11 +27,6 @@ import {
 	MessageComposeCallback,
 } from '@ioc:Adonis/Addons/Mail'
 
-import { ViewContract } from '@ioc:Adonis/Core/View'
-import { LoggerContract } from '@ioc:Adonis/Core/Logger'
-import { EmitterContract } from '@ioc:Adonis/Core/Event'
-import { ProfilerContract } from '@ioc:Adonis/Core/Profiler'
-
 import { Mailer } from './Mailer'
 import { prettyPrint } from '../Helpers/prettyPrint'
 
@@ -42,7 +37,7 @@ import { prettyPrint } from '../Helpers/prettyPrint'
  */
 export class MailManager
 	extends Manager<
-		IocContract,
+		ApplicationContract,
 		MailDriverContract,
 		MailerContract<keyof MailersList>,
 		{
@@ -90,13 +85,13 @@ export class MailManager
 	 * in AdonisJS codebase heavily relies on the container and hence we can pull
 	 * container bindings directly here.
 	 */
-	public view: ViewContract = this.container.use('Adonis/Core/View')
-	public emitter: EmitterContract = this.container.use('Adonis/Core/Event')
-	public profiler: ProfilerContract = this.container.use('Adonis/Core/Profiler')
-	public logger: LoggerContract = this.container.use('Adonis/Core/Logger')
+	public view = this.app.container.use('Adonis/Core/View')
+	public emitter = this.app.container.use('Adonis/Core/Event')
+	public logger = this.app.container.use('Adonis/Core/Logger')
+	public profiler = this.app.container.use('Adonis/Core/Profiler')
 
-	constructor(container: IocContract, private config: MailConfig) {
-		super(container)
+	constructor(private app: ApplicationContract, private config: MailConfig) {
+		super(app)
 		this.validateConfig()
 	}
 

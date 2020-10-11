@@ -8,26 +8,25 @@
  */
 
 import test from 'japa'
-import { join } from 'path'
-import { Registrar, Ioc } from '@adonisjs/fold'
-import { Application } from '@adonisjs/application/build/standalone'
-
 import { MailManager } from '../src/Mail/MailManager'
+import { fs, setup } from '../test-helpers'
 
-test.group('Mail Provider', () => {
+test.group('Mail Provider', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('register mail provider', async (assert) => {
-		const ioc = new Ioc()
-
-		ioc.bind('Adonis/Core/Application', () => {
-			return new Application(join(__dirname, 'fixtures'), ioc, {}, {})
+		const app = await setup({
+			mailer: 'smtp',
+			mailers: {
+				smtp: {},
+			},
 		})
-
-		const registrar = new Registrar(ioc, join(__dirname, '..'))
-		await registrar
-			.useProviders(['@adonisjs/view', '@adonisjs/core', './providers/MailProvider'])
-			.registerAndBoot()
-
-		assert.instanceOf(ioc.use('Adonis/Addons/Mail'), MailManager)
-		assert.deepEqual(ioc.use('Adonis/Addons/Mail'), ioc.use('Adonis/Addons/Mail'))
+		assert.instanceOf(app.container.use('Adonis/Addons/Mail'), MailManager)
+		assert.deepEqual(
+			app.container.use('Adonis/Addons/Mail'),
+			app.container.use('Adonis/Addons/Mail')
+		)
 	})
 })

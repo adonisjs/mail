@@ -10,26 +10,30 @@
 import test from 'japa'
 import dotenv from 'dotenv'
 import { join } from 'path'
-import { Logger } from '@adonisjs/logger/build/standalone'
 
 import { Message } from '../src/Message'
+import { setup, fs } from '../test-helpers'
 import { SparkPostDriver } from '../src/Drivers/SparkPost'
-
-const logger = new Logger({ enabled: true, name: 'adonis', level: 'info' })
 
 test.group('SparkPost Driver', (group) => {
 	group.before(() => {
 		dotenv.config({ path: join(__dirname, '..', '.env') })
 	})
 
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('send email using sparkpost driver', async (assert) => {
+		const app = await setup()
+
 		const sparkpost = new SparkPostDriver(
 			{
 				driver: 'sparkpost',
 				key: process.env.SPARKPOST_API_KEY!,
 				baseUrl: 'https://api.sparkpost.com/api/v1',
 			},
-			logger
+			app.logger
 		)
 
 		const message = new Message()
