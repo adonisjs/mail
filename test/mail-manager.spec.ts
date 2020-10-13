@@ -74,6 +74,28 @@ test.group('Mail Manager', (group) => {
 		const manager = new MailManager(app, config as any)
 		assert.deepEqual(manager['getMappingConfig']('marketing'), { driver: 'smtp' })
 	})
+
+	test('extend mailer by adding a custom driver', async (assert) => {
+		const config = {
+			mailer: 'marketing',
+			mailers: {
+				marketing: {
+					driver: 'mydriver',
+				},
+			},
+		}
+
+		const app = await setup()
+		const manager = new MailManager(app, config as any)
+		const mydriver = {
+			async send() {},
+			close() {},
+		}
+
+		manager.extend('mydriver', () => mydriver)
+		assert.deepEqual(manager['getMappingConfig']('marketing'), { driver: 'mydriver' })
+		assert.deepEqual(manager['makeExtendedDriver']('marketing', 'mydriver').driver, mydriver)
+	})
 })
 
 test.group('Mail Manager | Cache', (group) => {
