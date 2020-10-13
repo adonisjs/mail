@@ -7,15 +7,14 @@
  * file that was distributed with this source code.
  */
 
+import { ReplContract } from '@ioc:Adonis/Addons/Repl'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 /**
  * Defune repl bindings. The method must be invoked when application environment
  * is set to repl.
  */
-export default function defineReplBindings(application: ApplicationContract) {
-	const Repl = application.container.use('Adonis/Addons/Repl')
-
+export function defineReplBindings(application: ApplicationContract, Repl: ReplContract) {
 	Repl.addMethod(
 		'loadMailer',
 		(repl) => {

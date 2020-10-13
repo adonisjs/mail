@@ -13,7 +13,7 @@ import { Application } from '@adonisjs/core/build/standalone'
 
 export const fs = new Filesystem(join(__dirname, 'app'))
 
-export async function setup(mailConfig?: any) {
+export async function setup(environment: 'web' | 'repl' = 'web', mailConfig?: any) {
 	await fs.add('.env', '')
 	await fs.add(
 		'config/app.ts',
@@ -34,8 +34,13 @@ export async function setup(mailConfig?: any) {
 	`
 	)
 
-	const app = new Application(fs.basePath, 'web', {
-		providers: ['@adonisjs/core', '@adonisjs/view', '../../providers/MailProvider'],
+	const app = new Application(fs.basePath, environment, {
+		providers: [
+			'@adonisjs/core',
+			'@adonisjs/repl',
+			'@adonisjs/view',
+			'../../providers/MailProvider',
+		],
 	})
 
 	app.setup()

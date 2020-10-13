@@ -31,9 +31,14 @@ export default class MailProvider {
 	 * Setup REPL bindings
 	 */
 	public boot() {
-		if (this.app.environment === 'repl') {
-			require('../src/Bindings/Repl').default(this.app)
+		if (this.app.environment !== 'repl') {
+			return
 		}
+
+		this.app.container.with(['Adonis/Addons/Repl'], (Repl) => {
+			const { defineReplBindings } = require('../src/Bindings/Repl')
+			defineReplBindings(this.app, Repl)
+		})
 	}
 
 	/**

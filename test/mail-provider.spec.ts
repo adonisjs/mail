@@ -17,16 +17,31 @@ test.group('Mail Provider', (group) => {
 	})
 
 	test('register mail provider', async (assert) => {
-		const app = await setup({
+		const app = await setup('web', {
 			mailer: 'smtp',
 			mailers: {
 				smtp: {},
 			},
 		})
 		assert.instanceOf(app.container.use('Adonis/Addons/Mail'), MailManager)
+		assert.deepEqual(app.container.use('Adonis/Addons/Mail')['application'], app)
 		assert.deepEqual(
 			app.container.use('Adonis/Addons/Mail'),
 			app.container.use('Adonis/Addons/Mail')
+		)
+	})
+
+	test('register repl binding', async (assert) => {
+		const app = await setup('repl', {
+			mailer: 'smtp',
+			mailers: {
+				smtp: {},
+			},
+		})
+
+		assert.property(app.container.use('Adonis/Addons/Repl')['customMethods'], 'loadMailer')
+		assert.isFunction(
+			app.container.use('Adonis/Addons/Repl')['customMethods']['loadMailer']['handler']
 		)
 	})
 })
