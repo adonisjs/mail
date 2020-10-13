@@ -24,7 +24,7 @@ test.group('Mail Provider', (group) => {
 			},
 		})
 		assert.instanceOf(app.container.use('Adonis/Addons/Mail'), MailManager)
-		assert.deepEqual(app.container.use('Adonis/Addons/Mail')['application'], app)
+		assert.deepEqual(app.container.use('Adonis/Addons/Mail')['app'], app)
 		assert.deepEqual(
 			app.container.use('Adonis/Addons/Mail'),
 			app.container.use('Adonis/Addons/Mail')
