@@ -11,6 +11,6 @@ import { MailEventData } from '@ioc:Adonis/Addons/Mail'
 
 declare module '@ioc:Adonis/Core/Event' {
 	export interface EventsList {
-		'adonis:mail:sent': MailEventData
+		'mail:sent': MailEventData
 	}
 }
