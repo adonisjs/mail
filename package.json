@@ -7,7 +7,10 @@
 		"build/adonis-typings",
 		"build/providers",
 		"build/src",
-		"build/templates"
+		"build/templates",
+		"build/instructions.js",
+		"build/instructions.d.ts",
+		"build/instructions.md"
 	],
 	"typings": "./build/adonis-typings/index.d.ts",
 	"scripts": {
@@ -15,7 +18,7 @@
 		"pretest": "npm run lint",
 		"test": "node japaFile.js",
 		"clean": "del build",
-		"copyfiles": "copyfiles \"templates/**/*.txt\" build",
+		"copyfiles": "copyfiles \"templates/**/*.txt\" \"instructions.md\" build",
 		"compile": "npm run lint && npm run clean && tsc",
 		"build": "npm run compile && npm run copyfiles",
 		"commit": "git-cz",
@@ -38,6 +41,7 @@
 		"@adonisjs/mrm-preset": "^2.4.0",
 		"@adonisjs/repl": "^1.1.3",
 		"@adonisjs/require-ts": "^1.0.4",
+		"@adonisjs/sink": "^4.1.3",
 		"@adonisjs/view": "^3.0.6",
 		"@poppinss/dev-utils": "^1.0.11",
 		"@types/node": "^14.14.0",
@@ -110,34 +114,11 @@
 		"access": "public"
 	},
 	"adonisjs": {
-		"templates": {
-			"config": [
-				{
-					"src": "config.txt",
-					"dest": "mail"
-				}
-			],
-			"contracts": [
-				{
-					"src": "contract.txt",
-					"dest": "mail"
-				}
-			]
-		},
+		"instructions": "./build/instructions.js",
+		"instructionsMd": "./build/instructions.md",
 		"types": "@adonisjs/mail",
 		"providers": [
 			"@adonisjs/mail"
-		],
-		"env": {
-			"SMTP_HOST": "",
-			"SMTP_PORT": "587",
-			"SMTP_USERNAME": "",
-			"SMTP_PASSWORD": "",
-			"SES_ACCESS_KEY": "",
-			"SES_ACCESS_SECRET": "",
-			"SES_REGION": "us-east-1",
-			"MAILGUN_API_KEY": "",
-			"SPARKPOST_API_KEY": ""
-		}
+		]
 	}
 }

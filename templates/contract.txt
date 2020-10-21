@@ -9,9 +9,17 @@ declare module '@ioc:Adonis/Addons/Mail' {
   import { MailDrivers } from '@ioc:Adonis/Addons/Mail'
 
   interface MailersList {
+		{{#smtp}}
     smtp: MailDrivers['smtp'],
+		{{/smtp}}
+		{{#ses}}
     ses: MailDrivers['ses'],
+		{{/ses}}
+		{{#mailgun}}
     mailgun: MailDrivers['mailgun'],
+		{{/mailgun}}
+		{{#sparkpost}}
     sparkpost: MailDrivers['sparkpost'],
+		{{/sparkpost}}
   }
 }
