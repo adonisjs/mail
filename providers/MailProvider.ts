@@ -42,15 +42,6 @@ export default class MailProvider {
 	}
 
 	/**
-	 * On start check if we have everything in place to send emails
-	 */
-	public start() {
-		if (!this.app.container.hasBinding('Adonis/Core/View')) {
-			throw new Error('"@adonisjs/mail" requires "@adonisjs/view" to render mail templates')
-		}
-	}
-
-	/**
 	 * Close all drivers when shutting down the app
 	 */
 	public async shutdown() {

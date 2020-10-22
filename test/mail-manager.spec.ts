@@ -427,7 +427,7 @@ test.group('Mail Manager | Views', (group) => {
 		const app = await setup()
 		const manager = new MailManager(app, config as any)
 
-		manager.view.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
+		manager.view!.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -474,7 +474,7 @@ test.group('Mail Manager | Views', (group) => {
 
 		const app = await setup()
 		const manager = new MailManager(app, config as any)
-		manager.view.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
+		manager.view!.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -522,7 +522,7 @@ test.group('Mail Manager | Views', (group) => {
 		const app = await setup()
 		const manager = new MailManager(app, config as any)
 
-		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
+		manager.view!.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -569,7 +569,7 @@ test.group('Mail Manager | Views', (group) => {
 		const app = await setup()
 		const manager = new MailManager(app, config as any)
 
-		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
+		manager.view!.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -617,7 +617,7 @@ test.group('Mail Manager | Views', (group) => {
 		const app = await setup()
 		const manager = new MailManager(app, config as any)
 
-		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
+		manager.view!.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -664,7 +664,7 @@ test.group('Mail Manager | Views', (group) => {
 		const app = await setup()
 		const manager = new MailManager(app, config as any)
 
-		manager.view.registerTemplate('welcome', { template: 'Hello {{ username }}' })
+		manager.view!.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
 		manager.extend('custom', () => {
 			return customDriver
@@ -965,7 +965,7 @@ test.group('Mail Manager | trap', (group) => {
 			})
 		})
 
-		manager.view.registerTemplate('welcome', { template: '<p> Hello {{ name }} </p>' })
+		manager.view!.registerTemplate('welcome', { template: '<p> Hello {{ name }} </p>' })
 
 		await manager.use().send((message) => {
 			message.to('foo@bar.com')

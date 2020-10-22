@@ -85,7 +85,10 @@ export class MailManager
 	 * in AdonisJS codebase heavily relies on the container and hence we can pull
 	 * container bindings directly here.
 	 */
-	public view = this.app.container.use('Adonis/Core/View')
+	public view = this.app.container.hasBinding('Adonis/Core/View')
+		? this.app.container.use('Adonis/Core/View')
+		: undefined
+
 	public emitter = this.app.container.use('Adonis/Core/Event')
 	public logger = this.app.container.use('Adonis/Core/Logger')
 	public profiler = this.app.container.use('Adonis/Core/Profiler')

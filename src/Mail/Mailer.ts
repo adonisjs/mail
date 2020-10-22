@@ -33,21 +33,30 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 		public driver: MailersList[Name]['implementation']
 	) {}
 
+	private ensureView(methodName: string) {
+		if (!this.manager.view) {
+			throw new Error(`"@adonisjs/view" must be installed before using "message.${methodName}"`)
+		}
+	}
+
 	/**
 	 * Set the email contents by rendering the views. Views are only
 	 * rendered when inline values are not defined.
 	 */
 	private setEmailContent({ message, views }: CompiledMailNode) {
 		if (!message.html && views.html) {
-			message.html = this.manager.view.render(views.html.template, views.html.data)
+			this.ensureView('htmlView')
+			message.html = this.manager.view!.render(views.html.template, views.html.data)
 		}
 
 		if (!message.text && views.text) {
-			message.text = this.manager.view.render(views.text.template, views.text.data)
+			this.ensureView('textView')
+			message.text = this.manager.view!.render(views.text.template, views.text.data)
 		}
 
 		if (!message.watch && views.watch) {
-			message.watch = this.manager.view.render(views.watch.template, views.watch.data)
+			this.ensureView('watchView')
+			message.watch = this.manager.view!.render(views.watch.template, views.watch.data)
 		}
 	}
 
