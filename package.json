@@ -85,12 +85,12 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/adonisjs/adonis-mail.git"
+		"url": "git+https://github.com/adonisjs/mail.git"
 	},
 	"bugs": {
-		"url": "https://github.com/adonisjs/adonis-mail/issues"
+		"url": "https://github.com/adonisjs/mail/issues"
 	},
-	"homepage": "https://github.com/adonisjs/adonis-mail#readme",
+	"homepage": "https://github.com/adonisjs/mail#readme",
 	"nyc": {
 		"exclude": [
 			"test"
