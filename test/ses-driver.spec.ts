@@ -43,4 +43,34 @@ test.group('Ses Driver', (group) => {
 		assert.equal(response.envelope!.from, process.env.FROM_EMAIL)
 		assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
 	}).timeout(1000 * 10)
+
+	test('define email tags', async (assert) => {
+		assert.plan(1)
+
+		const ses = new SesDriver({
+			driver: 'ses',
+			apiVersion: '2010-12-01',
+			key: process.env.AWS_ACCESS_KEY_ID!,
+			secret: process.env.AWS_SECRET_ACCESS_KEY!,
+			region: process.env.AWS_REGION!,
+			sslEnabled: true,
+		})
+
+		const message = new Message()
+		message.from(process.env.FROM_EMAIL!)
+		message.to('virk@adonisjs.com')
+		message.cc('info@adonisjs.com')
+		message.subject('Adonisv5')
+		message.html('<p> Hello Adonis </p>')
+
+		ses['transporter'].sendMail = function (mailMessage: any) {
+			assert.deepEqual(mailMessage.ses, {
+				Tags: [{ Name: 'foo', Value: 'bar' }],
+			})
+		}
+
+		await ses.send(message.toJSON().message, {
+			Tags: [{ Name: 'foo', Value: 'bar' }],
+		})
+	})
 })

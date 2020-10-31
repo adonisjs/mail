@@ -37,12 +37,15 @@ export class SesDriver implements SesDriverContract {
 	/**
 	 * Send message
 	 */
-	public async send(message: MessageNode): Promise<SesMailResponse> {
+	public async send(
+		message: MessageNode,
+		options?: Omit<aws.SES.Types.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>
+	): Promise<SesMailResponse> {
 		if (!this.transporter) {
 			throw new Error('Driver transport has been closed and cannot be used for sending emails')
 		}
 
-		return this.transporter.sendMail(message)
+		return this.transporter.sendMail(Object.assign({}, message, { ses: options }))
 	}
 
 	/**

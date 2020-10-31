@@ -9,6 +9,7 @@
 
 declare module '@ioc:Adonis/Addons/Mail' {
 	import { TlsOptions } from 'tls'
+	import { SES } from 'aws-sdk'
 	import { Readable } from 'stream'
 	import { ManagerContract } from '@poppinss/manager'
 	import { ApplicationContract } from '@ioc:Adonis/Core/Application'
@@ -344,7 +345,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of the smtp driver
 	 */
 	export interface SmtpDriverContract extends MailDriverContract {
-		send(message: MessageNode): Promise<SmtpMailResponse>
+		send(message: MessageNode, config?: any): Promise<SmtpMailResponse>
 	}
 
 	/*
@@ -382,7 +383,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
 	 * Shape of the ses driver
 	 */
 	export interface SesDriverContract extends MailDriverContract {
-		send(message: MessageNode): Promise<SesMailResponse>
+		send(
+			message: MessageNode,
+			options?: Omit<SES.Types.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>
+		): Promise<SesMailResponse>
 	}
 
 	/*
