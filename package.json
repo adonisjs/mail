@@ -1,6 +1,6 @@
 {
 	"name": "@adonisjs/mail",
-	"version": "5.1.0",
+	"version": "5.2.0",
 	"description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
 	"main": "build/providers/MailProvider.js",
 	"files": [
@@ -121,6 +121,8 @@
 		"providers": [
 			"@adonisjs/mail"
 		],
-		"commands": ["@adonisjs/mail/build/commands"]
+		"commands": [
+			"@adonisjs/mail/build/commands"
+		]
 	}
 }
