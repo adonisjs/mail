@@ -102,6 +102,7 @@ export class MailManager
 
 	constructor(private app: ApplicationContract, private config: MailConfig) {
 		super(app)
+		this.BaseMailer.mail = this
 		this.validateConfig()
 	}
 
