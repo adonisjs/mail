@@ -28,6 +28,7 @@ import {
 } from '@ioc:Adonis/Addons/Mail'
 
 import { Mailer } from './Mailer'
+import { BaseMailer } from '../BaseMailer'
 import { prettyPrint } from '../Helpers/prettyPrint'
 
 /**
@@ -79,6 +80,12 @@ export class MailManager
 			)
 		}
 	}
+
+	/**
+	 * Reference to the base mailer since Ioc container doesn't allow
+	 * multiple exports
+	 */
+	public BaseMailer = BaseMailer
 
 	/**
 	 * Dependencies from the "@adonisjs/core" and "@adonisjs/view". The manager classes
