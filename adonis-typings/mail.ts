@@ -567,6 +567,11 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		sendCompiled(mail: CompiledMailNode): Promise<MailerResponseType<Name>>
 
 		/**
+		 * Define options to the passed to the mail driver send method
+		 */
+		options(options: DriverOptionsType<MailersList[Name]['implementation']>): this
+
+		/**
 		 * Send email
 		 */
 		send(
@@ -646,6 +651,47 @@ declare module '@ioc:Adonis/Addons/Mail' {
 		closeAll(): Promise<void>
 	}
 
+	/**
+	 * Base mailer
+	 */
+	export interface BaseMailerContract<Mailer extends keyof MailersList> {
+		/**
+		 * Reference to the mailer. Assigned inside the service provider
+		 */
+		mail: MailManagerContract
+
+		/**
+		 * An optional method to use a custom mailer and its options
+		 */
+		mailer?: MailerContract<Mailer>
+
+		/**
+		 * Prepare mail message
+		 */
+		prepare(message: MessageContract): Promise<any> | any
+
+		/**
+		 * Preview email
+		 */
+		preview(): Promise<SmtpMailResponse & { url: string; account: { user: string; pass: string } }>
+
+		/**
+		 * Send email
+		 */
+		send(): Promise<MailerResponseType<Mailer>>
+
+		/**
+		 * Send email by pushing it to the in-memory queue
+		 */
+		sendLater(): Promise<void>
+	}
+
+	export const BaseMailer: {
+		mail: MailManagerContract
+		new <Mailer extends keyof MailersList = keyof MailersList>(
+			...args: any[]
+		): BaseMailerContract<Mailer>
+	}
 	const Mail: MailManagerContract
 	export default Mail
 }

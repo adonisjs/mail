@@ -26,6 +26,8 @@ import { MailManager } from './MailManager'
  * driver
  */
 export class Mailer<Name extends keyof MailersList> implements MailerContract<Name> {
+	private driverOptions?: DriverOptionsType<MailersList[Name]['implementation']>
+
 	constructor(
 		public name: Name,
 		private manager: MailManager,
@@ -33,6 +35,9 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 		public driver: MailersList[Name]['implementation']
 	) {}
 
+	/**
+	 * Ensure "@adonisjs/view" is installed
+	 */
 	private ensureView(methodName: string) {
 		if (!this.manager.view) {
 			throw new Error(`"@adonisjs/view" must be installed before using "message.${methodName}"`)
@@ -58,6 +63,14 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 			this.ensureView('watchView')
 			message.watch = this.manager.view!.render(views.watch.template, views.watch.data)
 		}
+	}
+
+	/**
+	 * Define options to be forwarded to the underlying driver
+	 */
+	public options(options: DriverOptionsType<MailersList[Name]['implementation']>): this {
+		this.driverOptions = options
+		return this
 	}
 
 	/**
@@ -103,7 +116,7 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 			message: compiledMessage.message,
 			views: compiledMessage.views,
 			mailer: this.name,
-			config: config,
+			config: config || this.driverOptions,
 		})
 	}
 
@@ -127,7 +140,7 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
 			message: compiledMessage.message,
 			views: compiledMessage.views,
 			mailer: this.name,
-			config: config,
+			config: config || this.driverOptions,
 		})
 	}
 

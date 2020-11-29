@@ -789,7 +789,7 @@ test.group('Mail Manager | sendLater', (group) => {
 			public message: MessageNode
 			public options: any
 
-			public async send(message, options) {
+			public async send(message, options): Promise<void> {
 				return new Promise((resolve) => {
 					setTimeout(() => {
 						this.message = message
@@ -840,7 +840,7 @@ test.group('Mail Manager | sendLater', (group) => {
 			public message: MessageNode
 			public options: any
 
-			public async send(message, options) {
+			public async send(message, options): Promise<void> {
 				return new Promise((resolve) => {
 					setTimeout(() => {
 						this.message = message
