@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 /*
  * adonis-mail
@@ -7,9 +7,9 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
-*/
+ */
 
-const Message = require('./Message')
+const Message = require("./Message");
 
 /**
  * This class sends the email using the defined driverInstance.
@@ -20,9 +20,9 @@ const Message = require('./Message')
  * @constructor
  */
 class MailSender {
-  constructor (driverInstance, viewInstance) {
-    this._driverInstance = driverInstance
-    this._viewInstance = viewInstance
+  constructor(driverInstance, viewInstance) {
+    this._driverInstance = driverInstance;
+    this._viewInstance = viewInstance;
   }
 
   /**
@@ -38,38 +38,38 @@ class MailSender {
    *
    * @private
    */
-  _parseViews (views) {
+  _parseViews(views) {
     if (views instanceof Array === true) {
-      const returnHash = {}
+      const returnHash = {};
 
       /**
        * Loop over views to find the best match
        */
       const viewsCopy = views.slice().filter((view) => {
-        if (view.endsWith('.text') || view.endsWith('-text')) {
-          returnHash['text'] = view
-          return false
+        if (view.endsWith(".text") || view.endsWith("-text")) {
+          returnHash["text"] = view;
+          return false;
         }
 
-        if (view.endsWith('.watch') || view.endsWith('-watch')) {
-          returnHash['watch'] = view
-          return false
+        if (view.endsWith(".watch") || view.endsWith("-watch")) {
+          returnHash["watch"] = view;
+          return false;
         }
 
-        return true
-      })
+        return true;
+      });
 
       /**
        * If any views are left in the array, use
        * the first one for the html
        */
       if (viewsCopy.length) {
-        returnHash['html'] = viewsCopy[0]
+        returnHash["html"] = viewsCopy[0];
       }
 
-      return returnHash
+      return returnHash;
     }
-    return { html: views }
+    return { html: views };
   }
 
   /**
@@ -99,34 +99,34 @@ class MailSender {
    *
    * @throws {Error} If promise fails
    */
-  send (views, data, callback) {
-    const message = new Message()
+  send(views, data, callback) {
+    const message = new Message();
 
-    const viewsMap = this._parseViews(views)
+    const viewsMap = this._parseViews(views);
 
     /**
      * Set html text by rendering the view
      */
     if (viewsMap.html) {
-      message.html(this._viewInstance.render(viewsMap.html, data))
+      message.html(this._viewInstance.render(viewsMap.html, data));
     }
 
     /**
      * Set plain text by rendering the view
      */
     if (viewsMap.text) {
-      message.text(this._viewInstance.render(viewsMap.text, data))
+      message.text(this._viewInstance.render(viewsMap.text, data));
     }
 
     /**
      * Set watch text by rendering the view
      */
     if (viewsMap.watch) {
-      message.watchHtml(this._viewInstance.render(viewsMap.watch, data))
+      message.watchHtml(this._viewInstance.render(viewsMap.watch, data));
     }
 
-    callback(message)
-    return this._driverInstance.send(message.toJSON())
+    callback(message);
+    return this._driverInstance.send(message.toJSON());
   }
 
   /**
@@ -147,18 +147,44 @@ class MailSender {
    * })
    * ```
    */
-  raw (body, callback) {
-    const message = new Message()
+  raw(body, callback) {
+    const message = new Message();
 
     if (/^\s*</.test(body)) {
-      message.html(body)
+      message.html(body);
     } else {
-      message.text(body)
+      message.text(body);
     }
 
-    callback(message)
-    return this._driverInstance.send(message.toJSON())
+    callback(message);
+    return this._driverInstance.send(message.toJSON());
+  }
+
+  /**
+   * Verify connection to sender.
+   *
+   * @method verify
+   * @async
+   *
+   * @return {boolean}
+   *
+   * @example
+   * ```js
+   * await Mail.connection()
+   *    .verify()
+   *    .then((success) => {
+   *      // Implement success...
+   *    })
+   *    .catch((error) => {
+   *      // Implement fail...
+   *    });
+   * ```
+   *
+   * @throw {Error} If promise fails.
+   */
+  async verify() {
+    return this._driverInstance.transporter.verify();
   }
 }
 
-module.exports = MailSender
+module.exports = MailSender;
