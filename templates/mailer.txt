@@ -1,6 +1,6 @@
 import { BaseMailer, MessageContract } from '@ioc:Adonis/Addons/Mail'
 
-export default class NewUser extends BaseMailer {
+export default class {{filename}} extends BaseMailer {
   /**
    * WANT TO USE A DIFFERENT MAILER?
    *
@@ -12,7 +12,7 @@ export default class NewUser extends BaseMailer {
 
   /**
    * The prepare method is invoked automatically when you run
-   * "NewUser.send".
+   * "{{filename}}.send".
    *
    * Use this method to prepare the email message. The method can
    * also be async.
