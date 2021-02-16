@@ -12,36 +12,36 @@ import { MailManager } from '../src/Mail/MailManager'
 import { fs, setup } from '../test-helpers'
 
 test.group('Mail Provider', (group) => {
-	group.afterEach(async () => {
-		await fs.cleanup()
-	})
+  group.afterEach(async () => {
+    await fs.cleanup()
+  })
 
-	test('register mail provider', async (assert) => {
-		const app = await setup('web', {
-			mailer: 'smtp',
-			mailers: {
-				smtp: {},
-			},
-		})
-		assert.instanceOf(app.container.resolveBinding('Adonis/Addons/Mail'), MailManager)
-		assert.deepEqual(app.container.resolveBinding('Adonis/Addons/Mail')['app'], app)
-		assert.deepEqual(
-			app.container.resolveBinding('Adonis/Addons/Mail'),
-			app.container.resolveBinding('Adonis/Addons/Mail')
-		)
-	})
+  test('register mail provider', async (assert) => {
+    const app = await setup('web', {
+      mailer: 'smtp',
+      mailers: {
+        smtp: {},
+      },
+    })
+    assert.instanceOf(app.container.resolveBinding('Adonis/Addons/Mail'), MailManager)
+    assert.deepEqual(app.container.resolveBinding('Adonis/Addons/Mail')['app'], app)
+    assert.deepEqual(
+      app.container.resolveBinding('Adonis/Addons/Mail'),
+      app.container.resolveBinding('Adonis/Addons/Mail')
+    )
+  })
 
-	test('register repl binding', async (assert) => {
-		const app = await setup('repl', {
-			mailer: 'smtp',
-			mailers: {
-				smtp: {},
-			},
-		})
+  test('register repl binding', async (assert) => {
+    const app = await setup('repl', {
+      mailer: 'smtp',
+      mailers: {
+        smtp: {},
+      },
+    })
 
-		assert.property(app.container.resolveBinding('Adonis/Addons/Repl')['customMethods'], 'loadMail')
-		assert.isFunction(
-			app.container.resolveBinding('Adonis/Addons/Repl')['customMethods']['loadMail']['handler']
-		)
-	})
+    assert.property(app.container.resolveBinding('Adonis/Addons/Repl')['customMethods'], 'loadMail')
+    assert.isFunction(
+      app.container.resolveBinding('Adonis/Addons/Repl')['customMethods']['loadMail']['handler']
+    )
+  })
 })

@@ -8,9 +8,9 @@
  */
 
 declare module '@ioc:Adonis/Core/Application' {
-	import { MailManagerContract } from '@ioc:Adonis/Addons/Mail'
+  import { MailManagerContract } from '@ioc:Adonis/Addons/Mail'
 
-	export interface ContainerBindings {
-		'Adonis/Addons/Mail': MailManagerContract
-	}
+  export interface ContainerBindings {
+    'Adonis/Addons/Mail': MailManagerContract
+  }
 }

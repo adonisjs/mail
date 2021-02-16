@@ -6,3 +6,4 @@ docs
 config.json
 .eslintrc.json
 package.json
+*.txt

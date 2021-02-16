@@ -14,38 +14,38 @@ import { Application } from '@adonisjs/core/build/standalone'
 export const fs = new Filesystem(join(__dirname, 'app'))
 
 export async function setup(environment: 'web' | 'repl' = 'web', mailConfig?: any) {
-	await fs.add('.env', '')
-	await fs.add(
-		'config/app.ts',
-		`
+  await fs.add('.env', '')
+  await fs.add(
+    'config/app.ts',
+    `
 		export const appKey = 'averylong32charsrandomsecretkey',
 		export const http = {
 			cookie: {},
 			trustProxy: () => true,
 		}
 	`
-	)
+  )
 
-	await fs.add(
-		'config/mail.ts',
-		`
+  await fs.add(
+    'config/mail.ts',
+    `
 		const mailConfig = ${JSON.stringify(mailConfig || {}, null, 2)}
 		export default mailConfig
 	`
-	)
+  )
 
-	const app = new Application(fs.basePath, environment, {
-		providers: [
-			'@adonisjs/core',
-			'@adonisjs/repl',
-			'@adonisjs/view',
-			'../../providers/MailProvider',
-		],
-	})
+  const app = new Application(fs.basePath, environment, {
+    providers: [
+      '@adonisjs/core',
+      '@adonisjs/repl',
+      '@adonisjs/view',
+      '../../providers/MailProvider',
+    ],
+  })
 
-	await app.setup()
-	await app.registerProviders()
-	await app.bootProviders()
+  await app.setup()
+  await app.registerProviders()
+  await app.bootProviders()
 
-	return app
+  return app
 }

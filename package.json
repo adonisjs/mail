@@ -1,126 +1,126 @@
 {
-	"name": "@adonisjs/mail",
-	"version": "5.2.3",
-	"description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
-	"main": "build/providers/MailProvider.js",
-	"files": [
-		"build/adonis-typings",
-		"build/providers",
-		"build/src",
-		"build/commands",
-		"build/templates",
-		"build/instructions.js",
-		"build/instructions.d.ts",
-		"build/instructions.md"
-	],
-	"typings": "./build/adonis-typings/index.d.ts",
-	"scripts": {
-		"mrm": "mrm --preset=@adonisjs/mrm-preset",
-		"pretest": "npm run lint",
-		"test": "node japaFile.js",
-		"clean": "del build",
-		"copyfiles": "copyfiles \"templates/**/*.txt\" \"instructions.md\" build",
-		"compile": "npm run lint && npm run clean && tsc",
-		"build": "npm run compile && npm run copyfiles",
-		"commit": "git-cz",
-		"release": "np",
-		"version": "npm run build",
-		"format": "prettier --write .",
-		"prepublishOnly": "npm run build",
-		"sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json adonisjs/mail",
-		"lint": "eslint . --ext=.ts"
-	},
-	"keywords": [
-		"adonis",
-		"mailer",
-		"node-mailer"
-	],
-	"author": "virk",
-	"license": "MIT",
-	"devDependencies": {
-		"@adonisjs/core": "^5.0.5-canary-rc-2",
-		"@adonisjs/mrm-preset": "^3.0.0",
-		"@adonisjs/repl": "^2.0.1",
-		"@adonisjs/require-ts": "^2.0.2",
-		"@adonisjs/sink": "^5.0.0",
-		"@adonisjs/view": "^4.0.0",
-		"@poppinss/dev-utils": "^1.1.0",
-		"@types/node": "^14.14.28",
-		"aws-sdk": "^2.844.0",
-		"commitizen": "^4.2.3",
-		"copyfiles": "^2.4.1",
-		"cz-conventional-changelog": "^3.3.0",
-		"del-cli": "^3.0.1",
-		"dotenv": "^8.2.0",
-		"eslint": "^7.20.0",
-		"eslint-config-prettier": "^7.2.0",
-		"eslint-plugin-adonis": "^1.2.1",
-		"eslint-plugin-prettier": "^3.3.1",
-		"github-label-sync": "^2.0.0",
-		"husky": "^5.0.9",
-		"japa": "^3.1.1",
-		"mrm": "^2.5.18",
-		"np": "^7.4.0",
-		"prettier": "^2.2.1",
-		"typescript": "^4.1.5"
-	},
-	"config": {
-		"commitizen": {
-			"path": "cz-conventional-changelog"
-		}
-	},
-	"peerDependencies": {
-		"@adonisjs/view": "^4.0.0",
-		"@adonisjs/core": "^5.0.5-canary-rc"
-	},
-	"dependencies": {
-		"@poppinss/colors": "^2.1.0",
-		"@poppinss/manager": "^4.0.0",
-		"@poppinss/utils": "^3.0.3",
-		"fastq": "^1.10.1",
-		"get-stream": "^6.0.0",
-		"got": "^11.8.1",
-		"multi-part": "^3.0.0",
-		"nodemailer": "^6.4.18"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/adonisjs/mail.git"
-	},
-	"bugs": {
-		"url": "https://github.com/adonisjs/mail/issues"
-	},
-	"homepage": "https://github.com/adonisjs/mail#readme",
-	"nyc": {
-		"exclude": [
-			"test"
-		],
-		"extension": [
-			".ts"
-		]
-	},
-	"husky": {
-		"hooks": {
-			"commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
-		}
-	},
-	"np": {
-		"contents": ".",
-		"anyBranch": false
-	},
-	"publishConfig": {
-		"tag": "alpha",
-		"access": "public"
-	},
-	"adonisjs": {
-		"instructions": "./build/instructions.js",
-		"instructionsMd": "./build/instructions.md",
-		"types": "@adonisjs/mail",
-		"providers": [
-			"@adonisjs/mail"
-		],
-		"commands": [
-			"@adonisjs/mail/build/commands"
-		]
-	}
+  "name": "@adonisjs/mail",
+  "version": "5.2.3",
+  "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
+  "main": "build/providers/MailProvider.js",
+  "files": [
+    "build/adonis-typings",
+    "build/providers",
+    "build/src",
+    "build/commands",
+    "build/templates",
+    "build/instructions.js",
+    "build/instructions.d.ts",
+    "build/instructions.md"
+  ],
+  "typings": "./build/adonis-typings/index.d.ts",
+  "scripts": {
+    "mrm": "mrm --preset=@adonisjs/mrm-preset",
+    "pretest": "npm run lint",
+    "test": "node japaFile.js",
+    "clean": "del build",
+    "copyfiles": "copyfiles \"templates/**/*.txt\" \"instructions.md\" build",
+    "compile": "npm run lint && npm run clean && tsc",
+    "build": "npm run compile && npm run copyfiles",
+    "commit": "git-cz",
+    "release": "np",
+    "version": "npm run build",
+    "format": "prettier --write .",
+    "prepublishOnly": "npm run build",
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json adonisjs/mail",
+    "lint": "eslint . --ext=.ts"
+  },
+  "keywords": [
+    "adonis",
+    "mailer",
+    "node-mailer"
+  ],
+  "author": "virk",
+  "license": "MIT",
+  "devDependencies": {
+    "@adonisjs/core": "^5.0.5-canary-rc-2",
+    "@adonisjs/mrm-preset": "^3.0.0",
+    "@adonisjs/repl": "^2.0.1",
+    "@adonisjs/require-ts": "^2.0.2",
+    "@adonisjs/sink": "^5.0.0",
+    "@adonisjs/view": "^4.0.0",
+    "@poppinss/dev-utils": "^1.1.0",
+    "@types/node": "^14.14.28",
+    "aws-sdk": "^2.844.0",
+    "commitizen": "^4.2.3",
+    "copyfiles": "^2.4.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "del-cli": "^3.0.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-adonis": "^1.2.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "github-label-sync": "^2.0.0",
+    "husky": "^5.0.9",
+    "japa": "^3.1.1",
+    "mrm": "^2.5.18",
+    "np": "^7.4.0",
+    "prettier": "^2.2.1",
+    "typescript": "^4.1.5"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "peerDependencies": {
+    "@adonisjs/view": "^4.0.0",
+    "@adonisjs/core": "^5.0.5-canary-rc"
+  },
+  "dependencies": {
+    "@poppinss/colors": "^2.1.0",
+    "@poppinss/manager": "^4.0.0",
+    "@poppinss/utils": "^3.0.3",
+    "fastq": "^1.10.1",
+    "get-stream": "^6.0.0",
+    "got": "^11.8.1",
+    "multi-part": "^3.0.0",
+    "nodemailer": "^6.4.18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adonisjs/mail.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adonisjs/mail/issues"
+  },
+  "homepage": "https://github.com/adonisjs/mail#readme",
+  "nyc": {
+    "exclude": [
+      "test"
+    ],
+    "extension": [
+      ".ts"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
+    }
+  },
+  "np": {
+    "contents": ".",
+    "anyBranch": false
+  },
+  "publishConfig": {
+    "tag": "alpha",
+    "access": "public"
+  },
+  "adonisjs": {
+    "instructions": "./build/instructions.js",
+    "instructionsMd": "./build/instructions.md",
+    "types": "@adonisjs/mail",
+    "providers": [
+      "@adonisjs/mail"
+    ],
+    "commands": [
+      "@adonisjs/mail/build/commands"
+    ]
+  }
 }

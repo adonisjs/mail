@@ -20,63 +20,63 @@ const fs = new Filesystem(join(__dirname, '__app'))
 const templates = new Filesystem(join(__dirname, '..', 'templates'))
 
 test.group('Make Mailer', (group) => {
-	group.before(() => {
-		process.env.ADONIS_ACE_CWD = fs.basePath
-	})
+  group.before(() => {
+    process.env.ADONIS_ACE_CWD = fs.basePath
+  })
 
-	group.after(() => {
-		delete process.env.ADONIS_ACE_CWD
-	})
+  group.after(() => {
+    delete process.env.ADONIS_ACE_CWD
+  })
 
-	group.afterEach(async () => {
-		await fs.cleanup()
-	})
+  group.afterEach(async () => {
+    await fs.cleanup()
+  })
 
-	test('make a mailer inside the default directory', async (assert) => {
-		await fs.add('.adonisrc.json', JSON.stringify({}))
+  test('make a mailer inside the default directory', async (assert) => {
+    await fs.add('.adonisrc.json', JSON.stringify({}))
 
-		const rcContents = importFresh(join(fs.basePath, '.adonisrc.json')) as any
-		const app = new Application(fs.basePath, 'test', rcContents)
+    const rcContents = importFresh(join(fs.basePath, '.adonisrc.json')) as any
+    const app = new Application(fs.basePath, 'test', rcContents)
 
-		const mailer = new MakeMailer(app, new Kernel(app))
-		mailer.name = 'newUser'
-		await mailer.run()
+    const mailer = new MakeMailer(app, new Kernel(app))
+    mailer.name = 'newUser'
+    await mailer.run()
 
-		const NewUserMailer = await fs.get('app/Mailers/NewUser.ts')
-		const MailerTemplate = await templates.get('mailer.txt')
+    const NewUserMailer = await fs.get('app/Mailers/NewUser.ts')
+    const MailerTemplate = await templates.get('mailer.txt')
 
-		assert.deepEqual(
-			NewUserMailer.split('\n'),
-			MailerTemplate.replace(/{{filename}}/g, 'NewUser').split('\n')
-		)
-	})
+    assert.deepEqual(
+      NewUserMailer.split('\n'),
+      MailerTemplate.replace(/{{filename}}/g, 'NewUser').split('\n')
+    )
+  })
 
-	test('make a mailer inside a custom directory', async (assert) => {
-		await fs.add(
-			'.adonisrc.json',
-			JSON.stringify({
-				aliases: {
-					App: './app',
-				},
-				namespaces: {
-					mailers: 'App/My/Mailers',
-				},
-			})
-		)
+  test('make a mailer inside a custom directory', async (assert) => {
+    await fs.add(
+      '.adonisrc.json',
+      JSON.stringify({
+        aliases: {
+          App: './app',
+        },
+        namespaces: {
+          mailers: 'App/My/Mailers',
+        },
+      })
+    )
 
-		const rcContents = importFresh(join(fs.basePath, '.adonisrc.json')) as any
-		const app = new Application(fs.basePath, 'test', rcContents)
+    const rcContents = importFresh(join(fs.basePath, '.adonisrc.json')) as any
+    const app = new Application(fs.basePath, 'test', rcContents)
 
-		const mailer = new MakeMailer(app, new Kernel(app))
-		mailer.name = 'newUser'
-		await mailer.run()
+    const mailer = new MakeMailer(app, new Kernel(app))
+    mailer.name = 'newUser'
+    await mailer.run()
 
-		const NewUserMailer = await fs.get('app/My/Mailers/NewUser.ts')
-		const MailerTemplate = await templates.get('mailer.txt')
+    const NewUserMailer = await fs.get('app/My/Mailers/NewUser.ts')
+    const MailerTemplate = await templates.get('mailer.txt')
 
-		assert.deepEqual(
-			NewUserMailer.split('\n'),
-			MailerTemplate.replace(/{{filename}}/g, 'NewUser').split('\n')
-		)
-	})
+    assert.deepEqual(
+      NewUserMailer.split('\n'),
+      MailerTemplate.replace(/{{filename}}/g, 'NewUser').split('\n')
+    )
+  })
 })
