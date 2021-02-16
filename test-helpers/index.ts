@@ -43,8 +43,8 @@ export async function setup(environment: 'web' | 'repl' = 'web', mailConfig?: an
 		],
 	})
 
-	app.setup()
-	app.registerProviders()
+	await app.setup()
+	await app.registerProviders()
 	await app.bootProviders()
 
 	return app

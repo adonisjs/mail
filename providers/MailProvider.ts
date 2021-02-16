@@ -21,7 +21,7 @@ export default class MailProvider {
 	 */
 	public register() {
 		this.app.container.singleton('Adonis/Addons/Mail', () => {
-			const config = this.app.container.use('Adonis/Core/Config').get('mail', {})
+			const config = this.app.container.resolveBinding('Adonis/Core/Config').get('mail', {})
 			const { MailManager } = require('../src/Mail/MailManager')
 			return new MailManager(this.app, config)
 		})
@@ -35,7 +35,7 @@ export default class MailProvider {
 			return
 		}
 
-		this.app.container.with(['Adonis/Addons/Repl'], (Repl) => {
+		this.app.container.withBindings(['Adonis/Addons/Repl'], (Repl) => {
 			const { defineReplBindings } = require('../src/Bindings/Repl')
 			defineReplBindings(this.app, Repl)
 		})
@@ -45,6 +45,6 @@ export default class MailProvider {
 	 * Close all drivers when shutting down the app
 	 */
 	public async shutdown() {
-		await this.app.container.use('Adonis/Addons/Mail').closeAll()
+		await this.app.container.resolveBinding('Adonis/Addons/Mail').closeAll()
 	}
 }

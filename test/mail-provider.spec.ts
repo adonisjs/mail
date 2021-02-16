@@ -23,11 +23,11 @@ test.group('Mail Provider', (group) => {
 				smtp: {},
 			},
 		})
-		assert.instanceOf(app.container.use('Adonis/Addons/Mail'), MailManager)
-		assert.deepEqual(app.container.use('Adonis/Addons/Mail')['app'], app)
+		assert.instanceOf(app.container.resolveBinding('Adonis/Addons/Mail'), MailManager)
+		assert.deepEqual(app.container.resolveBinding('Adonis/Addons/Mail')['app'], app)
 		assert.deepEqual(
-			app.container.use('Adonis/Addons/Mail'),
-			app.container.use('Adonis/Addons/Mail')
+			app.container.resolveBinding('Adonis/Addons/Mail'),
+			app.container.resolveBinding('Adonis/Addons/Mail')
 		)
 	})
 
@@ -39,9 +39,9 @@ test.group('Mail Provider', (group) => {
 			},
 		})
 
-		assert.property(app.container.use('Adonis/Addons/Repl')['customMethods'], 'loadMailer')
+		assert.property(app.container.resolveBinding('Adonis/Addons/Repl')['customMethods'], 'loadMail')
 		assert.isFunction(
-			app.container.use('Adonis/Addons/Repl')['customMethods']['loadMailer']['handler']
+			app.container.resolveBinding('Adonis/Addons/Repl')['customMethods']['loadMail']['handler']
 		)
 	})
 })
