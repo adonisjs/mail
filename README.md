@@ -13,7 +13,7 @@
 
 <div align="center">
 
-[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]  [![audit-report-image]][audit-report-url]
+[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]  [![synk-image]][synk-url]
 
 </div>
 
@@ -49,5 +49,5 @@
 [license-image]: https://img.shields.io/npm/l/@adonisjs/mail?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
 
-[audit-report-image]: https://img.shields.io/badge/-Audit%20Report-blueviolet?style=for-the-badge
-[audit-report-url]: https://htmlpreview.github.io/?https://github.com/adonisjs/mail/blob/develop/npm-audit.html "audit-report"
+[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/adonisjs/mail?label=Synk%20Vulnerabilities&style=for-the-badge
+[synk-url]: https://snyk.io/test/github/adonisjs/mail?targetFile=package.json "synk"
