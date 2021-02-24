@@ -29,6 +29,7 @@ You just need the Mailgun's private key in order to send emails using the Mailgu
 
 ```ts
 MAILGUN_API_KEY: Env.schema.string(),
+MAILGUN_DOMAIN: Env.schema.string(),
 ```
 
 ## Variables for the Sparkpost driver

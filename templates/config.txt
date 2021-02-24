@@ -89,11 +89,15 @@ const mailConfig: MailConfig = {
     |
 		| Uses Mailgun service for sending emails.
     |
+    | If you are using an EU domain. Ensure to change the baseUrl to hit the
+    | europe endpoint (https://api.eu.mailgun.net/v3).
+    |
     */
     mailgun: {
       driver: 'mailgun',
       baseUrl: 'https://api.mailgun.net/v3',
       key: Env.get('MAILGUN_API_KEY'),
+      domain: Env.get('MAILGUN_DOMAIN'),
     },
 
 		{{/mailgun}}

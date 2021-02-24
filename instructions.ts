@@ -50,6 +50,7 @@ const DRIVER_ENV_VALUES = {
   },
   mailgun: {
     MAILGUN_API_KEY: '<mailgun-api-key>',
+    MAILGUN_DOMAIN: '<your-domain>',
   },
   sparkpost: {
     SPARKPOST_API_KEY: '<sparkpost-api-key>',
