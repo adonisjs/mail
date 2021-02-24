@@ -412,7 +412,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
     driver: 'mailgun'
     baseUrl: string
     key: string
-    domain?: string
+    domain: string
     oDkim?: boolean
   }
 

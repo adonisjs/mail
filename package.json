@@ -70,8 +70,8 @@
     }
   },
   "peerDependencies": {
-    "@adonisjs/view": "^4.0.0",
-    "@adonisjs/core": "^5.0.5-canary-rc"
+    "@adonisjs/core": "^5.0.5-canary-rc",
+    "@adonisjs/view": "^4.0.0"
   },
   "dependencies": {
     "@poppinss/colors": "^2.1.0",
