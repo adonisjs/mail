@@ -84,7 +84,7 @@ class Request {
    * @return {void}
    */
   async post (url, body) {
-    const headers = this._auth ? Object.assign({ 'Authorization': this._auth }, this._headers) : this._headers
+    const headers = this._auth ? Object.assign({ Authorization: this._auth }, this._headers) : this._headers
     try {
       const response = await got(url, {
         headers,

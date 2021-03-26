@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
 */
 
-require('dotenv').load()
+require('dotenv').config()
 const test = require('japa')
 const Message = require('../src/Mail/Message')
 const { sparkpost: SparkPost } = require('../src/Mail/Drivers')

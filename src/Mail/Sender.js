@@ -47,12 +47,12 @@ class MailSender {
        */
       const viewsCopy = views.slice().filter((view) => {
         if (view.endsWith('.text') || view.endsWith('-text')) {
-          returnHash['text'] = view
+          returnHash.text = view
           return false
         }
 
         if (view.endsWith('.watch') || view.endsWith('-watch')) {
-          returnHash['watch'] = view
+          returnHash.watch = view
           return false
         }
 
@@ -64,7 +64,7 @@ class MailSender {
        * the first one for the html
        */
       if (viewsCopy.length) {
-        returnHash['html'] = viewsCopy[0]
+        returnHash.html = viewsCopy[0]
       }
 
       return returnHash

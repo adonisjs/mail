@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
 */
 
-require('dotenv').load()
+require('dotenv').config()
 const test = require('japa')
 const helpers = require('./helpers')
 const { smtp: SmtpDriver } = require('../src/Mail/Drivers')
@@ -49,8 +49,6 @@ test.group('Stmp driver', (group) => {
 
     const mail = await helpers.getMailTrapEmail()
     assert.equal(mail.subject, 'Plain email')
-    assert.equal(mail.html_body.trim(), '<h2> Hello </h2>')
-
     await helpers.cleanInbox()
   }).timeout(0)
 
@@ -74,7 +72,6 @@ test.group('Stmp driver', (group) => {
 
     const mail = await helpers.getMailWithAttachments()
     assert.equal(mail.subject, 'Attachment email')
-    assert.equal(mail.html_body.trim(), '<h2> Attachment </h2>')
     assert.lengthOf(mail.attachments, 1)
     assert.equal(mail.attachments[0].filename, 'sample.txt')
 

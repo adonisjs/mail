@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
 */
 
-require('dotenv').load()
+require('dotenv').config()
 const test = require('japa')
 const { ethereal: EtherealDriver } = require('../src/Mail/Drivers')
 

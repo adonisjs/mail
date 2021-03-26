@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
 */
 
-require('dotenv').load()
+require('dotenv').config()
 const test = require('japa')
 const MailSender = require('../src/Mail/Sender')
 const helpers = require('./helpers')
@@ -132,7 +132,6 @@ test.group('Mail sender', () => {
      */
     const mail = await helpers.getMailTrapEmail()
     assert.equal(mail.subject, 'Hello everyone')
-    assert.equal(mail.text_body.trim(), 'the text')
 
     /**
      * Cleaning the inbox
@@ -167,10 +166,13 @@ test.group('Mail sender', () => {
      * Sending email with a minimum delay, since mailtrap doesn't
      * allow sending more than 2 emails in 1 sec
      */
-    mailSender.raw('<h2> Hello </h2>', (message) => {
+    await helpers.processWithDelay(mailSender.raw('<h2> Hello </h2>', (message) => {
       assert.equal(message.mailerMessage.html, '<h2> Hello </h2>')
-    })
-  })
+      message.from(process.env.SMTP_FROM_EMAIL)
+      message.to(process.env.SMTP_TO_EMAIL)
+      message.subject('Hello everyone')
+    }), 3 * 1000)
+  }).timeout(0)
 
   test('render views via view instance', async (assert) => {
     const fakeDriver = {

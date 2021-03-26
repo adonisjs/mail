@@ -33,9 +33,11 @@ class EtherealDriver {
       this.transporter = null
     }
 
-    this.log = typeof (config.log) === 'function' ? config.log : function (messageUrl) {
-      console.log(messageUrl)
-    }
+    this.log = typeof (config.log) === 'function'
+      ? config.log
+      : function (messageUrl) {
+        console.log(messageUrl)
+      }
   }
 
   /**

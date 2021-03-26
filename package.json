@@ -17,10 +17,8 @@
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
-    "test:local": "FORCE_COLOR=true node bin/index.js --local",
-    "test": "nyc node japaFile.js",
-    "test:win": "node ./node_modules/japa-cli/index.js",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "test": "node japaFile.js",
+    "test:win": "node japaFile.js",
     "commit": "git-cz",
     "lint": "standard"
   },
@@ -31,23 +29,23 @@
   "author": "virk",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/fold": "^4.0.9",
-    "@adonisjs/mrm-preset": "^1.0.13",
-    "@adonisjs/sink": "^1.0.17",
+    "@adonisjs/fold": "^4.1.0",
+    "@adonisjs/mrm-preset": "^3.0.0",
+    "@adonisjs/sink": "^1.1.0",
     "aws-sdk": "^2.325.0",
-    "commitizen": "^2.10.1",
+    "commitizen": "^4.2.3",
     "coveralls": "^3.0.2",
-    "cz-conventional-changelog": "^2.1.0",
-    "dotenv": "^6.0.0",
-    "japa": "^2.0.3",
+    "cz-conventional-changelog": "^3.3.0",
+    "dotenv": "^8.2.0",
+    "japa": "^3.1.1",
     "japa-cli": "^1.0.1",
-    "mailparser": "^2.3.4",
-    "mrm": "^1.2.1",
+    "mailparser": "^3.1.0",
+    "mrm": "^2.6.1",
     "nodemailer-ses-transport": "^1.5.1",
-    "nyc": "^13.0.1",
+    "nyc": "^15.1.0",
     "pkg-ok": "^2.2.0",
-    "semver": "^5.5.1",
-    "standard": "^12.0.1"
+    "semver": "^7.3.5",
+    "standard": "^16.0.3"
   },
   "config": {
     "commitizen": {
@@ -69,7 +67,7 @@
     "clone": "^2.1.2",
     "debug": "^4.0.1",
     "form-data": "^2.3.2",
-    "get-stream": "^4.0.0",
+    "get-stream": "^6.0.0",
     "got": "8.3.0",
     "nodemailer": "^4.6.8"
   },
