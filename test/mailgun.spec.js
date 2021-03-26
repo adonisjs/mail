@@ -76,6 +76,21 @@ test.group('Mailgun', () => {
     assert.deepEqual(mailgun._getExtras({ 'o:campaign': 'sales' }), { 'o:campaign': 'sales' })
   })
 
+  test('return correct endpoint when region is not set', (assert) => {
+    const mailgun = new (Mailgun.Transport)({
+      domain: 'test.domain'
+    })
+    assert.deepEqual(mailgun.endpoint, 'https://api.mailgun.net/v3/test.domain/messages.mime')
+  })
+
+  test('return correct endpoint when region is set', (assert) => {
+    const mailgun = new (Mailgun.Transport)({
+      domain: 'test.domain',
+      region: 'EU'
+    })
+    assert.deepEqual(mailgun.endpoint, 'https://api.eu.mailgun.net/v3/test.domain/messages.mime')
+  })
+
   test('send plain email', async (assert) => {
     const config = {
       domain: process.env.MAILGUN_DOMAIN,
