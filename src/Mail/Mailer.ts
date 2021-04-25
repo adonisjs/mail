@@ -48,20 +48,20 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
    * Set the email contents by rendering the views. Views are only
    * rendered when inline values are not defined.
    */
-  private setEmailContent({ message, views }: CompiledMailNode) {
+  private async setEmailContent({ message, views }: CompiledMailNode) {
     if (!message.html && views.html) {
       this.ensureView('htmlView')
-      message.html = this.manager.view!.render(views.html.template, views.html.data)
+      message.html = await this.manager.view!.render(views.html.template, views.html.data)
     }
 
     if (!message.text && views.text) {
       this.ensureView('textView')
-      message.text = this.manager.view!.render(views.text.template, views.text.data)
+      message.text = await this.manager.view!.render(views.text.template, views.text.data)
     }
 
     if (!message.watch && views.watch) {
       this.ensureView('watchView')
-      message.watch = this.manager.view!.render(views.watch.template, views.watch.data)
+      message.watch = await this.manager.view!.render(views.watch.template, views.watch.data)
     }
   }
 
@@ -81,7 +81,7 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
     /**
      * Set content by rendering views
      */
-    this.setEmailContent(mail)
+    await this.setEmailContent(mail)
 
     /**
      * Send email for real
