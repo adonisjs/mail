@@ -14,6 +14,7 @@ import {
   EnvolpeNode,
   MessageNode,
   MessageContract,
+  CalendarEventOptions,
   AttachmentOptionsNode,
   MessageContentViewsNode,
 } from '@ioc:Adonis/Addons/Mail'
@@ -277,6 +278,30 @@ export class Message implements MessageContract {
     this.nodeMailerMessage.headers = this.nodeMailerMessage.headers || []
     this.nodeMailerMessage.headers.push({ [key]: { prepared: true, value } })
 
+    return this
+  }
+
+  /**
+   * Attach a calendar event and define contents as string
+   */
+  public icalEvent(contents: string, options?: CalendarEventOptions): this {
+    this.nodeMailerMessage.icalEvent = { content: contents, ...options }
+    return this
+  }
+
+  /**
+   * Attach a calendar event and load contents from a file
+   */
+  public icalEventFromFile(filePath: string, options?: CalendarEventOptions): this {
+    this.nodeMailerMessage.icalEvent = { path: filePath, ...options }
+    return this
+  }
+
+  /**
+   * Attach a calendar event and load contents from a url
+   */
+  public icalEventFromUrl(url: string, options?: CalendarEventOptions): this {
+    this.nodeMailerMessage.icalEvent = { href: url, ...options }
     return this
   }
 

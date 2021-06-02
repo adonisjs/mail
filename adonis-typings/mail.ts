@@ -77,6 +77,28 @@ declare module '@ioc:Adonis/Addons/Mail' {
   export type RecipientNode = { address: string; name?: string }
 
   /**
+   * Available calendar event methods
+   */
+  export type CalendarEventMethod =
+    | 'PUBLISH'
+    | 'REQUEST'
+    | 'REPLY'
+    | 'ADD'
+    | 'CANCEL'
+    | 'REFRESH'
+    | 'COUNTER'
+    | 'DECLINECOUNTER'
+
+  /**
+   * Event options accepted by the icalEvent* methods
+   */
+  export type CalendarEventOptions = {
+    method?: CalendarEventMethod
+    filename?: string
+    encoding?: string
+  }
+
+  /**
    * Shape of data view defined on the message
    */
   export type MessageContentViewsNode = {
@@ -110,6 +132,11 @@ declare module '@ioc:Adonis/Addons/Mail' {
     encoding?: string
     priority?: 'low' | 'normal' | 'high'
     envelope?: EnvolpeNode
+    icalEvent?: CalendarEventOptions & {
+      content?: string
+      path?: string
+      href?: string
+    }
     attachments?: (AttachmentOptionsNode & {
       path?: string
       cid?: string
@@ -172,6 +199,21 @@ declare module '@ioc:Adonis/Addons/Mail' {
 
     header(key: string, value: string | string[]): this
     preparedHeader(key: string, value: string | string[]): this
+
+    /**
+     * Attach a calendar event and define contents as string
+     */
+    icalEvent(contents: string, options?: CalendarEventOptions): this
+
+    /**
+     * Attach a calendar event and load contents from a file
+     */
+    icalEventFromFile(filePath: string, options?: CalendarEventOptions): this
+
+    /**
+     * Attach a calendar event and load contents from a url
+     */
+    icalEventFromUrl(url: string, options?: CalendarEventOptions): this
 
     toJSON(): {
       message: MessageNode
@@ -432,10 +474,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
   }
 
   /*
-	|--------------------------------------------------------------------------
-	| SparkPost Driver
-	|--------------------------------------------------------------------------
-	*/
+  |--------------------------------------------------------------------------
+  | SparkPost Driver
+  |--------------------------------------------------------------------------
+  */
 
   /**
    * Following options can be defined during the `Mail.send` call

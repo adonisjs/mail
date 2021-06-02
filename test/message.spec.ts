@@ -247,4 +247,34 @@ test.group('Message', () => {
     const fn = () => message.embedData(Buffer.from('hello-world'), '1', { filename: 'foo-file' })
     assert.throw(fn, 'Cannot attach raw data when using "Mail.sendLater" method')
   })
+
+  test('attach ical event', (assert) => {
+    const message = new Message(true)
+    message.icalEvent('hello', { filename: 'invite.ics' })
+
+    assert.deepEqual(message.toJSON().message.icalEvent, {
+      content: 'hello',
+      filename: 'invite.ics',
+    })
+  })
+
+  test('attach ical event from file', (assert) => {
+    const message = new Message(true)
+    message.icalEventFromFile('/foo/invite.ics', { filename: 'invite.ics' })
+
+    assert.deepEqual(message.toJSON().message.icalEvent, {
+      path: '/foo/invite.ics',
+      filename: 'invite.ics',
+    })
+  })
+
+  test('attach ical event from path', (assert) => {
+    const message = new Message(true)
+    message.icalEventFromUrl('http://foo.com/invite', { filename: 'invite.ics' })
+
+    assert.deepEqual(message.toJSON().message.icalEvent, {
+      href: 'http://foo.com/invite',
+      filename: 'invite.ics',
+    })
+  })
 })
