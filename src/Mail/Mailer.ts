@@ -98,7 +98,7 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
       response: response,
     })
 
-    return (response as unknown) as Promise<MailerResponseType<Name>>
+    return response as unknown as Promise<MailerResponseType<Name>>
   }
 
   /**

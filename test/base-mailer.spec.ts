@@ -15,7 +15,7 @@ import { MailManager } from '../src/Mail/MailManager'
 import { fs, setup } from '../test-helpers'
 import { BaseMailer as BaseMailerClass } from '../src/BaseMailer'
 
-const BaseMailer = (BaseMailerClass as unknown) as typeof BaseMailerContract
+const BaseMailer = BaseMailerClass as unknown as typeof BaseMailerContract
 
 test.group('BaseMailer', (group) => {
   group.afterEach(async () => {

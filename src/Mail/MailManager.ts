@@ -45,7 +45,8 @@ export class MailManager
       [P in keyof MailersList]: MailerContract<keyof MailersList>
     }
   >
-  implements MailManagerContract {
+  implements MailManagerContract
+{
   /**
    * Caching driver instances. One must call `close` to clean it up
    */
