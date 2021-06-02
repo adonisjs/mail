@@ -47,9 +47,7 @@
     "@poppinss/dev-utils": "^1.1.4",
     "@types/node": "^15.6.2",
     "aws-sdk": "^2.919.0",
-    "commitizen": "^4.2.4",
     "copyfiles": "^2.4.1",
-    "cz-conventional-changelog": "^3.3.0",
     "del-cli": "^3.0.1",
     "dotenv": "^10.0.0",
     "eslint": "^7.27.0",
@@ -70,8 +68,8 @@
     }
   },
   "peerDependencies": {
-    "@adonisjs/view": "^6.0.0",
-    "@adonisjs/core": "^5.1.0"
+    "@adonisjs/core": "^5.1.0",
+    "@adonisjs/view": "^6.0.0"
   },
   "dependencies": {
     "@poppinss/colors": "^2.1.4",
