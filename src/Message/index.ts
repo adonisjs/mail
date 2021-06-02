@@ -10,6 +10,7 @@
 /// <reference path="../../adonis-typings/mail.ts" />
 
 import { Readable } from 'stream'
+import ical, { ICalCalendar } from 'ical-generator'
 import {
   EnvolpeNode,
   MessageNode,
@@ -284,7 +285,16 @@ export class Message implements MessageContract {
   /**
    * Attach a calendar event and define contents as string
    */
-  public icalEvent(contents: string, options?: CalendarEventOptions): this {
+  public icalEvent(
+    contents: ((calendar: ICalCalendar) => void) | string,
+    options?: CalendarEventOptions
+  ): this {
+    if (typeof contents === 'function') {
+      const calendar = ical()
+      contents(calendar)
+      contents = calendar.toString()
+    }
+
     this.nodeMailerMessage.icalEvent = { content: contents, ...options }
     return this
   }

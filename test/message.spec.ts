@@ -8,6 +8,7 @@
  */
 
 import test from 'japa'
+import { DateTime } from 'luxon'
 import { Message } from '../src/Message'
 
 test.group('Message', () => {
@@ -276,5 +277,23 @@ test.group('Message', () => {
       href: 'http://foo.com/invite',
       filename: 'invite.ics',
     })
+  })
+
+  test('attach ical event using the calendar object', (assert) => {
+    const message = new Message(true)
+    message.icalEvent(
+      (calendar) => {
+        calendar.createEvent({
+          summary: 'Discuss tech',
+          start: DateTime.local().plus({ minutes: 30 }),
+          end: DateTime.local().plus({ minutes: 60 }),
+          url: 'http://adonisjs.com/meeting/1',
+        })
+      },
+      { filename: 'invite.ics' }
+    )
+
+    assert.isTrue(message.toJSON().message.icalEvent!.content!.startsWith('BEGIN:VCALENDAR'))
+    assert.isTrue(message.toJSON().message.icalEvent!.content!.endsWith('END:VCALENDAR'))
   })
 })

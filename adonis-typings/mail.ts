@@ -8,9 +8,10 @@
  */
 
 declare module '@ioc:Adonis/Addons/Mail' {
-  import { TlsOptions } from 'tls'
   import { SES } from 'aws-sdk'
+  import { TlsOptions } from 'tls'
   import { Readable } from 'stream'
+  import { ICalCalendar } from 'ical-generator'
   import { ManagerContract } from '@poppinss/manager'
   import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
@@ -203,7 +204,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
     /**
      * Attach a calendar event and define contents as string
      */
-    icalEvent(contents: string, options?: CalendarEventOptions): this
+    icalEvent(
+      contents: ((calendar: ICalCalendar) => void) | string,
+      options?: CalendarEventOptions
+    ): this
 
     /**
      * Attach a calendar event and load contents from a file

@@ -57,6 +57,7 @@
     "github-label-sync": "^2.0.0",
     "husky": "^6.0.0",
     "japa": "^3.1.1",
+    "luxon": "^1.27.0",
     "mrm": "^3.0.2",
     "np": "^7.5.0",
     "prettier": "^2.3.0",
@@ -78,6 +79,7 @@
     "fastq": "^1.11.0",
     "get-stream": "^6.0.1",
     "got": "^11.8.2",
+    "ical-generator": "^2.2.0",
     "multi-part": "^3.0.0",
     "nodemailer": "^6.6.1"
   },
