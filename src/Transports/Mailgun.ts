@@ -108,7 +108,12 @@ export class MailgunTransport {
 
     Object.keys(tags).forEach((key) => form.append(key, tags[key]))
     Object.keys(headers).forEach((key) => form.append(key, headers[key]))
-    Object.keys(recipients).forEach((key) => form.append(key, recipients[key]))
+
+    Object.keys(recipients).forEach((key) => {
+      if (key !== 'to') form.append('to', recipients[key]);
+      form.append(key, recipients[key])
+    })
+
     form.append('message', mail.message.createReadStream(), { filename: 'message.mime' })
 
     this.logger.trace(
