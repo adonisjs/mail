@@ -16,7 +16,7 @@ import { Message } from '../src/Message'
 import { setup, fs } from '../test-helpers'
 import { MailgunDriver } from '../src/Drivers/Mailgun'
 
-const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))
+const sleep = (time: number) => new Promise<void>((resolve) => setTimeout(resolve, time))
 
 test.group('Mailgun Driver', (group) => {
   group.before(() => {
