@@ -79,7 +79,7 @@
     "fastq": "^1.11.1",
     "get-stream": "^6.0.1",
     "got": "^11.8.2",
-    "ical-generator": "^2.2.0",
+    "ical-generator": "^3.0.0-develop.4",
     "multi-part": "^3.0.0",
     "nodemailer": "^6.6.3"
   },
