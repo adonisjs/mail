@@ -73,7 +73,7 @@
     "@adonisjs/view": "^6.0.0"
   },
   "dependencies": {
-    "@poppinss/colors": "^2.1.5",
+    "@poppinss/colors": "^3.0.0",
     "@poppinss/manager": "^4.0.4",
     "@poppinss/utils": "^3.2.0",
     "fastq": "^1.12.0",
