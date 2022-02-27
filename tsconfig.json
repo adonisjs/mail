@@ -4,6 +4,11 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": ["@types/node", "@adonisjs/core", "@adonisjs/view", "@adonisjs/repl"]
+    "types": [
+      "@types/node",
+      "@adonisjs/core",
+      "@adonisjs/view",
+      "@adonisjs/repl"
+    ]
   }
 }
