@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { join } from 'path'
 import dotenv from 'dotenv'
 
@@ -15,38 +15,38 @@ import { Message } from '../src/Message'
 import { SesDriver } from '../src/Drivers/Ses'
 
 test.group('Ses Driver', (group) => {
-  group.before(() => {
+  group.setup(() => {
     dotenv.config({ path: join(__dirname, '..', '.env') })
   })
 
-  test
-    .skip('send email using ses driver', async (assert) => {
-      const ses = new SesDriver({
-        driver: 'ses',
-        apiVersion: '2010-12-01',
-        key: process.env.AWS_ACCESS_KEY_ID!,
-        secret: process.env.AWS_SECRET_ACCESS_KEY!,
-        region: process.env.AWS_REGION!,
-        sslEnabled: true,
-      })
-
-      const message = new Message()
-      message.from(process.env.FROM_EMAIL!)
-      message.to('virk@adonisjs.com')
-      message.cc('info@adonisjs.com')
-      message.subject('Adonisv5')
-      message.html('<p> Hello Adonis </p>')
-
-      const response = await ses.send(message.toJSON().message)
-
-      assert.exists(response.response)
-      assert.exists(response.messageId)
-      assert.equal(response.envelope!.from, process.env.FROM_EMAIL)
-      assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
+  test('send email using ses driver', async ({ assert }) => {
+    const ses = new SesDriver({
+      driver: 'ses',
+      apiVersion: '2010-12-01',
+      key: process.env.AWS_ACCESS_KEY_ID!,
+      secret: process.env.AWS_SECRET_ACCESS_KEY!,
+      region: process.env.AWS_REGION!,
+      sslEnabled: true,
     })
-    .timeout(1000 * 10)
 
-  test('define email tags', async (assert) => {
+    const message = new Message()
+    message.from(process.env.FROM_EMAIL!)
+    message.to('virk@adonisjs.com')
+    message.cc('info@adonisjs.com')
+    message.subject('Adonisv5')
+    message.html('<p> Hello Adonis </p>')
+
+    const response = await ses.send(message.toJSON().message)
+
+    assert.exists(response.response)
+    assert.exists(response.messageId)
+    assert.equal(response.envelope!.from, process.env.FROM_EMAIL)
+    assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
+  })
+    .timeout(1000 * 10)
+    .skip(true)
+
+  test('define email tags', async ({ assert }) => {
     assert.plan(1)
 
     const ses = new SesDriver({

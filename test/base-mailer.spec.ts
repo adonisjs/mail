@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { MessageContract, BaseMailer as BaseMailerContract } from '@ioc:Adonis/Addons/Mail'
 
 import { Message } from '../src/Message'
@@ -18,11 +18,11 @@ import { BaseMailer as BaseMailerClass } from '../src/BaseMailer'
 const BaseMailer = BaseMailerClass as unknown as typeof BaseMailerContract
 
 test.group('BaseMailer', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('send email using the mailer class', async (assert) => {
+  test('send email using the mailer class', async ({ assert }) => {
     assert.plan(1)
 
     const config = {
@@ -56,7 +56,7 @@ test.group('BaseMailer', (group) => {
     await mailer.send()
   })
 
-  test('use a custom mailer', async (assert) => {
+  test('use a custom mailer', async ({ assert }) => {
     assert.plan(1)
 
     const config = {
