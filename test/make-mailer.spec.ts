@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { join } from 'path'
 import importFresh from 'import-fresh'
 import { Kernel } from '@adonisjs/ace'
@@ -20,19 +20,19 @@ const fs = new Filesystem(join(__dirname, '__app'))
 const templates = new Filesystem(join(__dirname, '..', 'templates'))
 
 test.group('Make Mailer', (group) => {
-  group.before(() => {
+  group.setup(() => {
     process.env.ADONIS_ACE_CWD = fs.basePath
   })
 
-  group.after(() => {
+  group.teardown(() => {
     delete process.env.ADONIS_ACE_CWD
   })
 
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('make a mailer inside the default directory', async (assert) => {
+  test('make a mailer inside the default directory', async ({ assert }) => {
     await fs.add('.adonisrc.json', JSON.stringify({}))
 
     const rcContents = importFresh(join(fs.basePath, '.adonisrc.json')) as any
@@ -51,7 +51,7 @@ test.group('Make Mailer', (group) => {
     )
   })
 
-  test('make a mailer inside a custom directory', async (assert) => {
+  test('make a mailer inside a custom directory', async ({ assert }) => {
     await fs.add(
       '.adonisrc.json',
       JSON.stringify({

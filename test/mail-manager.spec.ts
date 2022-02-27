@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 
 import {
   MailersList,
@@ -26,11 +26,11 @@ import { SparkPostDriver } from '../src/Drivers/SparkPost'
 import { fs, setup } from '../test-helpers'
 
 test.group('Mail Manager', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('return driver for a given mapping', async (assert) => {
+  test('return driver for a given mapping', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -45,7 +45,7 @@ test.group('Mail Manager', (group) => {
     assert.equal(manager['getMappingDriver']('marketing'), 'smtp')
   })
 
-  test('return default mapping name', async (assert) => {
+  test('return default mapping name', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -60,7 +60,7 @@ test.group('Mail Manager', (group) => {
     assert.equal(manager['getDefaultMappingName'](), 'marketing')
   })
 
-  test('return config for a mapping name', async (assert) => {
+  test('return config for a mapping name', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -75,7 +75,7 @@ test.group('Mail Manager', (group) => {
     assert.deepEqual(manager['getMappingConfig']('marketing'), { driver: 'smtp' })
   })
 
-  test('extend mailer by adding a custom driver', async (assert) => {
+  test('extend mailer by adding a custom driver', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -99,11 +99,11 @@ test.group('Mail Manager', (group) => {
 })
 
 test.group('Mail Manager | Cache', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('close driver and release it from cache', async (assert) => {
+  test('close driver and release it from cache', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -144,7 +144,7 @@ test.group('Mail Manager | Cache', (group) => {
     assert.isTrue(customDriver.closed)
   })
 
-  test('close driver by invoking close on manager instance', async (assert) => {
+  test('close driver by invoking close on manager instance', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -185,7 +185,7 @@ test.group('Mail Manager | Cache', (group) => {
     assert.isTrue(customDriver.closed)
   })
 
-  test('close all mappings and clear cache', async (assert) => {
+  test('close all mappings and clear cache', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -228,11 +228,11 @@ test.group('Mail Manager | Cache', (group) => {
 })
 
 test.group('Mail Manager | SMTP', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get mailer instance for smtp driver', async (assert) => {
+  test('get mailer instance for smtp driver', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -250,7 +250,7 @@ test.group('Mail Manager | SMTP', (group) => {
     assert.instanceOf(mailer.driver, SmtpDriver)
   })
 
-  test('cache mailer instances for smtp', async (assert) => {
+  test('cache mailer instances for smtp', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -270,11 +270,11 @@ test.group('Mail Manager | SMTP', (group) => {
 })
 
 test.group('Mail Manager | SES', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get mailer instance for ses driver', async (assert) => {
+  test('get mailer instance for ses driver', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -292,7 +292,7 @@ test.group('Mail Manager | SES', (group) => {
     assert.instanceOf(mailer.driver, SesDriver)
   })
 
-  test('cache mailer instances for ses driver', async (assert) => {
+  test('cache mailer instances for ses driver', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -312,11 +312,11 @@ test.group('Mail Manager | SES', (group) => {
 })
 
 test.group('Mail Manager | Mailgun', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get mailer instance for mailgun driver', async (assert) => {
+  test('get mailer instance for mailgun driver', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -334,7 +334,7 @@ test.group('Mail Manager | Mailgun', (group) => {
     assert.instanceOf(mailer.driver, MailgunDriver)
   })
 
-  test('cache mailer instances for mailgun driver', async (assert) => {
+  test('cache mailer instances for mailgun driver', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -354,11 +354,11 @@ test.group('Mail Manager | Mailgun', (group) => {
 })
 
 test.group('Mail Manager | SparkPost', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get mailer instance for sparkpost driver', async (assert) => {
+  test('get mailer instance for sparkpost driver', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -376,7 +376,7 @@ test.group('Mail Manager | SparkPost', (group) => {
     assert.instanceOf(mailer.driver, SparkPostDriver)
   })
 
-  test('cache mailer instances for sparkpost driver', async (assert) => {
+  test('cache mailer instances for sparkpost driver', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -396,11 +396,11 @@ test.group('Mail Manager | SparkPost', (group) => {
 })
 
 test.group('Mail Manager | Views', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('make html view before sending the email', async (assert) => {
+  test('make html view before sending the email', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -448,7 +448,7 @@ test.group('Mail Manager | Views', (group) => {
     })
   })
 
-  test('do not make html view when inline html is defined', async (assert) => {
+  test('do not make html view when inline html is defined', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -496,7 +496,7 @@ test.group('Mail Manager | Views', (group) => {
     })
   })
 
-  test('make text view before sending the email', async (assert) => {
+  test('make text view before sending the email', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -543,7 +543,7 @@ test.group('Mail Manager | Views', (group) => {
     })
   })
 
-  test('do not make text view when inline text is defined', async (assert) => {
+  test('do not make text view when inline text is defined', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -591,7 +591,7 @@ test.group('Mail Manager | Views', (group) => {
     })
   })
 
-  test('make watch view before sending the email', async (assert) => {
+  test('make watch view before sending the email', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -638,7 +638,7 @@ test.group('Mail Manager | Views', (group) => {
     })
   })
 
-  test('do not make watch view when inline text is defined', async (assert) => {
+  test('do not make watch view when inline text is defined', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -688,11 +688,11 @@ test.group('Mail Manager | Views', (group) => {
 })
 
 test.group('Mail Manager | send', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('send email', async (assert) => {
+  test('send email', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -735,7 +735,7 @@ test.group('Mail Manager | send', (group) => {
     })
   })
 
-  test('pass config all the way to the driver send method', async (assert) => {
+  test('pass config all the way to the driver send method', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -771,11 +771,11 @@ test.group('Mail Manager | send', (group) => {
 })
 
 test.group('Mail Manager | sendLater', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('schedule emails for sending', async (assert, done) => {
+  test('schedule emails for sending', async ({ assert }, done) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -824,9 +824,9 @@ test.group('Mail Manager | sendLater', (group) => {
       message.from('baz@bar.com')
       message.subject('Hello world')
     })
-  })
+  }).waitForDone()
 
-  test('pass config all the way to the driver send method', async (assert, done) => {
+  test('pass config all the way to the driver send method', async ({ assert }, done) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -867,15 +867,15 @@ test.group('Mail Manager | sendLater', (group) => {
     })
 
     await (manager.use() as any).sendLater(() => {}, { foo: 'bar' })
-  })
+  }).waitForDone()
 })
 
 test.group('Mail Manager | trap', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('trap mail send call', async (assert) => {
+  test('trap mail send call', async ({ assert }) => {
     assert.plan(2)
 
     const config = {
@@ -924,7 +924,7 @@ test.group('Mail Manager | trap', (group) => {
     assert.isUndefined(customDriver.message)
   })
 
-  test('get rendered view content inside the trap callback', async (assert) => {
+  test('get rendered view content inside the trap callback', async ({ assert }) => {
     assert.plan(2)
 
     const config = {
@@ -977,7 +977,7 @@ test.group('Mail Manager | trap', (group) => {
     assert.isUndefined(customDriver.message)
   })
 
-  test('trap sendLater calls without hitting the queue', async (assert) => {
+  test('trap sendLater calls without hitting the queue', async ({ assert }) => {
     assert.plan(2)
 
     const config = {
@@ -1030,7 +1030,7 @@ test.group('Mail Manager | trap', (group) => {
     assert.isUndefined(customDriver.message)
   })
 
-  test('remove trap after restore', async (assert) => {
+  test('remove trap after restore', async ({ assert }) => {
     assert.plan(2)
 
     const config = {
@@ -1091,7 +1091,7 @@ test.group('Mail Manager | trap', (group) => {
     })
   })
 
-  test('trap multiple mail send calls', async (assert) => {
+  test('trap multiple mail send calls', async ({ assert }) => {
     assert.plan(3)
 
     const config = {
@@ -1159,7 +1159,7 @@ test.group('Mail Manager | trap', (group) => {
     assert.isUndefined(customDriver.message)
   })
 
-  test('trap when calling send on mail manager directly', async (assert) => {
+  test('trap when calling send on mail manager directly', async ({ assert }) => {
     assert.plan(2)
 
     const config = {
@@ -1210,11 +1210,11 @@ test.group('Mail Manager | trap', (group) => {
 })
 
 test.group('Mail Manager | preview', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('Mail.preview should return the preview url', async (assert) => {
+  test('Mail.preview should return the preview url', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -1235,7 +1235,7 @@ test.group('Mail Manager | preview', (group) => {
     assert.exists(response.url)
   }).timeout(1000 * 10)
 
-  test('multiple calls to preview should use one account', async (assert) => {
+  test('multiple calls to preview should use one account', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -1265,11 +1265,11 @@ test.group('Mail Manager | preview', (group) => {
 })
 
 test.group('Mail Manager | queue', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('pass mail and response to the queue monitor function', async (assert, done) => {
+  test('pass mail and response to the queue monitor function', async ({ assert }, done) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -1316,9 +1316,9 @@ test.group('Mail Manager | queue', (group) => {
       message.from('baz@bar.com')
       message.subject('Hello world')
     })
-  })
+  }).waitForDone()
 
-  test('attach mail to the queue error object', async (assert, done) => {
+  test('attach mail to the queue error object', async ({ assert }, done) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -1364,5 +1364,5 @@ test.group('Mail Manager | queue', (group) => {
       message.from('baz@bar.com')
       message.subject('Hello world')
     })
-  })
+  }).waitForDone()
 })

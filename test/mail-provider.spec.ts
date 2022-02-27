@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { MailManager } from '../src/Mail/MailManager'
 import { fs, setup } from '../test-helpers'
 
 test.group('Mail Provider', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('register mail provider', async (assert) => {
+  test('register mail provider', async ({ assert }) => {
     const app = await setup('web', {
       mailer: 'smtp',
       mailers: {
@@ -31,7 +31,7 @@ test.group('Mail Provider', (group) => {
     )
   })
 
-  test('register repl binding', async (assert) => {
+  test('register repl binding', async ({ assert }) => {
     const app = await setup('repl', {
       mailer: 'smtp',
       mailers: {

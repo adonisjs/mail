@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import dotenv from 'dotenv'
 import { join } from 'path'
 
@@ -15,11 +15,11 @@ import { Message } from '../src/Message'
 import { SmtpDriver } from '../src/Drivers/Smtp'
 
 test.group('Smtp Driver', (group) => {
-  group.before(() => {
+  group.setup(() => {
     dotenv.config({ path: join(__dirname, '..', '.env') })
   })
 
-  test('send email using smtp driver', async (assert) => {
+  test('send email using smtp driver', async ({ assert }) => {
     const smtp = new SmtpDriver({
       driver: 'smtp',
       host: process.env.MAILTRAP_SMTP_HOST!,

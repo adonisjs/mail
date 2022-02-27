@@ -8,7 +8,7 @@
  */
 
 import got from 'got'
-import test from 'japa'
+import { test } from '@japa/runner'
 import dotenv from 'dotenv'
 import { join } from 'path'
 
@@ -19,15 +19,15 @@ import { MailgunDriver } from '../src/Drivers/Mailgun'
 const sleep = (time: number) => new Promise<void>((resolve) => setTimeout(resolve, time))
 
 test.group('Mailgun Driver', (group) => {
-  group.before(() => {
+  group.setup(() => {
     dotenv.config({ path: join(__dirname, '..', '.env') })
   })
 
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('send email using mailgun driver', async (assert) => {
+  test('send email using mailgun driver', async ({ assert }) => {
     const app = await setup()
 
     const mailgun = new MailgunDriver(
@@ -53,7 +53,7 @@ test.group('Mailgun Driver', (group) => {
     assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
   }).timeout(1000 * 10)
 
-  test('enable tracking', async (assert) => {
+  test('enable tracking', async ({ assert }) => {
     const app = await setup()
 
     const mailgun = new MailgunDriver(
@@ -80,7 +80,7 @@ test.group('Mailgun Driver', (group) => {
     assert.deepEqual(response.envelope!.to, ['virk@adonisjs.com', 'info@adonisjs.com'])
   }).timeout(1000 * 10)
 
-  test('attach tags', async (assert) => {
+  test('attach tags', async ({ assert }) => {
     const app = await setup()
 
     const mailgun = new MailgunDriver(

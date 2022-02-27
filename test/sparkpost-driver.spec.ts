@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import dotenv from 'dotenv'
 import { join } from 'path'
 
@@ -16,15 +16,15 @@ import { setup, fs } from '../test-helpers'
 import { SparkPostDriver } from '../src/Drivers/SparkPost'
 
 test.group('SparkPost Driver', (group) => {
-  group.before(() => {
+  group.setup(() => {
     dotenv.config({ path: join(__dirname, '..', '.env') })
   })
 
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('send email using sparkpost driver', async (assert) => {
+  test('send email using sparkpost driver', async ({ assert }) => {
     const app = await setup()
 
     const sparkpost = new SparkPostDriver(
