@@ -118,7 +118,7 @@ test.group('Mailgun Driver', (group) => {
       }
     )
 
-    assert.deepEqual(body.items[0].tags, ['test', 'newsletter'])
+    assert.sameMembers(body.items[0].tags, ['test', 'newsletter'])
   })
     .timeout(1000 * 10)
     .retry(2)
