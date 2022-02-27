@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/mail",
-  "version": "7.2.4",
+  "version": "7.2.5",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "main": "build/providers/MailProvider.js",
   "files": [
@@ -111,7 +111,8 @@
   },
   "np": {
     "contents": ".",
-    "anyBranch": false
+    "anyBranch": false,
+    "yolo": true
   },
   "publishConfig": {
     "tag": "latest",
