@@ -44,16 +44,16 @@ test.group('BaseMailer', (group) => {
       }
     }
 
-    manager.trap((message) => {
-      assert.deepEqual(message, {
-        subject: 'Welcome',
-        from: { address: 'virk@adonisjs.com' },
-        to: [{ address: 'virk@adonisjs.com' }],
-      })
-    })
+    const fakeMailer = manager.fake()
 
     const mailer = new MyMailer()
     await mailer.send()
+
+    assert.deepEqual(fakeMailer.find({ subject: 'Welcome' }), {
+      subject: 'Welcome',
+      from: { address: 'virk@adonisjs.com' },
+      to: [{ address: 'virk@adonisjs.com' }],
+    })
   })
 
   test('use a custom mailer', async ({ assert }) => {
