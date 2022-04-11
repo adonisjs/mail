@@ -870,14 +870,12 @@ test.group('Mail Manager | sendLater', (group) => {
   }).waitForDone()
 })
 
-test.group('Mail Manager | trap', (group) => {
+test.group('Mail Manager | fake', (group) => {
   group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('trap mail send call', async ({ assert }) => {
-    assert.plan(2)
-
+  test('fake default mailer', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -907,25 +905,23 @@ test.group('Mail Manager | trap', (group) => {
       return customDriver
     })
 
-    manager.trap((message) => {
-      assert.deepEqual(message, {
-        to: [{ address: 'foo@bar.com' }],
-        from: { address: 'baz@bar.com' },
-        subject: 'Hello world',
-      })
-    })
-
+    const fakeMail = manager.fake()
     await manager.use().send((message) => {
       message.to('foo@bar.com')
       message.from('baz@bar.com')
       message.subject('Hello world')
     })
 
+    assert.deepEqual(fakeMail.find({ to: [{ address: 'foo@bar.com' }] }), {
+      to: [{ address: 'foo@bar.com', name: '' }],
+      from: { address: 'baz@bar.com', name: '' },
+      subject: 'Hello world',
+    })
     assert.isUndefined(customDriver.message)
   })
 
-  test('get rendered view content inside the trap callback', async ({ assert }) => {
-    assert.plan(2)
+  test('fake named mailer', async ({ assert }) => {
+    const sentMails: MessageNode[] = []
 
     const config = {
       mailer: 'marketing',
@@ -933,53 +929,66 @@ test.group('Mail Manager | trap', (group) => {
         marketing: {
           driver: 'custom',
         },
+        promotional: {
+          driver: 'custom',
+        },
       },
     }
 
     class CustomDriver implements MailDriverContract {
-      public message: MessageNode
-      public options: any
-
-      public async send(message, options) {
-        this.message = message
-        this.options = options
+      public async send(message: MessageNode) {
+        sentMails.push(message)
       }
 
       public async close() {}
     }
 
-    const customDriver = new CustomDriver()
     const app = await setup()
     const manager = new MailManager(app, config as any)
 
     manager.extend('custom', () => {
-      return customDriver
+      return new CustomDriver()
     })
 
-    manager.trap((message) => {
-      assert.deepEqual(message, {
-        to: [{ address: 'foo@bar.com' }],
-        from: { address: 'baz@bar.com' },
-        subject: 'Hello world',
-        html: '<p> Hello virk </p>',
-      })
+    const fakeMail = manager.fake('promotional')
+
+    /**
+     * Will be faked
+     */
+    await manager.use('promotional').send((message) => {
+      message.to('foo@bar.com')
+      message.from('baz@bar.com')
+      message.subject('Hello world')
     })
 
-    manager.view!.registerTemplate('welcome', { template: '<p> Hello {{ name }} </p>' })
-
+    /**
+     * Will hit real driver
+     */
     await manager.use().send((message) => {
       message.to('foo@bar.com')
       message.from('baz@bar.com')
       message.subject('Hello world')
-      message.htmlView('welcome', { name: 'virk' })
     })
 
-    assert.isUndefined(customDriver.message)
+    assert.deepEqual(fakeMail.find({ to: [{ address: 'foo@bar.com' }] }), {
+      to: [{ address: 'foo@bar.com', name: '' }],
+      from: { address: 'baz@bar.com', name: '' },
+      subject: 'Hello world',
+    })
+
+    assert.deepEqual(sentMails, [
+      {
+        to: [{ address: 'foo@bar.com' }],
+        from: { address: 'baz@bar.com' },
+        subject: 'Hello world',
+      },
+    ])
+
+    assert.isTrue(fakeMail.isFaked('promotional'))
+    assert.isFalse(fakeMail.isFaked('marketing' as any))
   })
 
-  test('trap sendLater calls without hitting the queue', async ({ assert }) => {
-    assert.plan(2)
-
+  test('send later method should not add mail to the queue', async ({ assert }) => {
     const config = {
       mailer: 'marketing',
       mailers: {
@@ -1009,29 +1018,23 @@ test.group('Mail Manager | trap', (group) => {
       return customDriver
     })
 
-    manager.trap((message) => {
-      assert.deepEqual(message, {
-        to: [{ address: 'foo@bar.com' }],
-        from: { address: 'baz@bar.com' },
-        subject: 'Hello world',
-      })
-    })
-
-    manager.monitorQueue(() => {
-      throw new Error('Never expected to reach here')
-    })
-
+    const fakeMail = manager.fake()
     await manager.use().sendLater((message) => {
       message.to('foo@bar.com')
       message.from('baz@bar.com')
       message.subject('Hello world')
     })
 
+    assert.deepEqual(fakeMail.find({ to: [{ address: 'foo@bar.com' }] }), {
+      to: [{ address: 'foo@bar.com', name: '' }],
+      from: { address: 'baz@bar.com', name: '' },
+      subject: 'Hello world',
+    })
     assert.isUndefined(customDriver.message)
   })
 
-  test('remove trap after restore', async ({ assert }) => {
-    assert.plan(2)
+  test('remove fake after restore', async ({ assert }) => {
+    const sentMails: MessageNode[] = []
 
     const config = {
       mailer: 'marketing',
@@ -1043,38 +1046,22 @@ test.group('Mail Manager | trap', (group) => {
     }
 
     class CustomDriver implements MailDriverContract {
-      public message: MessageNode
-      public options: any
-
-      public async send(message, options) {
-        this.message = message
-        this.options = options
+      public async send(message: MessageNode) {
+        sentMails.push(message)
       }
 
       public async close() {}
     }
 
-    const customDriver = new CustomDriver()
     const app = await setup()
     const manager = new MailManager(app, config as any)
 
     manager.extend('custom', () => {
-      return customDriver
+      return new CustomDriver()
     })
 
-    manager.trap((message) => {
-      assert.deepEqual(message, {
-        to: [{ address: 'foo@bar.com' }],
-        from: { address: 'baz@bar.com' },
-        subject: 'Hello world',
-      })
-    })
-
-    await manager.use().send((message) => {
-      message.to('foo@bar.com')
-      message.from('baz@bar.com')
-      message.subject('Hello world')
-    })
+    const fakeMail = manager.fake()
+    assert.isTrue(fakeMail.isFaked('marketing' as any))
 
     manager.restore()
 
@@ -1084,127 +1071,109 @@ test.group('Mail Manager | trap', (group) => {
       message.subject('Hello world')
     })
 
-    assert.deepEqual(customDriver.message, {
-      to: [{ address: 'foo@bar.com' }],
-      from: { address: 'baz@bar.com' },
-      subject: 'Hello world',
-    })
-  })
+    assert.deepEqual(
+      fakeMail.filter(() => true),
+      []
+    )
 
-  test('trap multiple mail send calls', async ({ assert }) => {
-    assert.plan(3)
-
-    const config = {
-      mailer: 'marketing',
-      mailers: {
-        marketing: {
-          driver: 'custom',
-        },
-      },
-    }
-
-    class CustomDriver implements MailDriverContract {
-      public message: MessageNode
-      public options: any
-
-      public async send(message, options) {
-        this.message = message
-        this.options = options
-      }
-
-      public async close() {}
-    }
-
-    const customDriver = new CustomDriver()
-    const app = await setup()
-    const manager = new MailManager(app, config as any)
-
-    manager.extend('custom', () => {
-      return customDriver
-    })
-
-    let i = 0
-
-    manager.trap((message) => {
-      i++
-      if (i === 1) {
-        assert.deepEqual(message, {
-          to: [{ address: 'foo@bar.com' }],
-          from: { address: 'baz@bar.com' },
-          subject: 'Hello world',
-        })
-      }
-
-      if (i === 2) {
-        assert.deepEqual(message, {
-          to: [{ address: 'foo@bar.com' }],
-          from: { address: 'baz@bar.com' },
-          subject: 'Hi world',
-        })
-      }
-    })
-
-    await manager.use().send((message) => {
-      message.to('foo@bar.com')
-      message.from('baz@bar.com')
-      message.subject('Hello world')
-    })
-
-    await manager.use().send((message) => {
-      message.to('foo@bar.com')
-      message.from('baz@bar.com')
-      message.subject('Hi world')
-    })
-
-    assert.isUndefined(customDriver.message)
-  })
-
-  test('trap when calling send on mail manager directly', async ({ assert }) => {
-    assert.plan(2)
-
-    const config = {
-      mailer: 'marketing',
-      mailers: {
-        marketing: {
-          driver: 'custom',
-        },
-      },
-    }
-
-    class CustomDriver implements MailDriverContract {
-      public message: MessageNode
-      public options: any
-
-      public async send(message, options) {
-        this.message = message
-        this.options = options
-      }
-
-      public async close() {}
-    }
-
-    const customDriver = new CustomDriver()
-    const app = await setup()
-    const manager = new MailManager(app, config as any)
-
-    manager.extend('custom', () => {
-      return customDriver
-    })
-
-    manager.trap((message) => {
-      assert.deepEqual(message, {
+    assert.deepEqual(sentMails, [
+      {
         to: [{ address: 'foo@bar.com' }],
         from: { address: 'baz@bar.com' },
         subject: 'Hello world',
-      })
+      },
+    ])
+
+    assert.isFalse(fakeMail.isFaked('marketing' as any))
+  })
+
+  test('fake when calling send on the mail manager', async ({ assert }) => {
+    const config = {
+      mailer: 'marketing',
+      mailers: {
+        marketing: {
+          driver: 'custom',
+        },
+      },
+    }
+
+    class CustomDriver implements MailDriverContract {
+      public message: MessageNode
+      public options: any
+
+      public async send(message, options) {
+        this.message = message
+        this.options = options
+      }
+
+      public async close() {}
+    }
+
+    const customDriver = new CustomDriver()
+    const app = await setup()
+    const manager = new MailManager(app, config as any)
+
+    manager.extend('custom', () => {
+      return customDriver
     })
 
+    const fakeMail = manager.fake()
     await manager.send((message) => {
       message.to('foo@bar.com')
       message.from('baz@bar.com')
       message.subject('Hello world')
     })
 
+    assert.deepEqual(fakeMail.find({ to: [{ address: 'foo@bar.com' }] }), {
+      to: [{ address: 'foo@bar.com', name: '' }],
+      from: { address: 'baz@bar.com', name: '' },
+      subject: 'Hello world',
+    })
+    assert.isUndefined(customDriver.message)
+  })
+
+  test('fake when calling sendLater on the mail manager', async ({ assert }) => {
+    const config = {
+      mailer: 'marketing',
+      mailers: {
+        marketing: {
+          driver: 'custom',
+        },
+      },
+    }
+
+    class CustomDriver implements MailDriverContract {
+      public message: MessageNode
+      public options: any
+
+      public async send(message, options) {
+        this.message = message
+        this.options = options
+      }
+
+      public async close() {}
+    }
+
+    const customDriver = new CustomDriver()
+    const app = await setup()
+    const manager = new MailManager(app, config as any)
+
+    manager.extend('custom', () => {
+      return customDriver
+    })
+
+    const fakeMail = manager.fake()
+    await manager.sendLater((message) => {
+      message.to('foo@bar.com')
+      message.from('baz@bar.com')
+      message.subject('Hello world')
+    })
+
+    assert.deepEqual(fakeMail.find({ to: [{ address: 'foo@bar.com' }] }), {
+      to: [{ address: 'foo@bar.com', name: '' }],
+      from: { address: 'baz@bar.com', name: '' },
+      subject: 'Hello world',
+    })
     assert.isUndefined(customDriver.message)
   })
 })

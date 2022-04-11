@@ -12,21 +12,49 @@
 import nodemailer from 'nodemailer'
 import {
   MessageNode,
-  TrapCallback,
   FakeDriverContract,
   FakeMailResponse,
+  MessageSearchNode,
 } from '@ioc:Adonis/Addons/Mail'
+import { subsetCompare } from '../utils'
 
 /**
  * Smtp driver to send email using smtp
  */
 export class FakeDriver implements FakeDriverContract {
   private transporter: any
+  public mails: MessageNode[] = []
 
-  constructor(private listener: TrapCallback) {
+  constructor() {
     this.transporter = nodemailer.createTransport({
       jsonTransport: true,
     })
+  }
+
+  /**
+   * Find an email
+   */
+  public find(
+    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
+  ): MessageNode | null {
+    if (typeof messageOrCallback === 'function') {
+      return this.mails.find(messageOrCallback) || null
+    }
+
+    return this.mails.find((mail) => subsetCompare(messageOrCallback, mail)) || null
+  }
+
+  /**
+   * Filter emails
+   */
+  public filter(
+    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
+  ): MessageNode[] {
+    if (typeof messageOrCallback === 'function') {
+      return this.mails.filter(messageOrCallback)
+    }
+
+    return this.mails.filter((mail) => subsetCompare(messageOrCallback, mail))
   }
 
   /**
@@ -37,9 +65,8 @@ export class FakeDriver implements FakeDriverContract {
       throw new Error('Driver transport has been closed and cannot be used for sending emails')
     }
 
-    const listenerResponse = this.listener(message)
-    const response = await this.transporter.sendMail(message)
-    return { ...response, ...listenerResponse }
+    this.mails.push(message)
+    return this.transporter.sendMail(message)
   }
 
   /**
@@ -47,6 +74,7 @@ export class FakeDriver implements FakeDriverContract {
    */
   public async close() {
     this.transporter.close()
+    this.mails = []
     this.transporter = null
   }
 }
