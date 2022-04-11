@@ -156,6 +156,8 @@ declare module '@ioc:Adonis/Addons/Mail' {
     watch?: string
   }
 
+  export type MessageSearchNode = Omit<MessageNode, 'attachments' | 'icalEvent'>
+
   /**
    * Shape of the message instance passed to `send` method callback
    */
@@ -540,6 +542,12 @@ declare module '@ioc:Adonis/Addons/Mail' {
    */
   export interface FakeDriverContract extends MailDriverContract {
     send(message: MessageNode): Promise<FakeMailResponse>
+    find(
+      messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
+    ): MessageNode | null
+    filter(
+      messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
+    ): MessageNode[]
   }
 
   /*
@@ -553,11 +561,6 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * message
    */
   export type MessageComposeCallback = (message: MessageContract) => void | Promise<void>
-
-  /**
-   * Callback to wrap emails
-   */
-  export type TrapCallback = (message: MessageNode) => any
 
   /**
    * Callback to monitor queues response
@@ -640,6 +643,22 @@ declare module '@ioc:Adonis/Addons/Mail' {
   }
 
   /**
+   * Fake mail manager to trap emails and write
+   * assertions against them
+   */
+  export interface FakeMailManagerContract {
+    isFaked(mailer: keyof MailersList): boolean
+    use(mailer: keyof MailersList): MailerContract<any>
+    exists(messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)): boolean
+    find(
+      messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
+    ): MessageNode | null
+    filter(
+      messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
+    ): MessageNode[]
+  }
+
+  /**
    * Shape of the mailer
    */
   export interface MailManagerContract
@@ -650,9 +669,9 @@ declare module '@ioc:Adonis/Addons/Mail' {
       { [P in keyof MailersList]: MailerContract<P> }
     > {
     /**
-     * Trap emails
+     * Fake one or more mailers
      */
-    trap(callback: TrapCallback): void
+    fake(mailers?: keyof MailersList | keyof MailersList[]): FakeMailManagerContract
 
     /**
      * Define a callback to monitor queued emails
@@ -660,9 +679,9 @@ declare module '@ioc:Adonis/Addons/Mail' {
     monitorQueue(callback: QueueMonitorCallback): void
 
     /**
-     * Restore trap
+     * Restore fakes
      */
-    restore(): void
+    restore(mailers?: keyof MailersList | keyof MailersList[]): void
 
     /**
      * Pretty print mailer event data

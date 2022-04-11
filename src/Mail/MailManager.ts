@@ -18,7 +18,6 @@ import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import {
   MailConfig,
   MailersList,
-  TrapCallback,
   MailerContract,
   CompiledMailNode,
   MailDriverContract,
@@ -28,6 +27,7 @@ import {
 } from '@ioc:Adonis/Addons/Mail'
 
 import { Mailer } from './Mailer'
+import { FakeMailManager } from '../Fake'
 import { BaseMailer } from '../BaseMailer'
 import { prettyPrint } from '../Helpers/prettyPrint'
 
@@ -48,21 +48,6 @@ export class MailManager
   implements MailManagerContract
 {
   /**
-   * Caching driver instances. One must call `close` to clean it up
-   */
-  protected singleton = true
-
-  /**
-   * Reference to the fake driver
-   */
-  private fakeMailer?: MailerContract<any>
-
-  /**
-   * Method to pretty print sent emails
-   */
-  public prettyPrint = prettyPrint
-
-  /**
    * Emails queue to scheduling emails to be delivered later
    */
   private emailsQueue = fastq(this, this.sendQueuedEmail, 10)
@@ -81,6 +66,21 @@ export class MailManager
       )
     }
   }
+
+  /**
+   * Reference to the fake mailer manager
+   */
+  private fakeMailManager = new FakeMailManager()
+
+  /**
+   * Caching driver instances. One must call `close` to clean it up
+   */
+  protected singleton = true
+
+  /**
+   * Method to pretty print sent emails
+   */
+  public prettyPrint = prettyPrint
 
   /**
    * Reference to the base mailer since Ioc container doesn't allow
@@ -228,12 +228,22 @@ export class MailManager
   }
 
   /**
-   * Fake email calls. The "sendLater" emails will be invoked right
-   * away as well
+   * Fake one or more mailers. Calling the method multiple times
+   * appends to the list of faked mailers
    */
-  public trap(callback: TrapCallback) {
+  public fake(mailers?: keyof MailersList | keyof MailersList[]) {
+    mailers = mailers || this.getDefaultMappingName()
+    const mailersToFake = Array.isArray(mailers) ? mailers : [mailers]
+
     const { FakeDriver } = require('../Drivers/Fake')
-    this.fakeMailer = new Mailer('fake' as any, this, false, new FakeDriver(callback))
+    mailersToFake.forEach((mailer) => {
+      this.fakeMailManager.fakedMailers.set(
+        mailer,
+        new Mailer('fake' as any, this, false, new FakeDriver())
+      )
+    })
+
+    return this.fakeMailManager
   }
 
   /**
@@ -244,19 +254,28 @@ export class MailManager
   }
 
   /**
-   * Restore previously created trap.
+   * Restore fakes
    */
-  public restore() {
-    this.fakeMailer = undefined
+  public restore(mailers?: keyof MailersList | keyof MailersList[]) {
+    mailers = mailers || this.getDefaultMappingName()
+    const mailersToRestore = Array.isArray(mailers) ? mailers : [mailers]
+
+    mailersToRestore.forEach((mailer) => {
+      this.fakeMailManager.restore(mailer)
+    })
   }
 
   /**
    * Sends email using the default `mailer`
    */
   public async send(callback: MessageComposeCallback) {
-    if (this.fakeMailer) {
-      return this.fakeMailer.send(callback)
+    /**
+     * Use fake and return its response
+     */
+    if (this.fakeMailManager.isFaked(this.getDefaultMappingName())) {
+      return this.fakeMailManager.use(this.getDefaultMappingName()).send(callback)
     }
+
     return this.use().send(callback)
   }
 
@@ -264,9 +283,13 @@ export class MailManager
    * Send email by pushing it to the in-memory queue
    */
   public async sendLater(callback: MessageComposeCallback) {
-    if (this.fakeMailer) {
-      return this.fakeMailer.sendLater(callback)
+    /**
+     * Use fake and return its response
+     */
+    if (this.fakeMailManager.isFaked(this.getDefaultMappingName())) {
+      return this.fakeMailManager.use(this.getDefaultMappingName()).send(callback)
     }
+
     return this.use().sendLater(callback)
   }
 
@@ -274,11 +297,16 @@ export class MailManager
    * Use a named or the default mailer
    */
   public use(name?: keyof MailersList) {
-    if (this.fakeMailer) {
-      return this.fakeMailer
+    name = name || this.getDefaultMappingName()
+
+    /**
+     * Use fake
+     */
+    if (this.fakeMailManager.isFaked(name)) {
+      return this.fakeMailManager.use(name)
     }
 
-    return name ? super.use(name) : super.use()
+    return super.use(name)
   }
 
   /**
