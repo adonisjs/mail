@@ -51,8 +51,8 @@ test.group('BaseMailer', (group) => {
 
     assert.deepEqual(fakeMailer.find({ subject: 'Welcome' }), {
       subject: 'Welcome',
-      from: { address: 'virk@adonisjs.com' },
-      to: [{ address: 'virk@adonisjs.com' }],
+      from: { address: 'virk@adonisjs.com', name: '' },
+      to: [{ address: 'virk@adonisjs.com', name: '' }],
     })
   })
 
