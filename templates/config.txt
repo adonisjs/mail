@@ -6,7 +6,7 @@
  */
 
 import Env from '@ioc:Adonis/Core/Env'
-import { mailConfig } from '@adonisjs/mail/config'
+import { mailConfig } from '@adonisjs/mail/build/config'
 
 export default mailConfig({
   /*

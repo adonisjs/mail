@@ -5,7 +5,7 @@
  * file.
  */
 
-import { InferMailersFromConfig } from '@adonisjs/mail/config'
+import { InferMailersFromConfig } from '@adonisjs/mail/build/config'
 import mailConfig from '../config/mail'
 
 declare module '@ioc:Adonis/Addons/Mail' {
