@@ -7,4 +7,4 @@
  * file that was distributed with this source code.
  */
 
-export default ['@adonisjs/mail/build/commands/MakeMailer']
+export default ['@adonisjs/mail/build/commands/MakeMailer.js']

@@ -5,21 +5,9 @@
  * file.
  */
 
-declare module '@ioc:Adonis/Addons/Mail' {
-  import { MailDrivers } from '@ioc:Adonis/Addons/Mail'
+import { InferMailersFromConfig } from '@adonisjs/mail/config'
+import mailConfig from '../config/mail'
 
-  interface MailersList {
-		{{#smtp}}
-    smtp: MailDrivers['smtp'],
-		{{/smtp}}
-		{{#ses}}
-    ses: MailDrivers['ses'],
-		{{/ses}}
-		{{#mailgun}}
-    mailgun: MailDrivers['mailgun'],
-		{{/mailgun}}
-		{{#sparkpost}}
-    sparkpost: MailDrivers['sparkpost'],
-		{{/sparkpost}}
-  }
+declare module '@ioc:Adonis/Addons/Mail' {
+  interface MailersList extends InferMailersFromConfig<typeof mailConfig> {}
 }

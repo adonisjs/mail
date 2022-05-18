@@ -156,6 +156,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
     watch?: string
   }
 
+  /**
+   * The object that can be used to search for mail messages
+   * during fakes
+   */
   export type MessageSearchNode = Omit<MessageNode, 'attachments' | 'icalEvent'>
 
   /**
@@ -271,7 +275,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
    * }
    * ```
    */
-  export type MailDrivers = {
+  export interface MailDrivers {
     smtp: {
       config: SmtpConfig
       implementation: SmtpDriverContract
@@ -671,7 +675,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
     /**
      * Fake one or more mailers
      */
-    fake(mailers?: keyof MailersList | keyof MailersList[]): FakeMailManagerContract
+    fake(mailers?: keyof MailersList | (keyof MailersList)[]): FakeMailManagerContract
 
     /**
      * Define a callback to monitor queued emails
@@ -681,7 +685,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
     /**
      * Restore fakes
      */
-    restore(mailers?: keyof MailersList | keyof MailersList[]): void
+    restore(mailers?: keyof MailersList | (keyof MailersList)[]): void
 
     /**
      * Pretty print mailer event data

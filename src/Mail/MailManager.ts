@@ -231,7 +231,7 @@ export class MailManager
    * Fake one or more mailers. Calling the method multiple times
    * appends to the list of faked mailers
    */
-  public fake(mailers?: keyof MailersList | keyof MailersList[]) {
+  public fake(mailers?: keyof MailersList | (keyof MailersList)[]) {
     mailers = mailers || this.getDefaultMappingName()
     const mailersToFake = Array.isArray(mailers) ? mailers : [mailers]
 
@@ -256,7 +256,7 @@ export class MailManager
   /**
    * Restore fakes
    */
-  public restore(mailers?: keyof MailersList | keyof MailersList[]) {
+  public restore(mailers?: keyof MailersList | (keyof MailersList)[]) {
     mailers = mailers || this.getDefaultMappingName()
     const mailersToRestore = Array.isArray(mailers) ? mailers : [mailers]
 
