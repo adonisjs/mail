@@ -1,21 +1,21 @@
 {
   "name": "@adonisjs/mail",
-  "version": "8.0.1",
+  "version": "8.1.0",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "main": "build/providers/MailProvider.js",
   "exports": {
-		".": {
-			"types": "./build/adonis-typings/index.d.ts",
-			"require": "./build/providers/MailProvider.js"
-		},
-		"./commands": "./build/commands/index.js",
-		"./commands/MakeMailer": "./build/commands/MakeMailer.js",
-		"./build/commands": "./build/commands/index.js",
-		"./build/commands/MakeMailer": "./build/commands/MakeMailer.js",
+    ".": {
+      "types": "./build/adonis-typings/index.d.ts",
+      "require": "./build/providers/MailProvider.js"
+    },
+    "./commands": "./build/commands/index.js",
+    "./commands/MakeMailer": "./build/commands/MakeMailer.js",
+    "./build/commands": "./build/commands/index.js",
+    "./build/commands/MakeMailer": "./build/commands/MakeMailer.js",
     "./config": "./build/config.js",
     "./build/config": "./build/config.js",
-		"./*": "./*"
-	},
+    "./*": "./*"
+  },
   "files": [
     "build/adonis-typings",
     "build/providers",
