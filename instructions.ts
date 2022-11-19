@@ -126,7 +126,8 @@ export default async function instructions(
   /**
    * Create the mail contracts file
    */
-  const contractsPath = app.makePath('contracts/mail.ts')
+  const contractsDir = app.directoriesMap.get('contracts') || 'contracts'
+  const contractsPath = app.makePath(`${contractsDir}/mail.ts`)
   const mailContract = new sink.files.MustacheFile(
     projectRoot,
     contractsPath,
@@ -141,7 +142,7 @@ export default async function instructions(
       sparkpost: mailDrivers.includes('sparkpost'),
     })
     .commit()
-  sink.logger.action('create').succeeded('contracts/mail.ts')
+  sink.logger.action('create').succeeded(`${contractsDir}/mail.ts`)
 
   /**
    * Setup .env file
