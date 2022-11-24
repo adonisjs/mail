@@ -75,13 +75,15 @@ test.group('Message', () => {
   test('define replyTo', ({ assert }) => {
     const message = new Message()
     message.replyTo('foo@bar.com')
-    assert.deepEqual(message.toJSON().message, { replyTo: { address: 'foo@bar.com' } })
+    assert.deepEqual(message.toJSON().message, { replyTo: [{ address: 'foo@bar.com' }] })
   })
 
   test('define replyTo with name', ({ assert }) => {
     const message = new Message()
     message.replyTo('foo@bar.com', 'Foo')
-    assert.deepEqual(message.toJSON().message, { replyTo: { address: 'foo@bar.com', name: 'Foo' } })
+    assert.deepEqual(message.toJSON().message, {
+      replyTo: [{ address: 'foo@bar.com', name: 'Foo' }],
+    })
   })
 
   test('define in reply to messageId', ({ assert }) => {

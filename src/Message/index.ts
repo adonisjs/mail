@@ -108,7 +108,8 @@ export class Message implements MessageContract {
    * Define replyTo email and name
    */
   public replyTo(address: string, name?: string): this {
-    this.nodeMailerMessage.replyTo = this.getAddress(address, name)
+    this.nodeMailerMessage.replyTo = this.nodeMailerMessage.replyTo || []
+    this.nodeMailerMessage.replyTo.push(this.getAddress(address, name))
     return this
   }
 

@@ -127,7 +127,7 @@ declare module '@ioc:Adonis/Addons/Mail' {
     bcc?: RecipientNode[]
     messageId?: string
     subject?: string
-    replyTo?: RecipientNode
+    replyTo?: RecipientNode[]
     inReplyTo?: string
     references?: string[]
     encoding?: string
