@@ -218,6 +218,28 @@ export class MailManager
     const { SparkPostDriver } = require('../Drivers/SparkPost')
     return new SparkPostDriver(config, this.logger)
   }
+  
+  
+  
+  protected create(name: string, config: any) {
+    //  add here
+    if(name == "smtp"){
+      const { SmtpDriver } = require('../Drivers/Smtp')
+      return new SmtpDriver(config)
+      
+    }else if(name == "ses"){
+      const { SesDriver } = require('../Drivers/Ses')
+      return new SesDriver(config)
+    
+    }else if(name == "mailgun"){
+      const { MailgunDriver } = require('../Drivers/Mailgun')
+      return new MailgunDriver(config, this.logger)
+    
+    }else if(name == "sparkpost"){
+      const { SparkPostDriver } = require('../Drivers/SparkPost')
+      return new SparkPostDriver(config, this.logger)
+    }
+  }
 
   /**
    * Method to schedule email for sending. This method is invoked by
