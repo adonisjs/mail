@@ -126,7 +126,8 @@ export default async function instructions(
   /**
    * Create the mail contracts file
    */
-  const contractsDir = app.directoriesMap.get('contracts') || 'contracts'
+  const contractsDirectory = app.directoriesMap.get('contracts') || 'contracts'
+  const contractPath = join(contractsDirectory, 'mail.ts')
   const contractsPath = app.makePath(`${contractsDir}/mail.ts`)
   const mailContract = new sink.files.MustacheFile(
     projectRoot,
