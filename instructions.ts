@@ -142,7 +142,7 @@ export default async function instructions(
       sparkpost: mailDrivers.includes('sparkpost'),
     })
     .commit()
-  sink.logger.action('create').succeeded(`${contractsDir}/mail.ts`)
+  sink.logger.action('create').succeeded(contractPath)
 
   /**
    * Setup .env file
