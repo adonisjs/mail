@@ -292,6 +292,10 @@ declare module '@ioc:Adonis/Addons/Mail' {
       config: SparkPostConfig
       implementation: SparkPostDriverContract
     }
+    file: {
+      config: FileConfig
+      implementation: FileDriverContract
+    }
   }
 
   /**
@@ -552,6 +556,34 @@ declare module '@ioc:Adonis/Addons/Mail' {
     filter(
       messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
     ): MessageNode[]
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | File driver
+  |--------------------------------------------------------------------------
+  */
+
+  /**
+   * Shape of FileConfig
+   */
+  export type FileConfig = {
+    filePath?: string
+  }
+
+  /**
+   * Shape of mail response for the file driver
+   */
+  export type FileMailResponse = {
+    messageId: string
+    message: MessageNode
+  }
+
+  /**
+   * Shape of the file driver
+   */
+  export interface FileDriverContract extends MailDriverContract {
+    send(message: MessageNode): Promise<FileMailResponse>
   }
 
   /*
