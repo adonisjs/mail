@@ -22,6 +22,7 @@ import { SmtpDriver } from '../src/Drivers/Smtp'
 import { MailManager } from '../src/Mail/MailManager'
 import { MailgunDriver } from '../src/Drivers/Mailgun'
 import { SparkPostDriver } from '../src/Drivers/SparkPost'
+import { FileDriver } from '../src/Drivers/File'
 
 import { fs, setup } from '../test-helpers'
 
@@ -309,6 +310,30 @@ test.group('Mail Manager | SES', (group) => {
 
     assert.deepEqual(mailer, mailer1)
   })
+})
+
+test.group('Mail Manager | File', (group) => {
+  group.each.teardown(async () => {
+    await fs.cleanup()
+  })
+
+  test('get mailer instance for file driver', async ({ assert }) => {
+    const config = {
+      mailer: 'marketing',
+      mailers: {
+        marketing: {
+          driver: 'file',
+        },
+      },
+    }
+
+    const app = await setup()
+    const manager = new MailManager(app, config as any)
+    const mailer = manager.use() as MailerContract<keyof MailersList>
+
+    assert.instanceOf(mailer, Mailer)
+    assert.instanceOf(mailer.driver, FileDriver)
+  }).pin() // TODO: Remove `pin`
 })
 
 test.group('Mail Manager | Mailgun', (group) => {
