@@ -220,6 +220,15 @@ export class MailManager
   }
 
   /**
+   * Creates an instance of `file` driver by lazy loading. This method
+   * is invoked internally when a new driver instance is required
+   */
+  protected createFile(_: string) {
+    const { FileDriver } = require('../Drivers/File')
+    return new FileDriver()
+  }
+
+  /**
    * Method to schedule email for sending. This method is invoked by
    * the mailer when `sendLater` method is called
    */
