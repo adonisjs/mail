@@ -86,6 +86,18 @@ test.group('Message', () => {
     })
   })
 
+  test('define multiple replyTo with name', ({ assert }) => {
+    const message = new Message()
+    message.replyTo('foo@bar.com', 'Foo')
+    message.replyTo('foo@baz.com', 'FooBaz')
+    assert.deepEqual(message.toJSON().message, {
+      replyTo: [
+        { address: 'foo@bar.com', name: 'Foo' },
+        { address: 'foo@baz.com', name: 'FooBaz' },
+      ],
+    })
+  })
+
   test('define in reply to messageId', ({ assert }) => {
     const message = new Message()
     message.inReplyTo('1234')
