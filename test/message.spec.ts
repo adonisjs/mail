@@ -299,7 +299,9 @@ test.group('Message', () => {
       (calendar) => {
         calendar.createEvent({
           summary: 'Discuss tech',
+          // @ts-expect-error See https://github.com/sebbo2002/ical-generator/issues/485
           start: DateTime.local().plus({ minutes: 30 }),
+          // @ts-expect-error See https://github.com/sebbo2002/ical-generator/issues/485
           end: DateTime.local().plus({ minutes: 60 }),
           url: 'http://adonisjs.com/meeting/1',
         })
