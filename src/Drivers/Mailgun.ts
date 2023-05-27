@@ -1,49 +1,39 @@
 /*
  * @adonisjs/mail
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) AdonisJS
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-/// <reference path="../../adonis-typings/mail.ts" />
-
 import nodemailer from 'nodemailer'
-import { LoggerContract } from '@ioc:Adonis/Core/Logger'
-
-import {
-  MessageNode,
-  MailgunConfig,
-  MailgunResponse,
-  MailgunRuntimeConfig,
-  MailgunDriverContract,
-} from '@ioc:Adonis/Addons/Mail'
-
-import { MailgunTransport } from '../Transports/Mailgun'
+import { MailgunConfig, MailgunResponse, MailgunRuntimeConfig } from '../types/drivers/mailgun.js'
+import { MailgunTransport } from '../transports/mailgun.js'
+import { MailDriverContract, MessageNode } from '../types/main.js'
+import { Logger } from '@adonisjs/core/logger'
 
 /**
  * Ses driver to send email using ses
  */
-export class MailgunDriver implements MailgunDriverContract {
-  constructor(private config: MailgunConfig, private logger: LoggerContract) {}
+export class MailgunDriver implements MailDriverContract {
+  #config: MailgunConfig
+  #logger: Logger
+
+  constructor(config: MailgunConfig, logger: Logger) {
+    this.#config = config
+    this.#logger = logger
+  }
 
   /**
    * Send message
    */
-  public async send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse> {
-    const transporter = nodemailer.createTransport(
-      new MailgunTransport(
-        {
-          ...this.config,
-          ...config,
-        },
-        this.logger
-      )
-    )
+  async send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse> {
+    const mailgunTransport = new MailgunTransport({ ...this.#config, ...config }, this.#logger)
+    const transporter = nodemailer.createTransport(mailgunTransport)
 
-    return transporter.sendMail(message)
+    return transporter.sendMail(message as any) as any
   }
 
-  public async close() {}
+  async close() {}
 }

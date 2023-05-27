@@ -1,25 +1,25 @@
 /*
  * @adonisjs/mail
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) AdonisJS
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 export class ObjectBuilder {
-  private result: { [key: string]: any } = {}
+  #result: { [key: string]: any } = {}
 
-  public add(key: string, value: any): this {
+  add(key: string, value: any): this {
     if (value === undefined) {
       return this
     }
-    this.result[key] = value
+    this.#result[key] = value
     return this
   }
 
-  public toObject() {
-    return this.result
+  toObject() {
+    return this.#result
   }
 }
 
@@ -27,7 +27,7 @@ export class ObjectBuilder {
  * Copy/paste from Japa assert module
  * https://github.com/japa/assert/blob/develop/src/Assert/utils.ts
  */
-export function subsetCompare(expected: any, actual: any) {
+export function subsetCompare(expected: any, actual: any): any {
   if (expected === actual) {
     return true
   }
@@ -86,5 +86,19 @@ export function subsetCompare(expected: any, actual: any) {
     }
 
     return ao === eo
+  })
+}
+
+/**
+ * Convert a stream to a blob
+ */
+export function streamToBlob(stream: NodeJS.ReadableStream, mimeType: string) {
+  return new Promise<Blob>((resolve, reject) => {
+    const chunks: any = []
+
+    stream
+      .on('data', (chunk) => chunks.push(chunk))
+      .once('end', () => resolve(new Blob(chunks, { type: mimeType })))
+      .once('error', reject)
   })
 }

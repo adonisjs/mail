@@ -1,82 +1,91 @@
 /*
  * @adonisjs/mail
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) AdonisJS
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 import got from 'got'
-import FormData from 'multi-part'
+import { FormData, File } from 'formdata-node'
 
-import { MailgunConfig } from '@ioc:Adonis/Addons/Mail'
-import { LoggerContract } from '@ioc:Adonis/Core/Logger'
-
-import { ObjectBuilder } from '../utils'
-import { EmailTransportException } from '../Exceptions/EmailTransportException'
+import { ObjectBuilder, streamToBlob } from '../utils/index.js'
+import { EmailTransportException } from '../exceptions/email_transport_exception.js'
+import { MailgunConfig } from '../types/drivers/mailgun.js'
+import { Logger } from '@adonisjs/core/logger'
+import { Transport } from 'nodemailer'
+import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 /**
  * Mailgun transport for node mailer. Uses the `/message.mime` to send MIME
  * representation of the email
  */
-export class MailgunTransport {
-  public name = 'mailgun'
-  public version = '1.0.0'
+export class MailgunTransport implements Transport {
+  name = 'mailgun'
+  version = '1.0.0'
 
-  constructor(private config: MailgunConfig, private logger: LoggerContract) {}
+  #config: MailgunConfig
+  #logger: Logger
+
+  constructor(config: MailgunConfig, logger: Logger) {
+    this.#config = config
+    this.#logger = logger
+  }
 
   /**
    * Converts a boolean flag to a yes/no string.
    */
-  private flagToYesNo(value?: boolean) {
+  #flagToYesNo(value?: boolean) {
     if (value === undefined) {
       return
     }
+
     return value === true ? 'yes' : 'no'
   }
 
   /**
    * Returns pre-configured otags
    */
-  private getOTags(config: MailgunConfig) {
+  #getOTags(config: MailgunConfig) {
     const tags = new ObjectBuilder()
     tags.add('o:tag', config.oTags)
-    tags.add('o:dkim', this.flagToYesNo(config.oDkim))
-    tags.add('o:testmode', this.flagToYesNo(config.oTestMode))
-    tags.add('o:tracking', this.flagToYesNo(config.oTracking))
-    tags.add('o:tracking-clicks', this.flagToYesNo(config.oTrackingClick))
-    tags.add('o:tracking-opens', this.flagToYesNo(config.oTrackingOpens))
+    tags.add('o:dkim', this.#flagToYesNo(config.oDkim))
+    tags.add('o:testmode', this.#flagToYesNo(config.oTestMode))
+    tags.add('o:tracking', this.#flagToYesNo(config.oTracking))
+    tags.add('o:tracking-clicks', this.#flagToYesNo(config.oTrackingClick))
+    tags.add('o:tracking-opens', this.#flagToYesNo(config.oTrackingOpens))
     return tags.toObject()
   }
 
   /**
    * Returns base url for sending emails
    */
-  private getBaseUrl(): string {
-    return this.config.domain ? `${this.config.baseUrl}/${this.config.domain}` : this.config.baseUrl
+  #getBaseUrl(): string {
+    return this.#config.domain
+      ? `${this.#config.baseUrl}/${this.#config.domain}`
+      : this.#config.baseUrl
   }
 
   /**
    * Returns an object of custom headers
    */
-  private getHeaders(config: MailgunConfig) {
+  #getHeaders(config: MailgunConfig) {
     return config.headers || {}
   }
 
   /**
    * Formats an array of recipients to a string accepted by mailgun
    */
-  private formatReceipents(recipients?: { address: string; name?: string }[]): string | undefined {
+  #formatRecipients(recipients?: { address: string; name?: string }[]): string | undefined {
     if (!recipients) {
       return
     }
 
     return recipients
       .map((recipient) => {
-        if (!recipient.name) {
-          return recipient.address
-        }
+        if (!recipient.name) return recipient.address
+
         return `${recipient.name} <${recipient.address}>`
       })
       .join(',')
@@ -85,52 +94,70 @@ export class MailgunTransport {
   /**
    * Returns an object of `to`, `cc` and `bcc`
    */
-  private getRecipients(mail: any) {
+  #getRecipients(mail: any) {
     const recipients = new ObjectBuilder()
-    recipients.add('to', this.formatReceipents(mail.data.to))
-    recipients.add('cc', this.formatReceipents(mail.data.cc))
-    recipients.add('bcc', this.formatReceipents(mail.data.bcc))
+    recipients.add('to', this.#formatRecipients(mail.data.to))
+    recipients.add('cc', this.#formatRecipients(mail.data.cc))
+    recipients.add('bcc', this.#formatRecipients(mail.data.bcc))
     return recipients.toObject()
+  }
+
+  /**
+   * If we call formData.append('to', ['a', 'b', 'c']), it will
+   * create a single key-value pair with key 'to' and value 'a,b,c'
+   *
+   * This method will append each value separately
+   */
+  #appendValue(form: FormData, key: string, value: any) {
+    if (Array.isArray(value)) {
+      value.forEach((item) => form.append(key, item))
+    } else {
+      form.append(key, value)
+    }
+  }
+
+  /**
+   * Create FormData object to send to Mailgun
+   */
+  async #createFormData(mail: MailMessage) {
+    const form = new FormData()
+
+    const tags = this.#getOTags(this.#config)
+    const headers = this.#getHeaders(this.#config)
+    const recipients = this.#getRecipients(mail)
+
+    Object.keys(tags).forEach((key) => this.#appendValue(form, key, tags[key]))
+    Object.keys(headers).forEach((key) => this.#appendValue(form, key, headers[key]))
+    Object.keys(recipients).forEach((key) => this.#appendValue(form, 'to', recipients[key]))
+
+    const mime = new File(
+      [await streamToBlob(mail.message.createReadStream(), 'message/rfc822')],
+      'message.mime'
+    )
+
+    form.append('message', mime, 'message.mime')
+
+    return form
   }
 
   /**
    * Send email
    */
-  public async send(mail: any, callback: any) {
-    const tags = this.getOTags(this.config)
-    const headers = this.getHeaders(this.config)
-    const recipients = this.getRecipients(mail)
-
+  async send(mail: MailMessage, callback: (err: Error | null, info?: any) => void) {
     const envelope = mail.message.getEnvelope()
+    const url = `${this.#getBaseUrl()}/messages.mime`
+    const form = await this.#createFormData(mail)
 
-    const form = new FormData()
-    const url = `${this.getBaseUrl()}/messages.mime`
-
-    Object.keys(tags).forEach((key) => form.append(key, tags[key]))
-    Object.keys(headers).forEach((key) => form.append(key, headers[key]))
-    Object.keys(recipients).forEach((key) => form.append('to', recipients[key]))
-
-    form.append('message', mail.message.createReadStream(), { filename: 'message.mime' })
-
-    this.logger.trace(
-      {
-        url,
-        tags,
-        headers,
-      },
-      'mailgun email'
-    )
+    this.#logger.trace({ url, envelope, form: { ...form } }, 'sending email')
 
     try {
       const response = await got.post<{ id: string }>(url, {
-        body: form.stream(),
+        body: form,
         username: 'api',
-        password: this.config.key,
+        password: this.#config.key,
         responseType: 'json',
-        headers: {
-          ...form.getHeaders(),
-        },
       })
+
       const messageId = (response.body?.id || mail.message.messageId()).replace(/^<|>$/g, '')
       callback(null, { messageId, envelope })
     } catch (error) {

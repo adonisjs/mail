@@ -1,34 +1,37 @@
 /*
  * @adonisjs/mail
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) AdonisJS
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-/// <reference path="../../adonis-typings/mail.ts" />
-
-import * as aws from 'aws-sdk'
+import SES from '@aws-sdk/client-ses'
 import nodemailer from 'nodemailer'
 
-import { MessageNode, SesMailResponse, SesConfig, SesDriverContract } from '@ioc:Adonis/Addons/Mail'
+import { SesConfig, SesMailResponse } from '../types/drivers/ses.js'
+import { MailDriverContract, MessageNode } from '../types/main.js'
+import SESTransport from 'nodemailer/lib/ses-transport/index.js'
 
 /**
  * Ses driver to send email using ses
  */
-export class SesDriver implements SesDriverContract {
-  private transporter: any
+export class SesDriver implements MailDriverContract {
+  protected transporter: nodemailer.Transporter<SESTransport.SentMessageInfo> | null
 
   constructor(config: SesConfig) {
-    this.transporter = nodemailer.createTransport({
-      SES: new aws.SES({
-        apiVersion: config.apiVersion,
+    const sesClient = new SES.SES({
+      apiVersion: config.apiVersion,
+      region: config.region,
+      credentials: {
         accessKeyId: config.key,
         secretAccessKey: config.secret,
-        region: config.region,
-        sslEnabled: config.sslEnabled,
-      }),
+      },
+    })
+
+    this.transporter = nodemailer.createTransport({
+      SES: { aws: SES, ses: sesClient },
       sendingRate: config.sendingRate,
       maxConnections: config.maxConnections,
     })
@@ -37,21 +40,28 @@ export class SesDriver implements SesDriverContract {
   /**
    * Send message
    */
-  public async send(
+  async send(
     message: MessageNode,
-    options?: Omit<aws.SES.Types.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>
+    options?: Omit<SES.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>
   ): Promise<SesMailResponse> {
     if (!this.transporter) {
       throw new Error('Driver transport has been closed and cannot be used for sending emails')
     }
 
-    return this.transporter.sendMail(Object.assign({}, message, { ses: options }))
+    const mailOptions = Object.assign({}, message, { ses: options })
+
+    // @ts-expect-error - `ses` doesn't seems to appear in the nodemailer types
+    return this.transporter.sendMail(mailOptions) as Promise<SesMailResponse>
   }
 
   /**
    * Close transporter connection, helpful when using connections pool
    */
-  public async close() {
+  async close() {
+    if (!this.transporter) {
+      return
+    }
+
     this.transporter.close()
     this.transporter = null
   }

@@ -1,40 +1,33 @@
 /*
  * @adonisjs/mail
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) AdonisJS
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-/// <reference path="../../adonis-typings/mail.ts" />
-
 import nodemailer from 'nodemailer'
-import {
-  MessageNode,
-  FakeDriverContract,
-  FakeMailResponse,
-  MessageSearchNode,
-} from '@ioc:Adonis/Addons/Mail'
-import { subsetCompare } from '../utils'
+import { subsetCompare } from '../utils/index.js'
+import { FakeMailResponse } from '../types/drivers/fake.js'
+import { MailDriverContract, MessageNode, MessageSearchNode } from '../types/main.js'
 
 /**
  * Smtp driver to send email using smtp
  */
-export class FakeDriver implements FakeDriverContract {
-  private transporter: any
-  public mails: MessageNode[] = []
+export class FakeDriver implements MailDriverContract {
+  #transporter: any
+
+  mails: MessageNode[] = []
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      jsonTransport: true,
-    })
+    this.#transporter = nodemailer.createTransport({ jsonTransport: true })
   }
 
   /**
    * Find an email
    */
-  public find(
+  find(
     messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
   ): MessageNode | null {
     if (typeof messageOrCallback === 'function') {
@@ -47,7 +40,7 @@ export class FakeDriver implements FakeDriverContract {
   /**
    * Filter emails
    */
-  public filter(
+  filter(
     messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
   ): MessageNode[] {
     if (typeof messageOrCallback === 'function') {
@@ -60,21 +53,21 @@ export class FakeDriver implements FakeDriverContract {
   /**
    * Send message
    */
-  public async send(message: MessageNode): Promise<FakeMailResponse> {
-    if (!this.transporter) {
+  async send(message: MessageNode): Promise<FakeMailResponse> {
+    if (!this.#transporter) {
       throw new Error('Driver transport has been closed and cannot be used for sending emails')
     }
 
     this.mails.push(message)
-    return this.transporter.sendMail(message)
+    return this.#transporter.sendMail(message)
   }
 
   /**
    * Close transporter connection, helpful when using connections pool
    */
-  public async close() {
-    this.transporter.close()
+  async close() {
+    this.#transporter.close()
     this.mails = []
-    this.transporter = null
+    this.#transporter = null
   }
 }

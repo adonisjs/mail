@@ -7,30 +7,26 @@
  * file that was distributed with this source code.
  */
 
-/// <reference path="../../adonis-typings/mail.ts" />
+import { AssertionError } from 'node:assert'
+import { ManagerDriverFactory } from '../define_config.js'
+import { MessageSearchNode, MessageNode, MailerContract } from '../types/main.js'
 
-import {
-  MailerContract,
-  MailersList,
-  MessageNode,
-  MessageSearchNode,
-  FakeMailManagerContract,
-} from '@ioc:Adonis/Addons/Mail'
-
-export class FakeMailManager implements FakeMailManagerContract {
-  public fakedMailers: Map<keyof MailersList, MailerContract<any>> = new Map()
+export class FakeMailManager<KnownMailers extends Record<string, ManagerDriverFactory>> {
+  fakedMailers: Map<keyof KnownMailers, MailerContract<any, any>> = new Map()
 
   /**
    * Returns the faked mailer instance
    */
-  public use(mailer: keyof MailersList) {
-    return this.fakedMailers.get(mailer)!
+  use(mailer: keyof KnownMailers) {
+    const result = this.fakedMailers.get(mailer)!
+
+    return result
   }
 
   /**
    * Restore mailer fake
    */
-  public restore(mailer: keyof MailersList) {
+  restore(mailer: keyof KnownMailers) {
     const mailerInstance = this.fakedMailers.get(mailer)
     if (mailerInstance) {
       mailerInstance.close()
@@ -41,23 +37,21 @@ export class FakeMailManager implements FakeMailManagerContract {
   /**
    * Find if a mailer is faked
    */
-  public isFaked(mailer: keyof MailersList): boolean {
+  isFaked(mailer: keyof KnownMailers): boolean {
     return this.fakedMailers.has(mailer)
   }
 
   /**
    * Find if an email exists
    */
-  public exists(
-    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
-  ): boolean {
+  exists(messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)): boolean {
     return !!this.find(messageOrCallback)
   }
 
   /**
    * Find an email
    */
-  public find(
+  find(
     messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
   ): MessageSearchNode | null {
     for (let [, mailer] of this.fakedMailers) {
@@ -73,7 +67,7 @@ export class FakeMailManager implements FakeMailManagerContract {
   /**
    * Filter emails
    */
-  public filter(
+  filter(
     messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
   ): MessageNode[] {
     let messages: MessageNode[] = []
@@ -82,5 +76,56 @@ export class FakeMailManager implements FakeMailManagerContract {
     }
 
     return messages
+  }
+
+  /**
+   * Assert a given mail has been sent
+   */
+  assertSent(messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)) {
+    const message = this.find(messageOrCallback)
+
+    if (!message) {
+      throw new AssertionError({
+        message: 'Expected to find sent email but not found any',
+        expected: true,
+        actual: false,
+        operator: 'assertSent',
+        stackStartFn: this.assertSent,
+      })
+    }
+  }
+
+  /**
+   * Assert a given mail has not been sent
+   */
+  assertNotSent(messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)) {
+    const message = this.find(messageOrCallback)
+
+    if (message) {
+      throw new AssertionError({
+        message: 'Expected to not find sent email but found one',
+        expected: false,
+        actual: true,
+        operator: 'assertNotSent',
+        stackStartFn: this.assertNotSent,
+      })
+    }
+  }
+
+  /**
+   * Assert no emails have been sent
+   */
+  assertNoneSent() {
+    const messages = this.filter(() => true)
+
+    if (messages.length) {
+      throw new AssertionError({
+        message: 'Expected to not find sent email but found one',
+        expected: false,
+        actual: true,
+        operator: 'assertNothingSent',
+        stackStartFn: this.assertNoneSent,
+      })
+    }
   }
 }

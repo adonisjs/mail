@@ -1,7 +1,19 @@
+/*
+ * @adonisjs/mail
+ *
+ * (c) AdonisJS
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 import { assert } from '@japa/assert'
 import { specReporter } from '@japa/spec-reporter'
 import { runFailedTests } from '@japa/run-failed-tests'
+import { fileSystem } from '@japa/file-system'
 import { processCliArgs, configure, run } from '@japa/runner'
+import { pathToFileURL } from 'node:url'
+import { expectTypeOf } from '@japa/expect-type'
 
 /*
 |--------------------------------------------------------------------------
@@ -19,10 +31,21 @@ import { processCliArgs, configure, run } from '@japa/runner'
 configure({
   ...processCliArgs(process.argv.slice(2)),
   ...{
-    files: ['test/**/*.spec.ts'],
-    plugins: [assert(), runFailedTests()],
+    plugins: [assert(), runFailedTests(), fileSystem(), expectTypeOf()],
     reporters: [specReporter()],
-    importer: (filePath: string) => import(filePath),
+    importer: (filePath: string) => import(pathToFileURL(filePath).href),
+
+    suites: [
+      {
+        name: 'unit',
+        files: ['test/unit/**/*.spec.ts'],
+      },
+      {
+        name: 'integration',
+        files: ['test/integration/**/*.spec.ts'],
+        timeout: 1000 * 10,
+      },
+    ],
   },
 })
 

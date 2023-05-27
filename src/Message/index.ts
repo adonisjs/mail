@@ -1,213 +1,208 @@
 /*
  * @adonisjs/mail
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) AdonisJS
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-/// <reference path="../../adonis-typings/mail.ts" />
-
-import { Readable } from 'stream'
+import { Readable } from 'node:stream'
 import ical, { ICalCalendar } from 'ical-generator'
 import {
-  EnvolpeNode,
-  MessageNode,
-  MessageContract,
-  CalendarEventOptions,
   AttachmentOptionsNode,
+  CalendarEventOptions,
+  EnvelopeNode,
   MessageContentViewsNode,
-} from '@ioc:Adonis/Addons/Mail'
+  MessageNode,
+  RecipientNode,
+} from '../types/main.js'
+import { basename } from 'node:path'
 
 /**
  * Fluent API to construct node mailer message object
  */
-export class Message implements MessageContract {
-  private nodeMailerMessage: MessageNode = {}
-  constructor(private deferred: boolean = false) {}
+export class Message {
+  #nodeMailerMessage: MessageNode = {}
+  #deferred = false
+
+  constructor(deferred = false) {
+    this.#deferred = deferred
+  }
 
   /**
    * Path to the views used to generate content for the
    * message
    */
-  private contentViews: {
-    html?: {
-      template: string
-      data?: any
-    }
-    text?: {
-      template: string
-      data?: any
-    }
-    watch?: {
-      template: string
-      data?: any
-    }
+  #contentViews: {
+    html?: { template: string; data?: any }
+    text?: { template: string; data?: any }
+    watch?: { template: string; data?: any }
   } = {}
 
   /**
    * Returns address node with correctly formatted way
    */
-  private getAddress(address: string, name?: string): { address: string; name?: string } {
+  #getAddress(address: string, name?: string): RecipientNode {
     return name ? { address, name } : { address }
   }
 
   /**
-   * Add receipent as `to`
+   * Add recipient as `to`
    */
-  public to(address: string, name?: string): this {
-    this.nodeMailerMessage.to = this.nodeMailerMessage.to || []
-    this.nodeMailerMessage.to.push(this.getAddress(address, name))
+  to(address: string, name?: string): this {
+    this.#nodeMailerMessage.to = this.#nodeMailerMessage.to || []
+    this.#nodeMailerMessage.to.push(this.#getAddress(address, name))
     return this
   }
 
   /**
    * Add `from` name and email
    */
-  public from(address: string, name?: string): this {
-    this.nodeMailerMessage.from = this.getAddress(address, name)
+  from(address: string, name?: string): this {
+    this.#nodeMailerMessage.from = this.#getAddress(address, name)
     return this
   }
 
   /**
-   * Add receipent as `cc`
+   * Add recipient as `cc`
    */
-  public cc(address: string, name?: string): this {
-    this.nodeMailerMessage.cc = this.nodeMailerMessage.cc || []
-    this.nodeMailerMessage.cc.push(this.getAddress(address, name))
+  cc(address: string, name?: string): this {
+    this.#nodeMailerMessage.cc = this.#nodeMailerMessage.cc || []
+    this.#nodeMailerMessage.cc.push(this.#getAddress(address, name))
     return this
   }
 
   /**
-   * Add receipent as `bcc`
+   * Add recipient as `bcc`
    */
-  public bcc(address: string, name?: string): this {
-    this.nodeMailerMessage.bcc = this.nodeMailerMessage.bcc || []
-    this.nodeMailerMessage.bcc.push(this.getAddress(address, name))
+  bcc(address: string, name?: string): this {
+    this.#nodeMailerMessage.bcc = this.#nodeMailerMessage.bcc || []
+    this.#nodeMailerMessage.bcc.push(this.#getAddress(address, name))
     return this
   }
 
   /**
    * Define custom message id
    */
-  public messageId(messageId: string): this {
-    this.nodeMailerMessage.messageId = messageId
+  messageId(messageId: string): this {
+    this.#nodeMailerMessage.messageId = messageId
     return this
   }
 
   /**
    * Define subject
    */
-  public subject(message: string): this {
-    this.nodeMailerMessage.subject = message
+  subject(message: string): this {
+    this.#nodeMailerMessage.subject = message
     return this
   }
 
   /**
    * Define replyTo email and name
    */
-  public replyTo(address: string, name?: string): this {
-    this.nodeMailerMessage.replyTo = this.nodeMailerMessage.replyTo || []
-    this.nodeMailerMessage.replyTo.push(this.getAddress(address, name))
+  replyTo(address: string, name?: string): this {
+    this.#nodeMailerMessage.replyTo = this.#nodeMailerMessage.replyTo || []
+    this.#nodeMailerMessage.replyTo.push(this.#getAddress(address, name))
     return this
   }
 
   /**
    * Define inReplyTo message id
    */
-  public inReplyTo(messageId: string): this {
-    this.nodeMailerMessage.inReplyTo = messageId
+  inReplyTo(messageId: string): this {
+    this.#nodeMailerMessage.inReplyTo = messageId
     return this
   }
 
   /**
    * Define multiple message id's as references
    */
-  public references(messagesIds: string[]): this {
-    this.nodeMailerMessage.references = messagesIds
+  references(messagesIds: string[]): this {
+    this.#nodeMailerMessage.references = messagesIds
     return this
   }
 
   /**
    * Optionally define email envolpe
    */
-  public envelope(envelope: EnvolpeNode): this {
-    this.nodeMailerMessage.envelope = envelope
+  envelope(envelope: EnvelopeNode): this {
+    this.#nodeMailerMessage.envelope = envelope
     return this
   }
 
   /**
    * Define contents encoding
    */
-  public encoding(encoding: string): this {
-    this.nodeMailerMessage.encoding = encoding
+  encoding(encoding: string): this {
+    this.#nodeMailerMessage.encoding = encoding
     return this
   }
 
   /**
    * Define email prority
    */
-  public priority(priority: 'low' | 'normal' | 'high'): this {
-    this.nodeMailerMessage.priority = priority
+  priority(priority: 'low' | 'normal' | 'high'): this {
+    this.#nodeMailerMessage.priority = priority
     return this
   }
 
   /**
    * Compute email html from defined view
    */
-  public htmlView(template: string, data?: any): this {
-    this.contentViews.html = { template, data }
+  htmlView(template: string, data?: any): this {
+    this.#contentViews.html = { template, data }
     return this
   }
 
   /**
    * Compute email text from defined view
    */
-  public textView(template: string, data?: any): this {
-    this.contentViews.text = { template, data }
+  textView(template: string, data?: any): this {
+    this.#contentViews.text = { template, data }
     return this
   }
 
   /**
    * Compute apple watch html from defined view
    */
-  public watchView(template: string, data?: any): this {
-    this.contentViews.watch = { template, data }
+  watchView(template: string, data?: any): this {
+    this.#contentViews.watch = { template, data }
     return this
   }
 
   /**
    * Compute email html from raw text
    */
-  public html(content: string): this {
-    this.nodeMailerMessage.html = content
+  html(content: string): this {
+    this.#nodeMailerMessage.html = content
     return this
   }
 
   /**
    * Compute email text from raw text
    */
-  public text(content: string): this {
-    this.nodeMailerMessage.text = content
+  text(content: string): this {
+    this.#nodeMailerMessage.text = content
     return this
   }
 
   /**
    * Compute email watch html from raw text
    */
-  public watch(content: string): this {
-    this.nodeMailerMessage.watch = content
+  watch(content: string): this {
+    this.#nodeMailerMessage.watch = content
     return this
   }
 
   /**
    * Define one or attachments
    */
-  public attach(filePath: string, options?: AttachmentOptionsNode): this {
-    this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
-    this.nodeMailerMessage.attachments.push({
+  attach(filePath: string, options?: AttachmentOptionsNode): this {
+    this.#nodeMailerMessage.attachments = this.#nodeMailerMessage.attachments || []
+    this.#nodeMailerMessage.attachments.push({
       path: filePath,
+      filename: basename(filePath),
       ...options,
     })
 
@@ -217,13 +212,13 @@ export class Message implements MessageContract {
   /**
    * Define attachment from raw data
    */
-  public attachData(content: Readable | Buffer, options?: AttachmentOptionsNode): this {
-    if (this.deferred) {
+  attachData(content: Readable | Buffer, options?: AttachmentOptionsNode): this {
+    if (this.#deferred) {
       throw new Error('Cannot attach raw data when using "Mail.sendLater" method')
     }
 
-    this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
-    this.nodeMailerMessage.attachments.push({
+    this.#nodeMailerMessage.attachments = this.#nodeMailerMessage.attachments || []
+    this.#nodeMailerMessage.attachments.push({
       content,
       ...options,
     })
@@ -234,9 +229,9 @@ export class Message implements MessageContract {
   /**
    * Embed attachment inside content using `cid`
    */
-  public embed(filePath: string, cid: string, options?: AttachmentOptionsNode): this {
-    this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
-    this.nodeMailerMessage.attachments.push({
+  embed(filePath: string, cid: string, options?: AttachmentOptionsNode): this {
+    this.#nodeMailerMessage.attachments = this.#nodeMailerMessage.attachments || []
+    this.#nodeMailerMessage.attachments.push({
       path: filePath,
       cid,
       ...options,
@@ -248,13 +243,13 @@ export class Message implements MessageContract {
   /**
    * Embed attachment from raw data inside content using `cid`
    */
-  public embedData(content: Readable | Buffer, cid: string, options?: AttachmentOptionsNode): this {
-    if (this.deferred) {
+  embedData(content: Readable | Buffer, cid: string, options?: AttachmentOptionsNode): this {
+    if (this.#deferred) {
       throw new Error('Cannot attach raw data when using "Mail.sendLater" method')
     }
 
-    this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
-    this.nodeMailerMessage.attachments.push({
+    this.#nodeMailerMessage.attachments = this.#nodeMailerMessage.attachments || []
+    this.#nodeMailerMessage.attachments.push({
       content,
       cid,
       ...options,
@@ -266,9 +261,9 @@ export class Message implements MessageContract {
   /**
    * Define custom headers for email
    */
-  public header(key: string, value: string | string[]): this {
-    this.nodeMailerMessage.headers = this.nodeMailerMessage.headers || []
-    this.nodeMailerMessage.headers.push({ [key]: value })
+  header(key: string, value: string | string[]): this {
+    this.#nodeMailerMessage.headers = this.#nodeMailerMessage.headers || []
+    this.#nodeMailerMessage.headers.push({ [key]: value })
 
     return this
   }
@@ -276,9 +271,9 @@ export class Message implements MessageContract {
   /**
    * Define custom prepared headers for email
    */
-  public preparedHeader(key: string, value: string | string[]): this {
-    this.nodeMailerMessage.headers = this.nodeMailerMessage.headers || []
-    this.nodeMailerMessage.headers.push({ [key]: { prepared: true, value } })
+  preparedHeader(key: string, value: string | string[]): this {
+    this.#nodeMailerMessage.headers = this.#nodeMailerMessage.headers || []
+    this.#nodeMailerMessage.headers.push({ [key]: { prepared: true, value } })
 
     return this
   }
@@ -286,7 +281,7 @@ export class Message implements MessageContract {
   /**
    * Attach a calendar event and define contents as string
    */
-  public icalEvent(
+  icalEvent(
     contents: ((calendar: ICalCalendar) => void) | string,
     options?: CalendarEventOptions
   ): this {
@@ -296,33 +291,33 @@ export class Message implements MessageContract {
       contents = calendar.toString()
     }
 
-    this.nodeMailerMessage.icalEvent = { content: contents, ...options }
+    this.#nodeMailerMessage.icalEvent = { content: contents, ...options }
     return this
   }
 
   /**
    * Attach a calendar event and load contents from a file
    */
-  public icalEventFromFile(filePath: string, options?: CalendarEventOptions): this {
-    this.nodeMailerMessage.icalEvent = { path: filePath, ...options }
+  icalEventFromFile(filePath: string, options?: CalendarEventOptions): this {
+    this.#nodeMailerMessage.icalEvent = { path: filePath, ...options }
     return this
   }
 
   /**
    * Attach a calendar event and load contents from a url
    */
-  public icalEventFromUrl(url: string, options?: CalendarEventOptions): this {
-    this.nodeMailerMessage.icalEvent = { href: url, ...options }
+  icalEventFromUrl(url: string, options?: CalendarEventOptions): this {
+    this.#nodeMailerMessage.icalEvent = { href: url, ...options }
     return this
   }
 
   /**
    * Get message JSON. The packet can be sent over to nodemailer
    */
-  public toJSON(): { message: MessageNode; views: MessageContentViewsNode } {
+  toJSON(): { message: MessageNode; views: MessageContentViewsNode } {
     return {
-      message: this.nodeMailerMessage,
-      views: this.contentViews,
+      message: this.#nodeMailerMessage,
+      views: this.#contentViews,
     }
   }
 }

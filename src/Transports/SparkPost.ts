@@ -1,7 +1,7 @@
 /*
  * @adonisjs/mail
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) AdonisJS
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,33 +10,38 @@
 import got from 'got'
 import getStream from 'get-stream'
 
-import { LoggerContract } from '@ioc:Adonis/Core/Logger'
-import { SparkPostConfig } from '@ioc:Adonis/Addons/Mail'
-
-import { ObjectBuilder } from '../utils'
-import { EmailTransportException } from '../Exceptions/EmailTransportException'
+import { ObjectBuilder } from '../utils/index.js'
+import { EmailTransportException } from '../exceptions/email_transport_exception.js'
+import { SparkPostConfig } from '../types/drivers/sparkpost.js'
+import { Logger } from '@adonisjs/core/logger'
 
 /**
  * Sparkpost transport for node mailer. Uses the `/message.mime` to send MIME
  * representation of the email
  */
 export class SparkPostTransport {
-  public name = 'sparkpost'
-  public version = '1.0.0'
+  name = 'sparkpost'
+  version = '1.0.0'
 
-  constructor(private config: SparkPostConfig, private logger: LoggerContract) {}
+  #config: SparkPostConfig
+  #logger: Logger
+
+  constructor(config: SparkPostConfig, logger: Logger) {
+    this.#config = config
+    this.#logger = logger
+  }
 
   /**
    * Returns base url for sending emails
    */
-  private getBaseUrl(): string {
-    return this.config.baseUrl
+  #getBaseUrl(): string {
+    return this.#config.baseUrl
   }
 
   /**
    * Returns an array of recipients accepted by the SparkPost API
    */
-  private getRecipients(
+  #getRecipients(
     recipients: { address: string; name?: string }[]
   ): { address: { name?: string; email: string } }[] {
     return recipients.map((recipient) => {
@@ -52,7 +57,7 @@ export class SparkPostTransport {
   /**
    * Returns an object of options accepted by the sparkpost mail API
    */
-  private getOptions(config: SparkPostConfig) {
+  #getOptions(config: SparkPostConfig) {
     const options = new ObjectBuilder()
     options.add('start_time', config.startTime)
     options.add('open_tracking', config.openTracking)
@@ -66,20 +71,14 @@ export class SparkPostTransport {
   /**
    * Send email
    */
-  public async send(mail: any, callback: any) {
-    const url = `${this.getBaseUrl()}/transmissions`
-    const options = this.getOptions(this.config)
+  async send(mail: any, callback: any) {
+    const url = `${this.#getBaseUrl()}/transmissions`
+    const options = this.#getOptions(this.#config)
     const envelope = mail.message.getEnvelope()
     const addresses = (mail.data.to || []).concat(mail.data.cc || []).concat(mail.data.bcc || [])
 
     try {
-      this.logger.trace(
-        {
-          url,
-          options,
-        },
-        'sparkpost email'
-      )
+      this.#logger.trace({ url, options }, 'sparkpost email')
 
       /**
        * The sparkpost API doesn't accept the multipart stream and hence we
@@ -88,16 +87,13 @@ export class SparkPostTransport {
       const emailBody = await getStream(mail.message.createReadStream())
       const response = await got.post<{ results?: { id: string } }>(url, {
         json: {
-          recipients: this.getRecipients(addresses),
+          recipients: this.#getRecipients(addresses),
           options: options,
-          content: {
-            email_rfc822: emailBody,
-          },
+          content: { email_rfc822: emailBody },
         },
+
         responseType: 'json',
-        headers: {
-          Authorization: this.config.key,
-        },
+        headers: { Authorization: this.#config.key },
       })
 
       const messageId = (response.body.results?.id || mail.message.messageId()).replace(

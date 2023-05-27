@@ -1,44 +1,46 @@
 /*
  * @adonisjs/mail
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) AdonisJS
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-/// <reference path="../../adonis-typings/mail.ts" />
-
+import { Message } from '../message/index.js'
+import { MailManager } from './mail_manager.js'
+import { ManagerDriverFactory } from '../define_config.js'
 import {
-  MailersList,
-  MailerContract,
   CompiledMailNode,
   DriverOptionsType,
+  MailerContract,
   MailerResponseType,
   MessageComposeCallback,
-} from '@ioc:Adonis/Addons/Mail'
+} from '../types/main.js'
 
-import { Message } from '../Message'
-import { MailManager } from './MailManager'
+export class Mailer<
+  KnownMailers extends Record<string, ManagerDriverFactory>,
+  Name extends keyof KnownMailers
+> implements MailerContract<KnownMailers, Name>
+{
+  #driverOptions?: DriverOptionsType<ReturnType<KnownMailers[Name]>>
 
-/**
- * Mailer exposes the unified API to send emails using one of the pre-configure
- * driver
- */
-export class Mailer<Name extends keyof MailersList> implements MailerContract<Name> {
-  private driverOptions?: DriverOptionsType<MailersList[Name]['implementation']>
+  #useQueue: boolean
 
   constructor(
     public name: Name,
-    private manager: MailManager,
-    private useQueue: boolean,
-    public driver: MailersList[Name]['implementation']
-  ) {}
+    public manager: MailManager<KnownMailers>,
+    useQueue: boolean,
+
+    public driver: ReturnType<KnownMailers[Name]>
+  ) {
+    this.#useQueue = useQueue
+  }
 
   /**
    * Ensure "@adonisjs/view" is installed
    */
-  private ensureView(methodName: string) {
+  #ensureView(methodName: string) {
     if (!this.manager.view) {
       throw new Error(`"@adonisjs/view" must be installed before using "message.${methodName}"`)
     }
@@ -48,40 +50,52 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
    * Set the email contents by rendering the views. Views are only
    * rendered when inline values are not defined.
    */
-  private async setEmailContent({ message, views }: CompiledMailNode) {
+  async #setEmailContent({ message, views }: CompiledMailNode<KnownMailers>) {
     if (!message.html && views.html) {
-      this.ensureView('htmlView')
+      this.#ensureView('htmlView')
       message.html = await this.manager.view!.render(views.html.template, views.html.data)
     }
 
     if (!message.text && views.text) {
-      this.ensureView('textView')
+      this.#ensureView('textView')
       message.text = await this.manager.view!.render(views.text.template, views.text.data)
     }
 
     if (!message.watch && views.watch) {
-      this.ensureView('watchView')
+      this.#ensureView('watchView')
       message.watch = await this.manager.view!.render(views.watch.template, views.watch.data)
     }
   }
 
   /**
-   * Define options to be forwarded to the underlying driver
+   * Override mail node settings with global settings
    */
-  public options(options: DriverOptionsType<MailersList[Name]['implementation']>): this {
-    this.driverOptions = options
-    return this
+  #setGlobalSettings(message: CompiledMailNode<KnownMailers>) {
+    const globalSettings = this.manager.getGlobalSettings()
+
+    if (globalSettings.from) {
+      message.message.from = globalSettings.from
+    }
+
+    if (globalSettings.to) {
+      message.message.to = globalSettings.to
+    }
   }
 
   /**
    * Sends email using a pre-compiled message. You should use [[MailerContract.send]], unless
    * you are pre-compiling messages yourself
    */
-  public async sendCompiled(mail: CompiledMailNode) {
+  async sendCompiled(mail: CompiledMailNode<KnownMailers>) {
     /**
      * Set content by rendering views
      */
-    await this.setEmailContent(mail)
+    await this.#setEmailContent(mail)
+
+    /**
+     * Set global `from` and `to` when defined
+     */
+    this.#setGlobalSettings(mail)
 
     /**
      * Send email for real
@@ -93,21 +107,27 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
      */
     this.manager.emitter.emit('mail:sent', {
       message: mail.message,
+      // @ts-ignore
       views: Object.keys(mail.views).map((view) => mail.views[view].template),
       mailer: mail.mailer,
       response: response,
     })
 
-    return response as unknown as Promise<MailerResponseType<Name>>
+    return response as unknown as Promise<MailerResponseType<Name, KnownMailers>>
+  }
+
+  /**
+   * Define options to be forwarded to the underlying driver
+   */
+  options(options: DriverOptionsType<ReturnType<KnownMailers[Name]>>): this {
+    this.#driverOptions = options
+    return this
   }
 
   /**
    * Sends email
    */
-  public async send(
-    callback: MessageComposeCallback,
-    config?: DriverOptionsType<MailersList[Name]>
-  ) {
+  async send(callback: MessageComposeCallback, config?: DriverOptionsType<KnownMailers[Name]>) {
     const message = new Message(false)
     await callback(message)
 
@@ -116,18 +136,18 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
       message: compiledMessage.message,
       views: compiledMessage.views,
       mailer: this.name,
-      config: config || this.driverOptions,
+      config: config || this.#driverOptions,
     })
   }
 
   /**
    * Send email later by queuing it inside an in-memory queue
    */
-  public async sendLater(
+  async sendLater(
     callback: MessageComposeCallback,
-    config?: DriverOptionsType<MailersList[Name]>
+    config?: DriverOptionsType<KnownMailers[Name]>
   ) {
-    if (!this.useQueue) {
+    if (!this.#useQueue) {
       await this.send(callback, config)
       return
     }
@@ -140,15 +160,14 @@ export class Mailer<Name extends keyof MailersList> implements MailerContract<Na
       message: compiledMessage.message,
       views: compiledMessage.views,
       mailer: this.name,
-      config: config || this.driverOptions,
+      config: config || this.#driverOptions,
     })
   }
 
   /**
    * Invokes `close` method on the driver
    */
-  public async close() {
+  async close() {
     await this.driver.close()
-    this.manager.release(this.name)
   }
 }
