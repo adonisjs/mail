@@ -41,7 +41,7 @@
     "test": "c8 npm run quick:test",
     "lint": "eslint . --ext=.ts",
     "clean": "del-cli build",
-    "compile": "npm run lint && npm run clean && tsc",
+    "compile": "npm run lint && npm run clean && tsc && npm run copy:templates && npm run index:commands",
     "copy:templates": "copyfiles \"stubs/**/**/*.stub\" build",
     "build": "npm run compile",
     "commit": "git-cz",
