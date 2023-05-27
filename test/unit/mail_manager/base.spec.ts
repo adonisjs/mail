@@ -86,7 +86,7 @@ test.group('Mail Manager | Base', () => {
     })
 
     // @ts-ignore
-    driversList.extend('mydriver', (config) => ({ send: () => assert.isTrue(true) }))
+    driversList.extend('mydriver', () => ({ send: () => assert.isTrue(true) }))
 
     const { manager } = await createMailManager(config)
     const mailer = manager.use('marketing')

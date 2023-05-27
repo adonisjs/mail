@@ -45,12 +45,12 @@ function getMessageRecipients(message: MailEventData<any>['message']): string {
 /**
  * Pretty prints the email event
  */
-export function prettyPrint(mail: MailEventData<any>) {
+export async function prettyPrint(mail: MailEventData<any>) {
   /**
    * Lazy loading pretty printed dependencies
    */
-  const { Colors } = require('@poppinss/colors')
-  const colors = new Colors()
+  const useColors = await import('@poppinss/colors')
+  const colors = useColors.default.ansi()
 
   /**
    * Begin

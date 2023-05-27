@@ -65,9 +65,9 @@ test.group('Define config', () => {
       list: { smtp: { driver: 'smtp', host: 'foo' } },
     })
 
-    driversList.extend('smtp', (config: any): any => {
+    driversList.extend('smtp', (c: any): any => {
       assert.isTrue(true)
-      assert.equal(config.host, 'foo')
+      assert.equal(c.host, 'foo')
     })
 
     config.list.smtp(null as any)
@@ -82,8 +82,8 @@ test.group('Define config', () => {
       },
     })
 
-    driversList.extend('ses', (config) => new SesDriver(config))
-    driversList.extend('mailgun', (config) => new MailgunDriver(config, {} as any))
+    driversList.extend('ses', (c) => new SesDriver(c))
+    driversList.extend('mailgun', (c) => new MailgunDriver(c, {} as any))
 
     const manager = new MailManagerFactory(config).create(null as any)
 

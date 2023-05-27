@@ -48,7 +48,7 @@ test.group('BaseMailer', () => {
       },
     })
 
-    driversList.extend('smtp', (config) => new SmtpDriver(config))
+    driversList.extend('smtp', (c) => new SmtpDriver(c))
     const { manager } = await createMailManager(config)
     manager.fake('transactional')
 
@@ -63,7 +63,7 @@ test.group('BaseMailer', () => {
 
     const mailer = new MyMailer()
     // @ts-ignore
-    mailer.mailer.send = async function send(callback: any, config: any) {
+    mailer.mailer.send = async function send(callback: any, c: any) {
       const message = new Message(false)
       await callback(message)
 
