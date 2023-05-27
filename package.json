@@ -99,8 +99,6 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.328.0",
     "@poppinss/colors": "^4.1.0-2",
-    "@poppinss/macroable": "1.0.0-6",
-    "@poppinss/manager": "^5.0.2",
     "@poppinss/utils": "^6.5.0-2",
     "fastq": "^1.15.0",
     "formdata-node": "^5.0.0",
