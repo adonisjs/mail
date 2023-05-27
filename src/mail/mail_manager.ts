@@ -8,6 +8,7 @@
  */
 
 import nodemailer from 'nodemailer'
+import SMTPTransport from 'nodemailer/lib/smtp-transport'
 import fastq from 'fastq'
 
 import { Logger } from '@adonisjs/core/logger'
@@ -291,7 +292,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
     })
 
     const mailer = new Mailer('ethereal', this, true, smtpDriver as any)
-    const response = await mailer.send(callback)
+    const response: SMTPTransport.SentMessageInfo = await mailer.send(callback)
     const url = nodemailer.getTestMessageUrl(response)
 
     return {
