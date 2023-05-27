@@ -30,6 +30,7 @@ import { BaseMailer } from '../index.js'
 import { FakeMailManager } from '../fake/index.js'
 import { FakeDriver } from '../drivers/fake.js'
 import { SmtpDriver } from '../drivers/smtp.js'
+import { prettyPrint } from '../pretty_print.js'
 
 /**
  * Mail manager config with the list of mailers in
@@ -80,6 +81,11 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
    * Cache of mailers
    */
   #mailersCache: Partial<Record<keyof KnownMailers, Mailer<any, any>>> = {}
+
+  /**
+   * Method to pretty print sent emails
+   */
+  prettyPrint = prettyPrint
 
   constructor(
     public view: ViewContract,

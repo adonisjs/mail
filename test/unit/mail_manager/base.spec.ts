@@ -161,6 +161,12 @@ test.group('Mail Manager | Base', () => {
 
     assert.deepEqual(customDriver.message?.from, { address: 'julr@adonisjs.com', name: 'jul' })
   })
+
+  test('should expose a prettyPrint method', async ({ assert }) => {
+    const { manager } = await createMailManager()
+
+    assert.isDefined(manager.prettyPrint)
+  })
 })
 
 test.group('Mail manager | send', () => {
