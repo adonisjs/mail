@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 14.15.4
           - 17.x
+          - 20.x
     steps:
       - uses: actions/checkout@v2
 
@@ -26,14 +26,24 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          MAILTRAP_SMTP_HOST: smtp.mailtrap.io
-          MAILTRAP_USERNAME: ${{ secrets.MAILTRAP_USERNAME }}
-          MAILTRAP_PASSWORD: ${{ secrets.MAILTRAP_PASSWORD }}
-          MAILTRAP_EMAIL: ${{ secrets.MAILTRAP_EMAIL }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: us-west-2
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          FROM_EMAIL: virk@adonisjs.com
-          MAILGUN_ACCESS_KEY: ${{ secrets.MAILGUN_ACCESS_KEY }}
-          MAILGUN_BASE_URL: https://api.mailgun.net/v3
-          SPARKPOST_API_KEY: ${{ secrets.SPARKPOST_API_KEY }}
+          TEST_EMAILS_RECIPIENT: julien+adonismail@ripouteau.com
+          TEST_EMAILS_CC: julien+adonismailcc@ripouteau.com
+
+          MAILTRAP_SMTP_HOST: sandbox.smtp.mailtrap.io
+          MAILTRAP_USERNAME: ${{ secrets.J_MAILTRAP_USERNAME }}
+          MAILTRAP_PASSWORD: ${{ secrets.J_MAILTRAP_PASSWORD }}
+          MAILTRAP_EMAIL: jul@mailtrap.io
+
+          AWS_FROM_EMAIL: julien@ripouteau.com
+          AWS_ACCESS_KEY_ID: ${{ secrets.J_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.J_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-west-3
+
+          SPARKPOST_FROM_EMAIL: julien@sparkpost.julr.dev
+          SPARKPOST_API_KEY: ${{ secrets.J_SPARKPOST_API_KEY }}
+          SPARKPOST_BASE_URL: https://api.eu.sparkpost.com/api/v1
+
+          MAILGUN_FROM_EMAIL: mailgun@sandbox-123.mailgun.org
+          MAILGUN_ACCESS_KEY: ${{ secrets.J_MAILGUN_ACCESS_KEY }}
+          MAILGUN_DOMAIN: sandboxfdb0ba03ea48411ba4ec05cc6c09d924.mailgun.org
+          MAILGUN_BASE_URL: https://api.eu.mailgun.net/v3
