@@ -18,17 +18,14 @@ import {
   RecipientNode,
 } from '../types/main.js'
 import { basename } from 'node:path'
+import { Macroable } from '@poppinss/macroable'
 
 /**
  * Fluent API to construct node mailer message object
  */
-export class Message {
+export class Message extends Macroable {
   #nodeMailerMessage: MessageNode = {}
   #deferred = false
-
-  constructor(deferred = false) {
-    this.#deferred = deferred
-  }
 
   /**
    * Path to the views used to generate content for the
@@ -39,6 +36,11 @@ export class Message {
     text?: { template: string; data?: any }
     watch?: { template: string; data?: any }
   } = {}
+
+  constructor(deferred = false) {
+    super()
+    this.#deferred = deferred
+  }
 
   /**
    * Returns address node with correctly formatted way
