@@ -47,3 +47,6 @@ jobs:
           MAILGUN_ACCESS_KEY: ${{ secrets.J_MAILGUN_ACCESS_KEY }}
           MAILGUN_DOMAIN: sandboxfdb0ba03ea48411ba4ec05cc6c09d924.mailgun.org
           MAILGUN_BASE_URL: https://api.eu.mailgun.net/v3
+
+          BREVO_FROM_EMAIL: ${{ secrets.J_BREVO_FROM_EMAIL }}
+          BREVO_API_KEY: ${{ secrets.J_BREVO_API_KEY }}
