@@ -108,5 +108,19 @@ export default defineConfig({
       key: env.get('SPARKPOST_API_KEY'),
     },
 		{{/if}}
+    {{#if brevo}}
+    /*
+    |--------------------------------------------------------------------------
+    | Brevo (ex Sendinblue)
+    |--------------------------------------------------------------------------
+    |
+    | Uses Brevo for sending emails.
+    |
+    */
+    brevo: {
+      driver: 'brevo',
+      key: env.get('BREVO_API_KEY'),
+    },
+    {{/if}}
   },
 })

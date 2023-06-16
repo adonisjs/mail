@@ -18,7 +18,7 @@ import { MailDriverContract, MessageNode } from '../types/main.js'
 import { Logger } from '@adonisjs/core/logger'
 
 /**
- * Ses driver to send email using ses
+ * Driver to send email using sparkpost
  */
 export class SparkPostDriver implements MailDriverContract {
   #config: SparkPostConfig

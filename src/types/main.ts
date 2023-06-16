@@ -19,7 +19,9 @@ import type { SmtpDriver } from '../drivers/smtp.js'
 import type { SparkPostDriver } from '../drivers/sparkpost.js'
 import type { MessageNode, MessageContentViewsNode } from './message.js'
 import type { MailDriversListContract, MailerResponseType, DriverOptionsType } from './helpers.js'
-import { Message } from '../message/index.js'
+import type { Message } from '../message/index.js'
+import type { BrevoConfig } from './drivers/brevo.js'
+import type { BrevoDriver } from '../drivers/brevo.js'
 
 /**
  * A list of known mailers inferred from the user config
@@ -38,6 +40,7 @@ export interface MailDriversList {
   mailgun: (config: MailgunConfig) => MailgunDriver
   sparkpost: (config: SparkPostConfig) => SparkPostDriver
   ses: (config: SesConfig) => SesDriver
+  brevo: (config: BrevoConfig) => BrevoDriver
 }
 
 /*

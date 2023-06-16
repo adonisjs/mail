@@ -8,19 +8,19 @@
  */
 
 import nodemailer from 'nodemailer'
-import { MailgunConfig, MailgunResponse, MailgunRuntimeConfig } from '../types/drivers/mailgun.js'
-import { MailgunTransport } from '../transports/mailgun.js'
 import { MailDriverContract, MessageNode } from '../types/main.js'
 import { Logger } from '@adonisjs/core/logger'
+import { BrevoConfig, BrevoResponse, BrevoRuntimeConfig } from '../types/drivers/brevo.js'
+import { BrevoTransport } from '../transports/brevo.js'
 
 /**
- * Driver to send email using mailgun
+ * Driver for sending emails using Brevo ( ex-sendinblue )
  */
-export class MailgunDriver implements MailDriverContract {
-  #config: MailgunConfig
+export class BrevoDriver implements MailDriverContract {
+  #config: BrevoConfig
   #logger: Logger
 
-  constructor(config: MailgunConfig, logger: Logger) {
+  constructor(config: BrevoConfig, logger: Logger) {
     this.#config = config
     this.#logger = logger
   }
@@ -28,8 +28,8 @@ export class MailgunDriver implements MailDriverContract {
   /**
    * Send message
    */
-  async send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse> {
-    const mailgunTransport = new MailgunTransport({ ...this.#config, ...config }, this.#logger)
+  async send(message: MessageNode, config?: BrevoRuntimeConfig): Promise<BrevoResponse> {
+    const mailgunTransport = new BrevoTransport({ ...this.#config, ...config }, this.#logger)
     const transporter = nodemailer.createTransport(mailgunTransport)
 
     return transporter.sendMail(message as any) as any

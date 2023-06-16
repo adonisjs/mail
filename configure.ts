@@ -17,6 +17,7 @@ const DRIVER_PROMPTS = [
   { name: 'ses' as const, message: 'Amazon SES' },
   { name: 'mailgun' as const, message: 'Mailgun' },
   { name: 'sparkpost' as const, message: 'SparkPost' },
+  { name: 'brevo' as const, message: 'Brevo' },
 ]
 
 /**
@@ -40,6 +41,9 @@ const DRIVER_ENV_VALUES = {
   },
   sparkpost: {
     SPARKPOST_API_KEY: '<sparkpost-api-key>',
+  },
+  brevo: {
+    BREVO_API_KEY: '<brevo-api-key>',
   },
 }
 
@@ -90,6 +94,7 @@ export async function configure(command: Configure) {
     ses: mailDrivers.includes('ses'),
     mailgun: mailDrivers.includes('mailgun'),
     sparkpost: mailDrivers.includes('sparkpost'),
+    brevo: mailDrivers.includes('brevo'),
   })
 
   /**

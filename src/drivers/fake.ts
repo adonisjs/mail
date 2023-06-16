@@ -12,9 +12,6 @@ import { subsetCompare } from '../utils/index.js'
 import { FakeMailResponse } from '../types/drivers/fake.js'
 import { MailDriverContract, MessageNode, MessageSearchNode } from '../types/main.js'
 
-/**
- * Smtp driver to send email using smtp
- */
 export class FakeDriver implements MailDriverContract {
   #transporter: any
 

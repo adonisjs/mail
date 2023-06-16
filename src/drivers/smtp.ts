@@ -13,7 +13,7 @@ import { MailDriverContract, MessageNode } from '../types/main.js'
 import SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
 
 /**
- * Smtp driver to send email using smtp
+ * Driver to send email using smtp
  */
 export class SmtpDriver implements MailDriverContract {
   #transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo> | null = null
