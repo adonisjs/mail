@@ -84,6 +84,7 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.341.0",
     "@poppinss/colors": "^4.1.0-2",
+    "@poppinss/hooks": "7.1.1-2",
     "@poppinss/macroable": "1.0.0-0",
     "@poppinss/utils": "^6.5.0-2",
     "fastq": "^1.15.0",
