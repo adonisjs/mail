@@ -10,14 +10,14 @@
 import app from '@adonisjs/core/services/app'
 import { MailerService } from '../src/types/main.js'
 
-let mailer: MailerService
+let mail: MailerService
 
 /**
  * Returns a singleton instance of the Mail manager from the
  * container
  */
 await app.booted(async () => {
-  mailer = await app.container.make('mail')
+  mail = await app.container.make('mail')
 })
 
-export { mailer as default }
+export { mail as default }

@@ -33,7 +33,7 @@
     "./commands": "./build/commands/main.js",
     "./commands/*": "./build/commands/*.js",
     "./providers/mail_provider": "./build/providers/mail_provider.js",
-    "./services/mailer": "./build/services/mailer.js",
+    "./services/main": "./build/services/main.js",
     "./factories": "./build/factories/main.js",
     "./types": "./build/src/types/main.js"
   },
@@ -74,9 +74,7 @@
     "@types/node": "^20.2.5",
     "@types/nodemailer": "^6.4.8",
     "c8": "^7.13.0",
-    "commitizen": "^4.3.0",
     "copyfiles": "^2.4.1",
-    "cz-conventional-changelog": "^3.3.0",
     "del-cli": "^5.0.0",
     "dotenv": "^16.0.3",
     "eslint": "^8.41.0",
