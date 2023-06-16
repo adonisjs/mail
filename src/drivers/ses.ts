@@ -42,7 +42,7 @@ export class SesDriver implements MailDriverContract {
    */
   async send(
     message: MessageNode,
-    options?: Omit<SES.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>
+    options?: Omit<SES.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>,
   ): Promise<SesMailResponse> {
     if (!this.transporter) {
       throw new Error('Driver transport has been closed and cannot be used for sending emails')

@@ -69,7 +69,7 @@ export type QueueMonitorCallback = (
   response?: {
     mail: CompiledMailNode<any>
     response: MailerResponseType<keyof MailersList, any>
-  }
+  },
 ) => void
 
 /**
@@ -94,7 +94,7 @@ export type MailEventData<KnownMailers extends MailDriversListContract> = {
 
 export interface MailerContract<
   KnownMailers extends MailDriversListContract,
-  Name extends keyof KnownMailers
+  Name extends keyof KnownMailers,
 > {
   /**
    * Mailer name
@@ -111,7 +111,7 @@ export interface MailerContract<
    */
   send(
     callback: MessageComposeCallback,
-    config?: DriverOptionsType<ReturnType<KnownMailers[Name]>>
+    config?: DriverOptionsType<ReturnType<KnownMailers[Name]>>,
   ): Promise<MailerResponseType<Name, KnownMailers>>
 
   /**
@@ -120,7 +120,7 @@ export interface MailerContract<
    * yourself.
    */
   sendCompiled(
-    mail: CompiledMailNode<KnownMailers>
+    mail: CompiledMailNode<KnownMailers>,
   ): Promise<MailerResponseType<Name, KnownMailers>>
 
   /**
@@ -128,7 +128,7 @@ export interface MailerContract<
    */
   sendLater(
     callback: MessageComposeCallback,
-    config?: DriverOptionsType<ReturnType<KnownMailers[Name]>>
+    config?: DriverOptionsType<ReturnType<KnownMailers[Name]>>,
   ): Promise<void>
 
   /**

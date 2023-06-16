@@ -315,7 +315,7 @@ test.group('Message', () => {
           url: 'http://adonisjs.com/meeting/1',
         })
       },
-      { filename: 'invite.ics' }
+      { filename: 'invite.ics' },
     )
 
     assert.isTrue(message.toJSON().message.icalEvent!.content!.startsWith('BEGIN:VCALENDAR'))

@@ -283,7 +283,7 @@ export class Message {
    */
   icalEvent(
     contents: ((calendar: ICalCalendar) => void) | string,
-    options?: CalendarEventOptions
+    options?: CalendarEventOptions,
   ): this {
     if (typeof contents === 'function') {
       const calendar = ical()

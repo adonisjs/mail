@@ -42,7 +42,7 @@ export class SparkPostTransport {
    * Returns an array of recipients accepted by the SparkPost API
    */
   #getRecipients(
-    recipients: { address: string; name?: string }[]
+    recipients: { address: string; name?: string }[],
   ): { address: { name?: string; email: string } }[] {
     return recipients.map((recipient) => {
       return {
@@ -98,7 +98,7 @@ export class SparkPostTransport {
 
       const messageId = (response.body.results?.id || mail.message.messageId()).replace(
         /^<|>$/g,
-        ''
+        '',
       )
       callback(null, { messageId, envelope })
     } catch (error) {

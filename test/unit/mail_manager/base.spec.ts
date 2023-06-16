@@ -203,7 +203,7 @@ test.group('Mail manager | send', () => {
         message.from('baz@bar.com')
         message.subject('Hello world')
       },
-      { foo: 'bar' }
+      { foo: 'bar' },
     )
 
     assert.deepEqual(customDriver.options, { foo: 'bar' })

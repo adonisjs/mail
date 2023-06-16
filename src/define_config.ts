@@ -27,7 +27,7 @@ export function defineConfig<
     {
       [K in keyof MailDriversList]: { driver: K } & Parameters<MailDriversList[K]>[0]
     }[keyof MailDriversList]
-  >
+  >,
 >(config: { default: keyof KnownMailers; list: KnownMailers; from?: RecipientNode }) {
   if (!config.list) {
     throw new InvalidArgumentsException('Missing "list" property inside the mail config')
@@ -35,7 +35,7 @@ export function defineConfig<
 
   if (config.default && !config.list[config.default]) {
     throw new InvalidArgumentsException(
-      `"${config.default.toString()}" is not a valid mailer name. Double check the config file`
+      `"${config.default.toString()}" is not a valid mailer name. Double check the config file`,
     )
   }
 
@@ -48,7 +48,7 @@ export function defineConfig<
     },
     {} as {
       [K in keyof KnownMailers]: MailDriversList[KnownMailers[K]['driver']]
-    }
+    },
   )
 
   return {

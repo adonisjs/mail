@@ -52,7 +52,7 @@ export class FakeMailManager<KnownMailers extends Record<string, ManagerDriverFa
    * Find an email
    */
   find(
-    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
+    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean),
   ): MessageSearchNode | null {
     for (let [, mailer] of this.fakedMailers) {
       const message = mailer.driver.find(messageOrCallback)
@@ -68,7 +68,7 @@ export class FakeMailManager<KnownMailers extends Record<string, ManagerDriverFa
    * Filter emails
    */
   filter(
-    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
+    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean),
   ): MessageNode[] {
     let messages: MessageNode[] = []
     for (let [, mailer] of this.fakedMailers) {

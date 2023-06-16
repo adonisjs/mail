@@ -68,7 +68,7 @@ test.group('Configure', (group) => {
     await assert.fileExists('types/mail.ts')
     await assert.fileContains(
       'types/mail.ts',
-      'export interface MailersList extends InferMailers<typeof mail>'
+      'export interface MailersList extends InferMailers<typeof mail>',
     )
   })
 

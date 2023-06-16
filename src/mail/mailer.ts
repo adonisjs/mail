@@ -20,7 +20,7 @@ import {
 
 export class Mailer<
   KnownMailers extends Record<string, ManagerDriverFactory>,
-  Name extends keyof KnownMailers
+  Name extends keyof KnownMailers,
 > implements MailerContract<KnownMailers, Name>
 {
   #driverOptions?: DriverOptionsType<ReturnType<KnownMailers[Name]>>
@@ -32,7 +32,7 @@ export class Mailer<
     public manager: MailManager<KnownMailers>,
     useQueue: boolean,
 
-    public driver: ReturnType<KnownMailers[Name]>
+    public driver: ReturnType<KnownMailers[Name]>,
   ) {
     this.#useQueue = useQueue
   }
@@ -145,7 +145,7 @@ export class Mailer<
    */
   async sendLater(
     callback: MessageComposeCallback,
-    config?: DriverOptionsType<KnownMailers[Name]>
+    config?: DriverOptionsType<KnownMailers[Name]>,
   ) {
     if (!this.#useQueue) {
       await this.send(callback, config)

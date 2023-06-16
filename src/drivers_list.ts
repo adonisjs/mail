@@ -25,7 +25,7 @@ class MailDriversCollection {
    */
   extend<Name extends keyof MailDriversList>(
     driverName: Name,
-    factoryCallback: MailDriversList[Name]
+    factoryCallback: MailDriversList[Name],
   ): this {
     this.list[driverName] = factoryCallback
     return this
@@ -36,12 +36,12 @@ class MailDriversCollection {
    */
   create<Name extends keyof MailDriversList>(
     name: Name,
-    config: Parameters<MailDriversList[Name]>[0]
+    config: Parameters<MailDriversList[Name]>[0],
   ) {
     const driverFactory = this.list[name]
     if (!driverFactory) {
       throw new RuntimeException(
-        `Unknown mail driver "${String(name)}". Make sure the driver is registered`
+        `Unknown mail driver "${String(name)}". Make sure the driver is registered`,
       )
     }
 

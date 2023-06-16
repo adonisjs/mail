@@ -68,7 +68,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
 
     this.logger.error(
       { subject: error.mail.message.subject, message: error.message },
-      'Unable to deliver email'
+      'Unable to deliver email',
     )
   }
 
@@ -91,7 +91,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
     public view: ViewContract,
     public emitter: Emitter<any>,
     public logger: Logger,
-    config: { default?: keyof KnownMailers; list: KnownMailers; from?: RecipientNode }
+    config: { default?: keyof KnownMailers; list: KnownMailers; from?: RecipientNode },
   ) {
     this.#config = config
 
@@ -107,7 +107,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
    * Creates an instance of a mail driver
    */
   #createDriver<DriverFactory extends ManagerDriverFactory>(
-    factory: DriverFactory
+    factory: DriverFactory,
   ): ReturnType<DriverFactory> {
     // @ts-ignore
     return factory()
@@ -119,7 +119,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
    */
   async #sendQueuedEmail(
     mail: CompiledMailNode<KnownMailers>,
-    cb: (error: null | any, response?: any) => void
+    cb: (error: null | any, response?: any) => void,
   ) {
     try {
       const response = await this.use(mail.mailer).sendCompiled(mail)
@@ -131,13 +131,13 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
   }
 
   use<MailerName extends keyof KnownMailers>(
-    mailer?: MailerName
+    mailer?: MailerName,
   ): MailerContract<KnownMailers, MailerName> {
     let mailerToUse = mailer || this.getDefaultDriverName()
 
     if (!mailerToUse) {
       throw new RuntimeException(
-        'Cannot create mail instance. No mailer is defined inside the config file'
+        'Cannot create mail instance. No mailer is defined inside the config file',
       )
     }
 
@@ -158,7 +158,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
 
     if (!driverFactory) {
       throw new RuntimeException(
-        `"${mailerToUse.toString()}" is not a valid mailer name. Double check the config file`
+        `"${mailerToUse.toString()}" is not a valid mailer name. Double check the config file`,
       )
     }
 
@@ -210,7 +210,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
     mailersToFake.forEach((mailer) => {
       this.#fakeMailManager.fakedMailers.set(
         mailer!,
-        new Mailer('fake', this, false, new FakeDriver() as any)
+        new Mailer('fake', this, false, new FakeDriver() as any),
       )
     })
 

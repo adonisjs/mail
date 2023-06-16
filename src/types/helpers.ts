@@ -20,7 +20,7 @@ export type DriverResponseType<Driver> = Driver extends MailDriverContract
  */
 export type MailerResponseType<
   Name extends keyof KnownMailers,
-  KnownMailers extends MailDriversListContract
+  KnownMailers extends MailDriversListContract,
 > = DriverResponseType<KnownMailers[Name]>
 
 /**

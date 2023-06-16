@@ -45,7 +45,7 @@ export class CustomDriverAsync implements MailDriverContract {
 export async function createMailManager<
   KnownMailers extends Record<string, ManagerDriverFactory> = {
     smtp: () => SmtpDriver
-  }
+  },
 >(config?: { default?: keyof KnownMailers; list: KnownMailers; from?: RecipientNode }) {
   const app = new AppFactory().create(BASE_URL, () => {})
 

@@ -28,7 +28,7 @@ test.group('SparkPost Driver', (group) => {
         key: process.env.SPARKPOST_API_KEY!,
         baseUrl: process.env.SPARKPOST_BASE_URL!,
       },
-      new LoggerFactory().create()
+      new LoggerFactory().create(),
     )
 
     const message = new Message()

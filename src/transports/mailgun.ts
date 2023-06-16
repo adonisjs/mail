@@ -132,7 +132,7 @@ export class MailgunTransport implements Transport {
 
     const mime = new File(
       [await streamToBlob(mail.message.createReadStream(), 'message/rfc822')],
-      'message.mime'
+      'message.mime',
     )
 
     form.append('message', mime, 'message.mime')
