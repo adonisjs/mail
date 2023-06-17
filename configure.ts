@@ -18,6 +18,7 @@ const DRIVER_PROMPTS = [
   { name: 'mailgun' as const, message: 'Mailgun' },
   { name: 'sparkpost' as const, message: 'SparkPost' },
   { name: 'brevo' as const, message: 'Brevo' },
+  { name: 'resend' as const, message: 'Resend' },
 ]
 
 /**
@@ -44,6 +45,9 @@ const DRIVER_ENV_VALUES = {
   },
   brevo: {
     BREVO_API_KEY: '<brevo-api-key>',
+  },
+  resend: {
+    RESEND_API_KEY: '<resend-api-key>',
   },
 }
 
@@ -95,6 +99,7 @@ export async function configure(command: Configure) {
     mailgun: mailDrivers.includes('mailgun'),
     sparkpost: mailDrivers.includes('sparkpost'),
     brevo: mailDrivers.includes('brevo'),
+    resend: mailDrivers.includes('resend'),
   })
 
   /**

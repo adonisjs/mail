@@ -50,3 +50,5 @@ jobs:
 
           BREVO_FROM_EMAIL: ${{ secrets.J_BREVO_FROM_EMAIL }}
           BREVO_API_KEY: ${{ secrets.J_BREVO_API_KEY }}
+
+          RESEND_API_KEY: ${{ secrets.J_RESEND_API_KEY }}

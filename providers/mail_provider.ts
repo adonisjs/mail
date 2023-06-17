@@ -15,6 +15,7 @@ import { SmtpDriver } from '../src/drivers/smtp.js'
 import { SparkPostDriver } from '../src/drivers/sparkpost.js'
 import { MailgunDriver } from '../src/drivers/mailgun.js'
 import { BrevoDriver } from '../src/drivers/brevo.js'
+import { ResendDriver } from '../src/drivers/resend.js'
 
 /**
  * Mail provider to register mail specific bindings
@@ -33,6 +34,7 @@ export default class MailProvider {
     driversList.extend('mailgun', (config) => new MailgunDriver(config, logger))
     driversList.extend('sparkpost', (config) => new SparkPostDriver(config, logger))
     driversList.extend('brevo', (config) => new BrevoDriver(config, logger))
+    driversList.extend('resend', (config) => new ResendDriver(config, logger))
   }
 
   /**

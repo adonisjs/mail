@@ -122,5 +122,19 @@ export default defineConfig({
       key: env.get('BREVO_API_KEY'),
     },
     {{/if}}
+    {{#if resend}}
+    /*
+    |--------------------------------------------------------------------------
+    | Resend
+    |--------------------------------------------------------------------------
+    |
+    | Uses Resend for sending emails.
+    |
+    */
+    resend: {
+      driver: 'resend',
+      key: env.get('RESEND_API_KEY'),
+    },
+    {{/if}}
   },
 })

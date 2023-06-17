@@ -22,6 +22,8 @@ import type { MailDriversListContract, MailerResponseType, DriverOptionsType } f
 import type { Message } from '../message/index.js'
 import type { BrevoConfig } from './drivers/brevo.js'
 import type { BrevoDriver } from '../drivers/brevo.js'
+import type { ResendConfig } from './drivers/resend.js'
+import type { ResendDriver } from '../drivers/resend.js'
 
 /**
  * A list of known mailers inferred from the user config
@@ -41,6 +43,7 @@ export interface MailDriversList {
   sparkpost: (config: SparkPostConfig) => SparkPostDriver
   ses: (config: SesConfig) => SesDriver
   brevo: (config: BrevoConfig) => BrevoDriver
+  resend: (config: ResendConfig) => ResendDriver
 }
 
 /*
