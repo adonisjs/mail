@@ -49,6 +49,7 @@
     "sync-labels": "github-label-sync --labels .github/labels.json adonisjs/logger",
     "quick:test": "node --loader=ts-node/esm bin/test.ts",
     "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands"
   },
   "devDependencies": {

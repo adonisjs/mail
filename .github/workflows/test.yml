@@ -53,3 +53,9 @@ jobs:
 
           RESEND_FROM_EMAIL: ${{ secrets.J_RESEND_FROM_EMAIL }}
           RESEND_API_KEY: ${{ secrets.J_RESEND_API_KEY }}
+
+  lint:
+    uses: adonisjs/.github/.github/workflows/lint.yml@main
+
+  typecheck:
+    uses: adonisjs/.github/.github/workflows/typecheck.yml@main
