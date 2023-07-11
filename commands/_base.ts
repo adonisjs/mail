@@ -39,8 +39,8 @@ export default abstract class extends BaseCommand {
         {
           flags: this.parsed.flags,
         },
-        stubState,
-      ),
+        stubState
+      )
     )
 
     const entityFileName = slash(this.app.relativePath(output.destination))

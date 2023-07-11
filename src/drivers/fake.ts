@@ -25,7 +25,7 @@ export class FakeDriver implements MailDriverContract {
    * Find an email
    */
   find(
-    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean),
+    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
   ): MessageNode | null {
     if (typeof messageOrCallback === 'function') {
       return this.mails.find(messageOrCallback) || null
@@ -38,7 +38,7 @@ export class FakeDriver implements MailDriverContract {
    * Filter emails
    */
   filter(
-    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean),
+    messageOrCallback: MessageSearchNode | ((mail: MessageSearchNode) => boolean)
   ): MessageNode[] {
     if (typeof messageOrCallback === 'function') {
       return this.mails.filter(messageOrCallback)

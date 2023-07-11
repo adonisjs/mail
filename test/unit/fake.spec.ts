@@ -123,7 +123,7 @@ test.group('Fake mail manager', () => {
 
     assert.deepEqual(
       fakeMail.filter(() => true),
-      [],
+      []
     )
 
     assert.deepEqual(customDriver.message, {
@@ -188,7 +188,7 @@ test.group('Fake mail manager', () => {
 
     assert.throws(
       () => fakeMail.assertSent(() => false),
-      'Expected to find sent email but not found any',
+      'Expected to find sent email but not found any'
     )
   })
 
@@ -204,7 +204,7 @@ test.group('Fake mail manager', () => {
       fakeMail.assertSent({
         to: [{ address: 'jul@adonisjs.com' }],
         text: 'Hello world',
-      }),
+      })
     )
   })
 
@@ -222,7 +222,7 @@ test.group('Fake mail manager', () => {
           to: [{ address: 'jul@adonisjs.com' }],
           text: 'Hello world',
         }),
-      'Expected to not find sent email but found one',
+      'Expected to not find sent email but found one'
     )
   })
 
@@ -234,7 +234,7 @@ test.group('Fake mail manager', () => {
       fakeMail.assertNotSent({
         to: [{ address: 'jul@adonisjs.com' }],
         text: 'Hello world',
-      }),
+      })
     )
 
     assert.doesNotThrows(() => fakeMail.assertNotSent(() => false))

@@ -25,7 +25,7 @@ test.group('Brevo Driver', (group) => {
   test('send email using brevo driver', async ({ assert }) => {
     const brevo = new BrevoDriver(
       { driver: 'brevo', key: process.env.BREVO_API_KEY! },
-      new LoggerFactory().create(),
+      new LoggerFactory().create()
     )
 
     const message = new Message()

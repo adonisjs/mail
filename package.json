@@ -54,9 +54,9 @@
   },
   "devDependencies": {
     "@adonisjs/core": "^6.1.5-4",
-    "@adonisjs/eslint-config": "^1.1.2",
-    "@adonisjs/prettier-config": "^1.1.2",
-    "@adonisjs/tsconfig": "^1.1.2",
+    "@adonisjs/eslint-config": "^1.1.8",
+    "@adonisjs/prettier-config": "^1.1.8",
+    "@adonisjs/tsconfig": "^1.1.8",
     "@adonisjs/view": "^7.0.0-2",
     "@japa/assert": "^2.0.0-1",
     "@japa/expect-type": "^2.0.0-0",
@@ -72,12 +72,12 @@
     "copyfiles": "^2.4.1",
     "del-cli": "^5.0.0",
     "dotenv": "^16.0.3",
-    "eslint": "^8.41.0",
+    "eslint": "^8.44.0",
     "github-label-sync": "^2.3.1",
     "husky": "^8.0.3",
     "luxon": "^3.3.0",
     "np": "^7.7.0",
-    "prettier": "^2.8.8",
+    "prettier": "^3.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
@@ -114,7 +114,7 @@
     "node-mailer"
   ],
   "eslintConfig": {
-    "extends": "@adonisjs/eslint-config/typescript-package"
+    "extends": "@adonisjs/eslint-config/package"
   },
   "prettier": "@adonisjs/prettier-config",
   "commitlint": {

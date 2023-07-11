@@ -285,7 +285,7 @@ export class Message extends Macroable {
    */
   icalEvent(
     contents: ((calendar: ICalCalendar) => void) | string,
-    options?: CalendarEventOptions,
+    options?: CalendarEventOptions
   ): this {
     if (typeof contents === 'function') {
       const calendar = ical()

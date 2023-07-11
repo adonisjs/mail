@@ -20,7 +20,7 @@ export class EmailTransportException extends Exception {
     if (error.response) {
       const exception = new this(
         error.response.statusMessage || 'Unable to send email. Check "error.response" for details',
-        { status: error.response.statusCode },
+        { status: error.response.statusCode }
       )
       exception.response = error.response.body
       return error

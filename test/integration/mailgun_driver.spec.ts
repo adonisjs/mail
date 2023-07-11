@@ -33,7 +33,7 @@ test.group('Mailgun Driver', (group) => {
         baseUrl: process.env.MAILGUN_BASE_URL!,
         domain: process.env.MAILGUN_DOMAIN!,
       },
-      new LoggerFactory().create(),
+      new LoggerFactory().create()
     )
 
     const message = new Message()
@@ -61,7 +61,7 @@ test.group('Mailgun Driver', (group) => {
         domain: process.env.MAILGUN_DOMAIN!,
         oTracking: true,
       },
-      new LoggerFactory().create(),
+      new LoggerFactory().create()
     )
 
     const message = new Message()
@@ -88,7 +88,7 @@ test.group('Mailgun Driver', (group) => {
         baseUrl: process.env.MAILGUN_BASE_URL!,
         domain: process.env.MAILGUN_DOMAIN!,
       },
-      new LoggerFactory().create(),
+      new LoggerFactory().create()
     )
 
     const message = new Message()
@@ -116,7 +116,7 @@ test.group('Mailgun Driver', (group) => {
         responseType: 'json',
         username: 'api',
         password: process.env.MAILGUN_ACCESS_KEY,
-      },
+      }
     )
 
     assert.sameMembers(body.items[0].tags, ['test', 'newsletter'])

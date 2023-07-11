@@ -24,7 +24,7 @@ test.group('Define config', () => {
     assert.throws(
       // @ts-ignore
       () => defineConfig({ list: {}, default: 'smtp' as any }),
-      '"smtp" is not a valid mailer name',
+      '"smtp" is not a valid mailer name'
     )
   })
 

@@ -66,7 +66,7 @@ function getMailDrivers(command: Configure) {
           ? true
           : 'Select at least one mail driver. You can always change it later'
       },
-    },
+    }
   )
 }
 

@@ -44,7 +44,7 @@ test.group('Resend Driver', (group) => {
   test('send email using resend driver', async ({ assert }) => {
     const resend = new ResendDriver(
       { driver: 'resend', key: process.env.RESEND_API_KEY! },
-      new LoggerFactory().create(),
+      new LoggerFactory().create()
     )
 
     const message = new Message()

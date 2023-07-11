@@ -32,7 +32,7 @@ export class Mailer<
     public manager: MailManager<KnownMailers>,
     useQueue: boolean,
 
-    public driver: ReturnType<KnownMailers[Name]>,
+    public driver: ReturnType<KnownMailers[Name]>
   ) {
     this.#useQueue = useQueue
   }
@@ -150,7 +150,7 @@ export class Mailer<
    */
   async sendLater(
     callback: MessageComposeCallback,
-    config?: DriverOptionsType<KnownMailers[Name]>,
+    config?: DriverOptionsType<KnownMailers[Name]>
   ) {
     if (!this.#useQueue) {
       await this.send(callback, config)

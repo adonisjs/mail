@@ -49,7 +49,7 @@ export class MailManagerFactory<
    * Merge factory parameters
    */
   merge<Mailers extends Record<string, ManagerDriverFactory>>(
-    config: Config<Mailers>,
+    config: Config<Mailers>
   ): MailManagerFactory<Mailers> {
     return new MailManagerFactory(config)
   }
@@ -62,7 +62,7 @@ export class MailManagerFactory<
       new ViewFactory().create(),
       new EmitterFactory().create(app),
       new LoggerFactory().create(),
-      this.#config,
+      this.#config
     )
   }
 }
