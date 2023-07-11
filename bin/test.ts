@@ -8,11 +8,8 @@
  */
 
 import { assert } from '@japa/assert'
-import { specReporter } from '@japa/spec-reporter'
-import { runFailedTests } from '@japa/run-failed-tests'
 import { fileSystem } from '@japa/file-system'
-import { processCliArgs, configure, run } from '@japa/runner'
-import { pathToFileURL } from 'node:url'
+import { processCLIArgs, configure, run } from '@japa/runner'
 import { expectTypeOf } from '@japa/expect-type'
 
 /*
@@ -28,25 +25,20 @@ import { expectTypeOf } from '@japa/expect-type'
 |
 | Please consult japa.dev/runner-config for the config docs.
 */
+processCLIArgs(process.argv.slice(2)),
 configure({
-  ...processCliArgs(process.argv.slice(2)),
-  ...{
-    plugins: [assert(), runFailedTests(), fileSystem(), expectTypeOf()],
-    reporters: [specReporter()],
-    importer: (filePath: string) => import(pathToFileURL(filePath).href),
-
-    suites: [
-      {
-        name: 'unit',
-        files: ['test/unit/**/*.spec.ts'],
-      },
-      {
-        name: 'integration',
-        files: ['test/integration/**/*.spec.ts'],
-        timeout: 1000 * 10,
-      },
-    ],
-  },
+  plugins: [assert(), fileSystem(), expectTypeOf()],
+  suites: [
+    {
+      name: 'unit',
+      files: ['test/unit/**/*.spec.ts'],
+    },
+    {
+      name: 'integration',
+      files: ['test/integration/**/*.spec.ts'],
+      timeout: 1000 * 10,
+    },
+  ],
 })
 
 /*
