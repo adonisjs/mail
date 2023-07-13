@@ -38,7 +38,7 @@
     "release": "np --message=\"chore(release): %s\"",
     "version": "npm run build",
     "sync-labels": "github-label-sync --labels .github/labels.json adonisjs/mail",
-    "quick:test": "node --loader=ts-node/esm bin/test.ts",
+    "quick:test": "node --enable-source-maps --loader=ts-node/esm bin/test.ts",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands"
