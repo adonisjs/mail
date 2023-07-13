@@ -18,7 +18,7 @@ import {
   RecipientNode,
 } from '../types/main.js'
 import { basename } from 'node:path'
-import { Macroable } from '@poppinss/macroable'
+import Macroable from '@poppinss/macroable'
 
 /**
  * Fluent API to construct node mailer message object
