@@ -87,6 +87,12 @@ export class Mailer<
    * you are pre-compiling messages yourself
    */
   async sendCompiled(mail: CompiledMailNode<KnownMailers>) {
+    const eventsData = {
+      message: mail.message,
+      views: Object.keys(mail.views).map((view) => (mail.views as any)[view].template),
+      mailer: mail.mailer,
+    }
+
     /**
      * Set content by rendering views
      */
@@ -98,20 +104,19 @@ export class Mailer<
     this.#setGlobalSettings(mail)
 
     /**
+     * Emit mail:sending event
+     */
+    this.manager.emitter.emit('mail:sending', eventsData)
+
+    /**
      * Send email for real
      */
     const response = await this.driver.send(mail.message, mail.config)
 
     /**
-     * Emit event
+     * Emit mail:sent event
      */
-    this.manager.emitter.emit('mail:sent', {
-      message: mail.message,
-      // @ts-ignore
-      views: Object.keys(mail.views).map((view) => mail.views[view].template),
-      mailer: mail.mailer,
-      response: response,
-    })
+    this.manager.emitter.emit('mail:sent', { ...eventsData, response: response })
 
     return response as unknown as Promise<MailerResponseType<Name, KnownMailers>>
   }

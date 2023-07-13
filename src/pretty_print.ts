@@ -8,7 +8,7 @@
  */
 
 import nodemailer from 'nodemailer'
-import { MailEventData } from './types/main.js'
+import { MailSentEventData } from './types/main.js'
 
 /**
  * Formats recipients for display
@@ -20,7 +20,7 @@ function formatRecipients(recipients: string[]) {
 /**
  * Returns display message for the accepted recipients (if any)
  */
-function getAcceptedRecipients(response: MailEventData<any>['response']): string | undefined {
+function getAcceptedRecipients(response: MailSentEventData<any>['response']): string | undefined {
   if ('accepted' in response) {
     return formatRecipients(response.accepted)
   }
@@ -29,7 +29,7 @@ function getAcceptedRecipients(response: MailEventData<any>['response']): string
 /**
  * Returns display message for the accepted recipients (if any)
  */
-function getRejectedRecipients(response: MailEventData<any>['response']): string | undefined {
+function getRejectedRecipients(response: MailSentEventData<any>['response']): string | undefined {
   if ('rejected' in response) {
     return formatRecipients(response.rejected)
   }
@@ -38,14 +38,14 @@ function getRejectedRecipients(response: MailEventData<any>['response']): string
 /**
  * Returns display message for the accepted recipients (if any)
  */
-function getMessageRecipients(message: MailEventData<any>['message']): string {
+function getMessageRecipients(message: MailSentEventData<any>['message']): string {
   return formatRecipients((message.to || []).map(({ address }) => address))
 }
 
 /**
  * Pretty prints the email event
  */
-export async function prettyPrint(mail: MailEventData<any>) {
+export async function prettyPrint(mail: MailSentEventData<any>) {
   /**
    * Lazy loading pretty printed dependencies
    */

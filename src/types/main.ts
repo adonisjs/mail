@@ -91,12 +91,20 @@ export type CompiledMailNode<KnownMailers extends MailDriversListContract> = {
 /**
  * Packet emitted by the `mail:sent` event
  */
-export type MailEventData<KnownMailers extends MailDriversListContract> = {
+export type MailSentEventData<KnownMailers extends MailDriversListContract> = {
   message: MessageNode
   views: string[]
   mailer: keyof MailersList
   response: MailerResponseType<keyof MailersList, KnownMailers>
 }
+
+/**
+ * Packet emitted by the `mail:sending` event
+ */
+export type MailSendingEventData<KnownMailers extends MailDriversListContract> = Omit<
+  MailSentEventData<KnownMailers>,
+  'response'
+>
 
 export interface MailerContract<
   KnownMailers extends MailDriversListContract,

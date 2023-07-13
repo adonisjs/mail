@@ -7,7 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { MailDriversListContract, MailEventData, MailerService, MailersList } from './main.js'
+import {
+  MailDriversListContract,
+  MailSendingEventData,
+  MailSentEventData,
+  MailerService,
+  MailersList,
+} from './main.js'
 
 declare module '@adonisjs/core/types' {
   export interface ContainerBindings {
@@ -15,6 +21,18 @@ declare module '@adonisjs/core/types' {
   }
 
   export interface EventsList {
-    'mail:sent': MailEventData<MailersList extends MailDriversListContract ? MailersList : never>
+    /**
+     * Just before the mailer sends the email
+     */
+    'mail:sending': MailSendingEventData<
+      MailersList extends MailDriversListContract ? MailersList : never
+    >
+
+    /**
+     * After the mailer has sent the email
+     */
+    'mail:sent': MailSentEventData<
+      MailersList extends MailDriversListContract ? MailersList : never
+    >
   }
 }
