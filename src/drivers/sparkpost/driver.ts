@@ -9,11 +9,7 @@
 
 import { createTransport } from 'nodemailer'
 import { SparkPostTransport } from './transport.js'
-import {
-  SparkPostConfig,
-  SparkPostRuntimeConfig,
-  SparkPostResponse,
-} from './types.js'
+import { SparkPostConfig, SparkPostRuntimeConfig, SparkPostResponse } from './types.js'
 import { MailDriverContract, MessageNode } from '../../types/main.js'
 import { Logger } from '@adonisjs/core/logger'
 

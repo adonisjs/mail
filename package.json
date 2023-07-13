@@ -3,8 +3,8 @@
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
   "version": "9.0.0-1",
   "engines": {
-		"node": ">=18.16.0"
-	},
+    "node": ">=18.16.0"
+  },
   "main": "build/index.js",
   "type": "module",
   "files": [
@@ -49,6 +49,7 @@
     "@adonisjs/prettier-config": "^1.1.8",
     "@adonisjs/tsconfig": "^1.1.8",
     "@adonisjs/view": "^7.0.0-4",
+    "@aws-sdk/client-ses": "^3.370.0",
     "@japa/assert": "^2.0.0-1",
     "@japa/expect-type": "^2.0.0-0",
     "@japa/file-system": "^2.0.0-1",
@@ -83,9 +84,9 @@
     "nodemailer": "^6.9.3"
   },
   "peerDependencies": {
-    "@aws-sdk/client-ses": "^3.341.0",
     "@adonisjs/core": "^6.1.5-7",
-    "@adonisjs/view": "^7.0.0-4"
+    "@adonisjs/view": "^7.0.0-4",
+    "@aws-sdk/client-ses": "^3.341.0"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-ses": {
