@@ -73,7 +73,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.341.0",
     "@poppinss/colors": "^4.1.0-3",
     "@poppinss/utils": "^6.5.0-3",
     "fastq": "^1.15.0",
@@ -84,8 +83,14 @@
     "nodemailer": "^6.9.3"
   },
   "peerDependencies": {
+    "@aws-sdk/client-ses": "^3.341.0",
     "@adonisjs/core": "^6.1.5-7",
     "@adonisjs/view": "^7.0.0-4"
+  },
+  "peerDependenciesMeta": {
+    "@aws-sdk/client-ses": {
+      "optional": true
+    }
   },
   "author": "virk,adonisjs",
   "license": "MIT",
