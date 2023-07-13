@@ -10,13 +10,11 @@
 import { IgnitorFactory } from '@adonisjs/core/factories'
 import { test } from '@japa/runner'
 
-import { defineConfig } from '../../src/define_config.js'
 import driversList from '../../src/drivers_list.js'
 import { SmtpDriver } from '../../src/drivers/smtp.js'
 import { MailgunDriver } from '../../src/drivers/mailgun.js'
 import { SesDriver } from '../../src/drivers/ses.js'
 import { SparkPostDriver } from '../../src/drivers/sparkpost.js'
-import { Mailer } from '../../src/mail/mailer.js'
 import { MailManager } from '../../src/mail/mail_manager.js'
 
 const BASE_URL = new URL('./tmp/', import.meta.url)
