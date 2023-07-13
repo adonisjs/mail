@@ -7,23 +7,23 @@
  * file that was distributed with this source code.
  */
 
-import type { SmtpConfig } from './drivers/smtp.js'
-import type { MailgunConfig } from './drivers/mailgun.js'
-import type { SesConfig } from './drivers/ses.js'
-import type { SparkPostConfig } from './drivers/sparkpost.js'
+import type { SmtpConfig } from '../drivers/smtp/types.js'
+import type { MailgunConfig } from '../drivers/mailgun/types.js'
+import type { SesConfig } from '../drivers/ses/types.js'
+import type { SparkPostConfig } from '../drivers/sparkpost/types.js'
 import type { ManagerDriverFactory } from '../define_config.js'
 import type { MailManager } from '../mail/mail_manager.js'
-import type { MailgunDriver } from '../drivers/mailgun.js'
-import type { SesDriver } from '../drivers/ses.js'
-import type { SmtpDriver } from '../drivers/smtp.js'
-import type { SparkPostDriver } from '../drivers/sparkpost.js'
+import type { MailgunDriver } from '../drivers/mailgun/driver.js'
+import type { SesDriver } from '../drivers/ses/driver.js'
+import type { SmtpDriver } from '../drivers/smtp/driver.js'
+import type { SparkPostDriver } from '../drivers/sparkpost/driver.js'
 import type { MessageNode, MessageContentViewsNode } from './message.js'
 import type { MailDriversListContract, MailerResponseType, DriverOptionsType } from './helpers.js'
 import type { Message } from '../message/index.js'
-import type { BrevoConfig } from './drivers/brevo.js'
-import type { BrevoDriver } from '../drivers/brevo.js'
-import type { ResendConfig } from './drivers/resend.js'
-import type { ResendDriver } from '../drivers/resend.js'
+import type { BrevoConfig } from '../drivers/brevo/types.js'
+import type { BrevoDriver } from '../drivers/brevo/driver.js'
+import type { ResendConfig } from '../drivers/resend/types.js'
+import type { ResendDriver } from '../drivers/resend/driver.js'
 
 /**
  * A list of known mailers inferred from the user config

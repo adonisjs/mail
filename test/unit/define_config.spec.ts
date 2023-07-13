@@ -10,9 +10,9 @@
 import { test } from '@japa/runner'
 import { defineConfig } from '../../src/define_config.js'
 import driversList from '../../src/drivers_list.js'
-import { MailgunDriver } from '../../src/drivers/mailgun.js'
+import { MailgunDriver } from '../../src/drivers/mailgun/driver.js'
 import { MessageComposeCallback } from '../../src/types/main.js'
-import { SesDriver } from '../../src/drivers/ses.js'
+import { SesDriver } from '../../src/drivers/ses/driver.js'
 import { MailManagerFactory } from '../../factories/mail_manager.js'
 
 test.group('Define config', () => {

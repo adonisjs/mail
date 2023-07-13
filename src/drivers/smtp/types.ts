@@ -8,7 +8,7 @@
  */
 
 import type { TlsOptions } from 'node:tls'
-import type { PostSentEnvelopeNode } from '../main.js'
+import type { PostSentEnvelopeNode } from '../../types/main.js'
 
 /**
  * Login options for Oauth2 smtp login

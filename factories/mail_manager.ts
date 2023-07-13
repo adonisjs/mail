@@ -12,7 +12,7 @@ import { LoggerFactory } from '@adonisjs/core/factories/logger'
 import { ViewFactory } from '@adonisjs/view/factories'
 import { Application } from '@adonisjs/core/app'
 
-import { SmtpDriver } from '../src/drivers/smtp.js'
+import { SmtpDriver } from '../src/drivers/smtp/driver.js'
 import { MailManager } from '../src/mail/mail_manager.js'
 import { RecipientNode } from '../src/types/main.js'
 import { ManagerDriverFactory } from '../src/define_config.js'

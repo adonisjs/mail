@@ -12,8 +12,8 @@ import got from 'got'
 import { Transport } from 'nodemailer'
 import { Address } from 'nodemailer/lib/mailer/index.js'
 import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
-import { EmailTransportException } from '../exceptions/email_transport_exception.js'
-import { ResendApiResponse, ResendConfig } from '../types/drivers/resend.js'
+import { EmailTransportException } from '../../exceptions/email_transport_exception.js'
+import { ResendApiResponse, ResendConfig } from './types.js'
 
 /**
  * Resend transport for Nodemailer

@@ -13,7 +13,7 @@ import { join } from 'node:path'
 import dotenv from 'dotenv'
 
 import { Message } from '../../src/message/index.js'
-import { SesDriver } from '../../src/drivers/ses.js'
+import { SesDriver } from '../../src/drivers/ses/driver.js'
 
 test.group('Ses Driver', (group) => {
   group.setup(() => {

@@ -8,9 +8,9 @@
  */
 
 import nodemailer from 'nodemailer'
-import { subsetCompare } from '../utils/index.js'
-import { FakeMailResponse } from '../types/drivers/fake.js'
-import { MailDriverContract, MessageNode, MessageSearchNode } from '../types/main.js'
+import { subsetCompare } from '../../utils/index.js'
+import { FakeMailResponse } from './types.js'
+import { MailDriverContract, MessageNode, MessageSearchNode } from '../../types/main.js'
 
 export class FakeDriver implements MailDriverContract {
   #transporter: any

@@ -15,7 +15,7 @@ import { test } from '@japa/runner'
 import { getDirname } from '@poppinss/utils'
 import { LoggerFactory } from '@adonisjs/core/factories/logger'
 
-import { MailgunDriver } from '../../src/drivers/mailgun.js'
+import { MailgunDriver } from '../../src/drivers/mailgun/driver.js'
 import { Message } from '../../src/message/index.js'
 
 const sleep = (time: number) => new Promise<void>((resolve) => setTimeout(resolve, time))

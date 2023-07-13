@@ -1,7 +1,7 @@
 import { AppFactory } from '@adonisjs/core/factories/app'
 import { MailManagerFactory } from '../factories/mail_manager.js'
 import { ManagerDriverFactory } from '../src/define_config.js'
-import { SmtpDriver } from '../src/drivers/smtp.js'
+import { SmtpDriver } from '../src/drivers/smtp/driver.js'
 import { MailDriverContract, MessageNode, RecipientNode } from '../src/types/main.js'
 
 export const BASE_URL = new URL('./tmp/', import.meta.url)

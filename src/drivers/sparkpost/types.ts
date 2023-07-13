@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { PostSentEnvelopeNode } from '../main.js'
+import type { PostSentEnvelopeNode } from '../../types/main.js'
 
 /**
  * Following options can be defined during the `Mail.send` call

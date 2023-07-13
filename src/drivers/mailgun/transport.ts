@@ -10,9 +10,9 @@
 import got from 'got'
 import { FormData, File } from 'formdata-node'
 
-import { ObjectBuilder, streamToBlob } from '../utils/index.js'
-import { EmailTransportException } from '../exceptions/email_transport_exception.js'
-import { MailgunConfig } from '../types/drivers/mailgun.js'
+import { ObjectBuilder, streamToBlob } from '../../utils/index.js'
+import { EmailTransportException } from '../../exceptions/email_transport_exception.js'
+import { MailgunConfig } from './types.js'
 import { Logger } from '@adonisjs/core/logger'
 import { Transport } from 'nodemailer'
 import MailMessage from 'nodemailer/lib/mailer/mail-message.js'

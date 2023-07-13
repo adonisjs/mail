@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { PostSentEnvelopeNode } from '../main.js'
+import type { PostSentEnvelopeNode } from '../../types/main.js'
 
 export type BrevoRuntimeConfig = {
   scheduledAt?: luxon.DateTime

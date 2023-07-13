@@ -13,7 +13,7 @@ import { join } from 'node:path'
 import dotenv from 'dotenv'
 
 import { Message } from '../../src/message/index.js'
-import { SmtpDriver } from '../../src/drivers/smtp.js'
+import { SmtpDriver } from '../../src/drivers/smtp/driver.js'
 
 test.group('Smtp Driver', (group) => {
   group.setup(() => {

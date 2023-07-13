@@ -15,7 +15,7 @@ import { getDirname } from '@poppinss/utils'
 import { LoggerFactory } from '@adonisjs/core/factories/logger'
 
 import { Message } from '../../src/message/index.js'
-import { ResendDriver } from '../../src/drivers/resend.js'
+import { ResendDriver } from '../../src/drivers/resend/driver.js'
 import got from 'got'
 
 function getEmailById(id: string) {

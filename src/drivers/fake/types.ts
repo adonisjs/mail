@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { MessageNode, PostSentEnvelopeNode } from '../main.js'
+import type { MessageNode, PostSentEnvelopeNode } from '../../types/main.js'
 
 /**
  * Shape of mail response for the fake driver

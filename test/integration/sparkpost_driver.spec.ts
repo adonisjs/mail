@@ -14,7 +14,7 @@ import dotenv from 'dotenv'
 import { join } from 'node:path'
 
 import { Message } from '../../src/message/index.js'
-import { SparkPostDriver } from '../../src/drivers/sparkpost.js'
+import { SparkPostDriver } from '../../src/drivers/sparkpost/driver.js'
 
 test.group('SparkPost Driver', (group) => {
   group.setup(() => {

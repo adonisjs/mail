@@ -11,8 +11,8 @@ import got from 'got'
 import { Transport } from 'nodemailer'
 import { Address } from 'nodemailer/lib/mailer/index.js'
 import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
-import { EmailTransportException } from '../exceptions/email_transport_exception.js'
-import { BrevoConfig } from '../types/drivers/brevo.js'
+import { EmailTransportException } from '../../exceptions/email_transport_exception.js'
+import { BrevoConfig } from './types.js'
 import { Logger } from '@adonisjs/core/logger'
 
 /**

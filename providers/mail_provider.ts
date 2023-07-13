@@ -10,12 +10,12 @@
 import { ApplicationService } from '@adonisjs/core/types'
 
 import driversList from '../src/drivers_list.js'
-import { SesDriver } from '../src/drivers/ses.js'
-import { SmtpDriver } from '../src/drivers/smtp.js'
-import { SparkPostDriver } from '../src/drivers/sparkpost.js'
-import { MailgunDriver } from '../src/drivers/mailgun.js'
-import { BrevoDriver } from '../src/drivers/brevo.js'
-import { ResendDriver } from '../src/drivers/resend.js'
+import { SesDriver } from '../src/drivers/ses/driver.js'
+import { SmtpDriver } from '../src/drivers/smtp/driver.js'
+import { SparkPostDriver } from '../src/drivers/sparkpost/driver.js'
+import { MailgunDriver } from '../src/drivers/mailgun/driver.js'
+import { BrevoDriver } from '../src/drivers/brevo/driver.js'
+import { ResendDriver } from '../src/drivers/resend/driver.js'
 import { defineReplBindings } from '../src/bindings.js'
 
 /**

@@ -8,9 +8,13 @@
  */
 
 import nodemailer from 'nodemailer'
-import { MailgunConfig, MailgunResponse, MailgunRuntimeConfig } from '../types/drivers/mailgun.js'
-import { MailgunTransport } from '../transports/mailgun.js'
-import { MailDriverContract, MessageNode } from '../types/main.js'
+import {
+  MailgunConfig,
+  MailgunResponse,
+  MailgunRuntimeConfig,
+} from './types.js'
+import { MailgunTransport } from './transport.js'
+import { MailDriverContract, MessageNode } from '../../types/main.js'
 import { Logger } from '@adonisjs/core/logger'
 
 /**

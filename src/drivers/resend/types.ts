@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { PostSentEnvelopeNode } from '../main.js'
+import { PostSentEnvelopeNode } from '../../types/main.js'
 
 export type ResendRuntimeConfig = {
   tags?: {

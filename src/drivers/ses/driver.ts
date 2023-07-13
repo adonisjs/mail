@@ -10,8 +10,8 @@
 import SES from '@aws-sdk/client-ses'
 import nodemailer from 'nodemailer'
 
-import { SesConfig, SesMailResponse } from '../types/drivers/ses.js'
-import { MailDriverContract, MessageNode } from '../types/main.js'
+import { SesConfig, SesMailResponse } from './types.js'
+import { MailDriverContract, MessageNode } from '../../types/main.js'
 import SESTransport from 'nodemailer/lib/ses-transport/index.js'
 
 /**

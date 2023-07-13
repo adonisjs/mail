@@ -8,12 +8,12 @@
  */
 
 import { Logger } from '@adonisjs/core/logger'
-import { BrevoResponse } from '../types/drivers/brevo.js'
-import { MailDriverContract } from '../types/main.js'
-import { MessageNode } from '../types/message.js'
+import { BrevoResponse } from '../brevo/types.js'
+import { MailDriverContract } from '../../types/main.js'
+import { MessageNode } from '../../types/message.js'
 import nodemailer from 'nodemailer'
-import { ResendTransport } from '../transports/resend.js'
-import { ResendConfig, ResendRuntimeConfig } from '../types/drivers/resend.js'
+import { ResendTransport } from './transport.js'
+import { ResendConfig, ResendRuntimeConfig } from './types.js'
 
 /**
  * Driver for sending emails using Brevo ( ex-sendinblue )

@@ -10,9 +10,9 @@
 import got from 'got'
 import getStream from 'get-stream'
 
-import { ObjectBuilder } from '../utils/index.js'
-import { EmailTransportException } from '../exceptions/email_transport_exception.js'
-import { SparkPostConfig } from '../types/drivers/sparkpost.js'
+import { ObjectBuilder } from '../../utils/index.js'
+import { EmailTransportException } from '../../exceptions/email_transport_exception.js'
+import { SparkPostConfig } from './types.js'
 import { Logger } from '@adonisjs/core/logger'
 
 /**
