@@ -18,12 +18,11 @@ import {
   RecipientNode,
 } from './types/main.js'
 import { basename } from 'node:path'
-import Macroable from '@poppinss/macroable'
 
 /**
  * Fluent API to construct node mailer message object
  */
-export class Message extends Macroable {
+export class Message {
   #nodeMailerMessage: MessageNode = {}
   #deferred = false
 
