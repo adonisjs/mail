@@ -167,29 +167,6 @@ test.group('Mail Manager | Base', () => {
 
     assert.isDefined(manager.prettyPrint)
   })
-
-  test('register afterCompile hook', async ({ assert }) => {
-    const customDriver = new CustomDriver()
-    const { manager } = await createMailManager({
-      default: 'smtp',
-      list: {
-        smtp: () => customDriver,
-        smtp2: () => customDriver,
-      },
-    })
-
-    manager.afterCompile(async (mailerName, message) => {
-      assert.equal(mailerName, 'smtp')
-      message.message.html = 'hello'
-    })
-
-    const mailer = manager.use()
-    await mailer.send((message) => {
-      message.to('foo@bar.com').html('world')
-    })
-
-    assert.equal(customDriver.message?.html, 'hello')
-  })
 })
 
 test.group('Mail manager | send', () => {

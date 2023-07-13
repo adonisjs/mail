@@ -93,11 +93,6 @@ export class Mailer<
     await this.#setEmailContent(mail)
 
     /**
-     * run afterCompile hooks
-     */
-    await this.manager.hooks.runner('afterCompile').run(this.name, mail)
-
-    /**
      * Set global `from` and `to` when defined
      */
     this.#setGlobalSettings(mail)

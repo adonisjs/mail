@@ -31,7 +31,6 @@ import { FakeMailManager } from '../fake/index.js'
 import { FakeDriver } from '../drivers/fake/driver.js'
 import { SmtpDriver } from '../drivers/smtp/driver.js'
 import { prettyPrint } from '../pretty_print.js'
-import Hooks from '@poppinss/hooks'
 
 /**
  * Mail manager config with the list of mailers in
@@ -87,11 +86,6 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
    * Method to pretty print sent emails
    */
   prettyPrint = prettyPrint
-
-  /**
-   * Registered hooks
-   */
-  hooks = new Hooks()
 
   constructor(
     public view: ViewContract,
@@ -286,15 +280,6 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
     this.#globalSettings.from = { address, name }
 
     return this
-  }
-
-  /**
-   * Register an afterCompile hook. Callback will be invoked
-   * just after the Message has been compiled, and just before
-   * it is sent
-   */
-  afterCompile(callback: (mailerName: keyof KnownMailers, message: CompiledMailNode<any>) => any) {
-    this.hooks.add('afterCompile', callback)
   }
 
   /**
