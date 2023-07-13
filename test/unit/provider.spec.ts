@@ -46,37 +46,6 @@ test.group('Mail Provider', () => {
     assert.instanceOf(manager, MailManager)
   })
 
-  test('construct mailer class from the container', async ({ assert }) => {
-    const config = defineConfig({
-      default: 'smtp',
-      list: { smtp: { driver: 'smtp', host: 'smtp.mailtrap.io' } },
-    })
-
-    const ignitor = new IgnitorFactory()
-      .withCoreConfig()
-      .withCoreProviders()
-      .merge({
-        config: { views: { cache: false }, mail: config },
-        rcFileContents: {
-          providers: [
-            '../../providers/mail_provider.js',
-            '@adonisjs/view/providers/views_provider',
-          ],
-        },
-      })
-      .create(BASE_URL, { importer: (filePath) => import(filePath) })
-
-    const app = ignitor.createApp('web')
-    await app.init()
-    await app.boot()
-
-    const manager = await app.container.make('mail')
-    const mailer = await app.container.make(Mailer)
-
-    assert.instanceOf(mailer, Mailer)
-    assert.strictEqual(mailer, manager.use())
-  }).skip()
-
   test('should extends the drivers list with builtin drivers', async ({ assert }) => {
     const ignitor = new IgnitorFactory()
       .withCoreConfig()
@@ -100,5 +69,60 @@ test.group('Mail Provider', () => {
     assert.instanceOf(driversList.create('mailgun', {} as any), MailgunDriver)
     assert.instanceOf(driversList.create('ses', {} as any), SesDriver)
     assert.instanceOf(driversList.create('sparkpost', {} as any), SparkPostDriver)
+  })
+
+  test('register repl binding', async ({ assert }) => {
+    const ignitor = new IgnitorFactory()
+      .withCoreConfig()
+      .withCoreProviders()
+      .merge({
+        config: { views: { cache: false } },
+        rcFileContents: {
+          providers: [
+            '../../providers/mail_provider.js',
+            '@adonisjs/view/providers/views_provider',
+          ],
+        },
+      })
+      .create(BASE_URL, { importer: (filePath) => import(filePath) })
+
+    const app = ignitor.createApp('repl')
+    await app.init()
+    await app.boot()
+
+    const repl = await app.container.make('repl')
+    const replMethods = repl.getMethods()
+
+    assert.property(replMethods, 'loadMail')
+    assert.property(replMethods, 'loadMailers')
+
+    assert.isFunction(replMethods.loadMail.handler)
+    assert.isFunction(replMethods.loadMailers.handler)
+  })
+
+  test('do not register repl binding when not in repl environment', async ({ assert }) => {
+    const ignitor = new IgnitorFactory()
+      .withCoreConfig()
+      .withCoreProviders()
+      .merge({
+        config: { views: { cache: false } },
+        rcFileContents: {
+          providers: [
+            '../../providers/mail_provider.js',
+            '@adonisjs/view/providers/views_provider',
+          ],
+        },
+      })
+      .create(BASE_URL, { importer: (filePath) => import(filePath) })
+
+    const app = ignitor.createApp('web')
+    await app.init()
+    await app.boot()
+
+    const repl = await app.container.make('repl')
+    const replMethods = repl.getMethods()
+
+    assert.notProperty(replMethods, 'loadMail')
+    assert.notProperty(replMethods, 'loadMailers')
   })
 })

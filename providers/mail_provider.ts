@@ -16,6 +16,7 @@ import { SparkPostDriver } from '../src/drivers/sparkpost.js'
 import { MailgunDriver } from '../src/drivers/mailgun.js'
 import { BrevoDriver } from '../src/drivers/brevo.js'
 import { ResendDriver } from '../src/drivers/resend.js'
+import { defineReplBindings } from '../src/bindings.js'
 
 /**
  * Mail provider to register mail specific bindings
@@ -54,10 +55,23 @@ export default class MailProvider {
   }
 
   /**
+   * Register REPL bindings
+   */
+  async #registerReplBindings() {
+    if (this.app.getEnvironment() !== 'repl') {
+      return
+    }
+
+    const repl = await this.app.container.make('repl')
+    defineReplBindings(this.app, repl)
+  }
+
+  /**
    * Registers bindings
    */
   async register() {
     this.#registerMailManager()
+    this.#registerReplBindings()
   }
 
   /**
