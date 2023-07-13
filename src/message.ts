@@ -16,7 +16,7 @@ import {
   MessageContentViewsNode,
   MessageNode,
   RecipientNode,
-} from '../types/main.js'
+} from './types/main.js'
 import { basename } from 'node:path'
 import Macroable from '@poppinss/macroable'
 

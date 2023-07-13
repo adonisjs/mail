@@ -10,7 +10,7 @@
 import got from 'got'
 import { FormData, File } from 'formdata-node'
 
-import { ObjectBuilder, streamToBlob } from '../../utils/index.js'
+import { ObjectBuilder, streamToBlob } from '../../utils.js'
 import { EmailTransportException } from '../../exceptions/email_transport_exception.js'
 import { MailgunConfig } from './types.js'
 import { Logger } from '@adonisjs/core/logger'

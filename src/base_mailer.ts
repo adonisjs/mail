@@ -7,13 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { Message } from '../message/index.js'
+import { Message } from './message.js'
 import {
   MailDriversListContract,
   MailerContract,
   MailerService,
   MailersList,
-} from '../types/main.js'
+} from './types/main.js'
 
 export abstract class BaseMailer {
   static mail: MailerService
@@ -28,6 +28,9 @@ export abstract class BaseMailer {
    */
   abstract prepare(message: Message): Promise<any> | any
 
+  /**
+   * Email driver to be used for sending emails.
+   */
   resolvedMailer() {
     return this.mailer || BaseMailer.mail.use()
   }

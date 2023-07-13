@@ -13,7 +13,7 @@ import { test } from '@japa/runner'
 import dotenv from 'dotenv'
 import { join } from 'node:path'
 
-import { Message } from '../../src/message/index.js'
+import { Message } from '../../src/message.js'
 import { SparkPostDriver } from '../../src/drivers/sparkpost/driver.js'
 
 test.group('SparkPost Driver', (group) => {

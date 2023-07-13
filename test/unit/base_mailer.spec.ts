@@ -9,10 +9,10 @@
 
 import { test } from '@japa/runner'
 
-import { BaseMailer } from '../../src/base_mailer/index.js'
+import { BaseMailer } from '../../src/base_mailer.js'
 import { createMailManager } from '../../test_helpers/index.js'
 import { SmtpDriver } from '../../src/drivers/smtp/driver.js'
-import { Message } from '../../src/message/index.js'
+import { Message } from '../../src/message.js'
 import driversList from '../../src/drivers_list.js'
 import { defineConfig } from '../../index.js'
 

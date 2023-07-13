@@ -8,7 +8,7 @@
  */
 
 import nodemailer from 'nodemailer'
-import { subsetCompare } from '../../utils/index.js'
+import { subsetCompare } from '../../utils.js'
 import { FakeMailResponse } from './types.js'
 import { MailDriverContract, MessageNode, MessageSearchNode } from '../../types/main.js'
 

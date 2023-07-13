@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/core/factories/app'
-import { Mailer } from '../../src/mail/mailer.js'
+import { Mailer } from '../../src/mailer.js'
 import { CustomDriver } from '../../test_helpers/index.js'
 import { MailManagerFactory } from '../../factories/mail_manager.js'
 

@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-import { Message } from '../message/index.js'
-import { MailManager } from './mail_manager.js'
-import { ManagerDriverFactory } from '../define_config.js'
+import { Message } from './message.js'
+import { MailManager } from './managers/mail_manager.js'
+import { ManagerDriverFactory } from './define_config.js'
 import {
   CompiledMailNode,
   DriverOptionsType,
   MailerContract,
   MailerResponseType,
   MessageComposeCallback,
-} from '../types/main.js'
+} from './types/main.js'
 
 export class Mailer<
   KnownMailers extends Record<string, ManagerDriverFactory>,

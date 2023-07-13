@@ -10,7 +10,7 @@
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 
-import { Message } from '../../src/message/index.js'
+import { Message } from '../../src/message.js'
 
 test.group('Message', () => {
   test('add from address', ({ assert }) => {

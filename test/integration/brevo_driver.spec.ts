@@ -14,7 +14,7 @@ import { test } from '@japa/runner'
 import { getDirname } from '@poppinss/utils'
 import { LoggerFactory } from '@adonisjs/core/factories/logger'
 
-import { Message } from '../../src/message/index.js'
+import { Message } from '../../src/message.js'
 import { BrevoDriver } from '../../src/drivers/brevo/driver.js'
 
 test.group('Brevo Driver', (group) => {

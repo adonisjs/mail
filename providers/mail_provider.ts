@@ -43,7 +43,7 @@ export default class MailProvider {
    */
   #registerMailManager() {
     this.app.container.singleton('mail', async () => {
-      const { MailManager } = await import('../src/mail/mail_manager.js')
+      const { MailManager } = await import('../src/managers/mail_manager.js')
 
       const logger = await this.app.container.make('logger')
       const view = await this.app.container.make('view')

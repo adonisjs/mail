@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 
-import { Mailer } from '../../../src/mail/mailer.js'
+import { Mailer } from '../../../src/mailer.js'
 import driversList from '../../../src/drivers_list.js'
 import { SesDriver } from '../../../src/drivers/ses/driver.js'
 import { SmtpDriver } from '../../../src/drivers/smtp/driver.js'

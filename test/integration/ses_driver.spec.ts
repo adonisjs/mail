@@ -12,7 +12,7 @@ import { test } from '@japa/runner'
 import { join } from 'node:path'
 import dotenv from 'dotenv'
 
-import { Message } from '../../src/message/index.js'
+import { Message } from '../../src/message.js'
 import { SesDriver } from '../../src/drivers/ses/driver.js'
 
 test.group('Ses Driver', (group) => {

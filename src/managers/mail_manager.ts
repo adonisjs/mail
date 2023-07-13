@@ -16,7 +16,7 @@ import { Emitter } from '@adonisjs/core/events'
 import { RuntimeException } from '@poppinss/utils'
 import { ViewContract } from '@adonisjs/view/types'
 
-import { Mailer } from './mailer.js'
+import { Mailer } from '../mailer.js'
 import {
   CompiledMailNode,
   MailerContract,
@@ -26,8 +26,8 @@ import {
 } from '../types/main.js'
 import debug from '../debug.js'
 import { ManagerDriverFactory } from '../define_config.js'
-import { BaseMailer } from '../index.js'
-import { FakeMailManager } from '../fake/index.js'
+import { BaseMailer } from '../base_mailer.js'
+import { FakeMailManager } from './fake_mail_manager.js'
 import { FakeDriver } from '../drivers/fake/driver.js'
 import { SmtpDriver } from '../drivers/smtp/driver.js'
 import { prettyPrint } from '../pretty_print.js'
