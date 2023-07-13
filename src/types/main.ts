@@ -145,3 +145,9 @@ export interface MailerContract<
 
 export * from './message.js'
 export * from './helpers.js'
+export * from '../drivers/brevo/driver.js'
+export * from '../drivers/mailgun/driver.js'
+export * from '../drivers/resend/driver.js'
+export * from '../drivers/ses/driver.js'
+export * from '../drivers/smtp/driver.js'
+export * from '../drivers/sparkpost/driver.js'

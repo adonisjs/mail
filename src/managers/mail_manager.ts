@@ -130,6 +130,10 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
     }
   }
 
+  /**
+   * Use one of the defined mailers
+   * Returns the default mailer when no mailer name is passed
+   */
   use<MailerName extends keyof KnownMailers>(
     mailer?: MailerName
   ): MailerContract<KnownMailers, MailerName> {
@@ -299,13 +303,14 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
 
     const mailer = new Mailer('ethereal', this, true, smtpDriver as any)
     const response: SMTPTransport.SentMessageInfo = await mailer.send(callback)
-    const url = nodemailer.getTestMessageUrl(response)
 
     return {
       ...response,
-      url,
-      account: { user: account.user, pass: account.pass },
-      toIframe: () => `<iframe src="${url}" width="100%" height="100%"></iframe>`,
+      url: nodemailer.getTestMessageUrl(response),
+      account: {
+        user: account.user,
+        pass: account.pass,
+      },
     }
   }
 }

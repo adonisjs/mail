@@ -11,21 +11,6 @@ import { test } from '@japa/runner'
 import { createMailManager } from '../../../test_helpers/index.js'
 
 test.group('Mail Manager | Preview', () => {
-  test('Mail.preview should return the preview url', async ({ assert }) => {
-    const { manager } = await createMailManager()
-
-    const response = await manager.preview((message) => {
-      message.to('foo@bar.com')
-      message.from('baz@bar.com')
-      message.subject('Hello world')
-    })
-
-    const iframe = response.toIframe()
-
-    assert.exists(response.url)
-    assert.include(iframe, response.url)
-  }).timeout(1000 * 10)
-
   test('multiple calls to preview should use one account', async ({ assert }) => {
     const { manager } = await createMailManager()
 

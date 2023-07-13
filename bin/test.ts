@@ -25,21 +25,21 @@ import { expectTypeOf } from '@japa/expect-type'
 |
 | Please consult japa.dev/runner-config for the config docs.
 */
-processCLIArgs(process.argv.slice(2)),
-  configure({
-    plugins: [assert(), fileSystem(), expectTypeOf()],
-    suites: [
-      {
-        name: 'unit',
-        files: ['test/unit/**/*.spec.ts'],
-      },
-      {
-        name: 'integration',
-        files: ['test/integration/**/*.spec.ts'],
-        timeout: 1000 * 10,
-      },
-    ],
-  })
+processCLIArgs(process.argv.slice(2))
+configure({
+  plugins: [assert(), fileSystem(), expectTypeOf()],
+  suites: [
+    {
+      name: 'unit',
+      files: ['test/unit/**/*.spec.ts'],
+    },
+    {
+      name: 'integration',
+      files: ['test/integration/**/*.spec.ts'],
+      timeout: 1000 * 10,
+    },
+  ],
+})
 
 /*
 |--------------------------------------------------------------------------

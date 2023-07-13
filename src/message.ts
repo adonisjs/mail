@@ -37,7 +37,6 @@ export class Message {
   } = {}
 
   constructor(deferred = false) {
-    super()
     this.#deferred = deferred
   }
 
