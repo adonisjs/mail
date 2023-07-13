@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { args } from '@adonisjs/core/ace'
-import BaseCommand from './_base.js'
+import { args, BaseCommand } from '@adonisjs/core/ace'
+import { stubsRoot } from '../index.js'
 
 /**
  * Command to make a new mailer
@@ -26,8 +26,10 @@ export default class MakeMailer extends BaseCommand {
   protected stubPath: string = 'make/mailer.stub'
 
   async run() {
-    await this.generate(this.stubPath, {
-      entity: this.app.generators.createEntity(this.name),
-    })
+    await this.makeUsingStub(
+      this.stubPath,
+      { entity: this.app.generators.createEntity(this.name) },
+      stubsRoot
+    )
   }
 }
