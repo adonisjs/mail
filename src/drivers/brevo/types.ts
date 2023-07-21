@@ -8,9 +8,10 @@
  */
 
 import type { PostSentEnvelopeNode } from '../../types/main.js'
+import type { DateTime } from 'luxon'
 
 export type BrevoRuntimeConfig = {
-  scheduledAt?: luxon.DateTime
+  scheduledAt?: DateTime
   tags?: string[]
   templateId?: number
   templateParams?: Record<string, any>
