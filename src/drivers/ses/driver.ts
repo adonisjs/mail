@@ -7,9 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import SES from '@aws-sdk/client-ses'
 import nodemailer from 'nodemailer'
-
+import type * as SES from '@aws-sdk/client-ses'
 import { SesConfig, SesMailResponse } from './types.js'
 import { MailDriverContract, MessageNode } from '../../types/main.js'
 import SESTransport from 'nodemailer/lib/ses-transport/index.js'
@@ -18,22 +17,45 @@ import SESTransport from 'nodemailer/lib/ses-transport/index.js'
  * Ses driver to send email using ses
  */
 export class SesDriver implements MailDriverContract {
-  protected transporter: nodemailer.Transporter<SESTransport.SentMessageInfo> | null
+  /**
+   * SES config
+   */
+  #config: SesConfig
+
+  /**
+   * Store the promise that is resolved when the transporter is created
+   */
+  #createTransportPromise?: Promise<void>
+
+  /**
+   * The nodemailer transport
+   */
+  protected transporter: nodemailer.Transporter<SESTransport.SentMessageInfo> | null = null
 
   constructor(config: SesConfig) {
+    this.#config = config
+    this.#createTransportPromise = this.#createTransporter()
+  }
+
+  /**
+   * Create transporter instance
+   */
+  async #createTransporter() {
+    const SES = await import('@aws-sdk/client-ses')
+
     const sesClient = new SES.SES({
-      apiVersion: config.apiVersion,
-      region: config.region,
+      apiVersion: this.#config.apiVersion,
+      region: this.#config.region,
       credentials: {
-        accessKeyId: config.key,
-        secretAccessKey: config.secret,
+        accessKeyId: this.#config.key,
+        secretAccessKey: this.#config.secret,
       },
     })
 
     this.transporter = nodemailer.createTransport({
       SES: { aws: SES, ses: sesClient },
-      sendingRate: config.sendingRate,
-      maxConnections: config.maxConnections,
+      sendingRate: this.#config.sendingRate,
+      maxConnections: this.#config.maxConnections,
     })
   }
 
@@ -44,6 +66,8 @@ export class SesDriver implements MailDriverContract {
     message: MessageNode,
     options?: Omit<SES.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>
   ): Promise<SesMailResponse> {
+    await this.#createTransportPromise
+
     if (!this.transporter) {
       throw new Error('Driver transport has been closed and cannot be used for sending emails')
     }

@@ -14,6 +14,7 @@ import dotenv from 'dotenv'
 
 import { Message } from '../../src/message.js'
 import { SesDriver } from '../../src/drivers/ses/driver.js'
+import { sleep } from '../../test_helpers/index.js'
 
 test.group('Ses Driver', (group) => {
   group.setup(() => {
@@ -66,6 +67,11 @@ test.group('Ses Driver', (group) => {
     message.cc(process.env.TEST_EMAILS_CC!)
     message.subject('Adonisv5')
     message.html('<p> Hello Adonis </p>')
+
+    /**
+     * Wait for the transporter to be created
+     */
+    await sleep(1000)
 
     // @ts-ignore
     ses['transporter'].sendMail = function (mailMessage: any) {
