@@ -8,10 +8,10 @@
  */
 
 import { createTransport } from 'nodemailer'
-import { SparkPostTransport } from './transport.js'
-import { SparkPostConfig, SparkPostRuntimeConfig, SparkPostResponse } from './types.js'
-import { MailDriverContract, MessageNode } from '../../types/main.js'
-import { Logger } from '@adonisjs/core/logger'
+
+import type { Logger } from '@adonisjs/core/logger'
+import type { SparkPostConfig, SparkPostRuntimeConfig, SparkPostResponse } from './types.js'
+import type { MailDriverContract, MessageNode } from '../../types/main.js'
 
 /**
  * Driver to send email using sparkpost
@@ -29,10 +29,11 @@ export class SparkPostDriver implements MailDriverContract {
    * Send message
    */
   async send(message: MessageNode, config?: SparkPostRuntimeConfig): Promise<SparkPostResponse> {
+    const { SparkPostTransport } = await import('./transport.js')
     const sparkpostTransport = new SparkPostTransport({ ...this.#config, ...config }, this.#logger)
     const transporter = createTransport(sparkpostTransport)
 
-    // @ts-expect-error internal
+    // @ts-ignore
     return transporter.sendMail(message)
   }
 

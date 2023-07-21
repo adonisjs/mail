@@ -8,10 +8,10 @@
  */
 
 import nodemailer from 'nodemailer'
-import { MailgunConfig, MailgunResponse, MailgunRuntimeConfig } from './types.js'
-import { MailgunTransport } from './transport.js'
-import { MailDriverContract, MessageNode } from '../../types/main.js'
-import { Logger } from '@adonisjs/core/logger'
+
+import type { MailgunConfig, MailgunResponse, MailgunRuntimeConfig } from './types.js'
+import type { MailDriverContract, MessageNode } from '../../types/main.js'
+import type { Logger } from '@adonisjs/core/logger'
 
 /**
  * Driver to send email using mailgun
@@ -29,6 +29,7 @@ export class MailgunDriver implements MailDriverContract {
    * Send message
    */
   async send(message: MessageNode, config?: MailgunRuntimeConfig): Promise<MailgunResponse> {
+    const { MailgunTransport } = await import('./transport.js')
     const mailgunTransport = new MailgunTransport({ ...this.#config, ...config }, this.#logger)
     const transporter = nodemailer.createTransport(mailgunTransport)
 

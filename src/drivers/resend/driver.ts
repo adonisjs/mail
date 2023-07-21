@@ -7,13 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { Logger } from '@adonisjs/core/logger'
-import { BrevoResponse } from '../brevo/types.js'
-import { MailDriverContract } from '../../types/main.js'
-import { MessageNode } from '../../types/message.js'
 import nodemailer from 'nodemailer'
-import { ResendTransport } from './transport.js'
-import { ResendConfig, ResendRuntimeConfig } from './types.js'
+
+import type { Logger } from '@adonisjs/core/logger'
+import type { BrevoResponse } from '../brevo/types.js'
+import type { MailDriverContract } from '../../types/main.js'
+import type { MessageNode } from '../../types/message.js'
+import type { ResendConfig, ResendRuntimeConfig } from './types.js'
 
 /**
  * Driver for sending emails using Brevo ( ex-sendinblue )
@@ -31,6 +31,7 @@ export class ResendDriver implements MailDriverContract {
    * Send message
    */
   async send(message: MessageNode, config?: ResendRuntimeConfig): Promise<BrevoResponse> {
+    const { ResendTransport } = await import('./transport.js')
     const mailgunTransport = new ResendTransport({ ...this.#config, ...config }, this.#logger)
     const transporter = nodemailer.createTransport(mailgunTransport)
 

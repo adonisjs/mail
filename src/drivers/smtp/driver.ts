@@ -8,9 +8,10 @@
  */
 
 import nodemailer from 'nodemailer'
-import { SmtpConfig, SmtpMailResponse } from './types.js'
-import { MailDriverContract, MessageNode } from '../../types/main.js'
-import SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
+
+import type { SmtpConfig, SmtpMailResponse } from './types.js'
+import type { MailDriverContract, MessageNode } from '../../types/main.js'
+import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
 
 /**
  * Driver to send email using smtp

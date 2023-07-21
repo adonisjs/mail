@@ -8,10 +8,10 @@
  */
 
 import nodemailer from 'nodemailer'
-import { MailDriverContract, MessageNode } from '../../types/main.js'
-import { Logger } from '@adonisjs/core/logger'
-import { BrevoConfig, BrevoResponse, BrevoRuntimeConfig } from './types.js'
-import { BrevoTransport } from './transport.js'
+
+import type { Logger } from '@adonisjs/core/logger'
+import type { BrevoConfig, BrevoResponse, BrevoRuntimeConfig } from './types.js'
+import type { MailDriverContract, MessageNode } from '../../types/main.js'
 
 /**
  * Driver for sending emails using Brevo ( ex-sendinblue )
@@ -29,6 +29,7 @@ export class BrevoDriver implements MailDriverContract {
    * Send message
    */
   async send(message: MessageNode, config?: BrevoRuntimeConfig): Promise<BrevoResponse> {
+    const { BrevoTransport } = await import('./transport.js')
     const mailgunTransport = new BrevoTransport({ ...this.#config, ...config }, this.#logger)
     const transporter = nodemailer.createTransport(mailgunTransport)
 
