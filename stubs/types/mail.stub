@@ -1,8 +1,8 @@
 ---
 to: {{ app.makePath('types/mail.ts') }}
 ---
-import mail from "#config/mail";
+import mail from '#config/mail';
 
-declare module "@adonisjs/mail/types" {
+declare module '@adonisjs/mail/types' {
   export interface MailersList extends InferMailers<typeof mail> {}
 }
