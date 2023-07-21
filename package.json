@@ -23,7 +23,7 @@
     ".": "./build/index.js",
     "./commands": "./build/commands/main.js",
     "./commands/*": "./build/commands/*.js",
-    "./providers/mail_provider": "./build/providers/mail_provider.js",
+    "./mail_provider": "./build/providers/mail_provider.js",
     "./services/main": "./build/services/main.js",
     "./factories": "./build/factories/main.js",
     "./types": "./build/src/types/main.js"

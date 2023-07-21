@@ -117,9 +117,7 @@ export async function configure(command: Configure) {
    * Add the provider to the RC file
    */
   await command.updateRcFile((rcFile) => {
-    rcFile
-      .addProvider('@adonisjs/mail/providers/mail_provider')
-      .addCommand('@adonisjs/mail/commands')
+    rcFile.addProvider('@adonisjs/mail/mail_provider').addCommand('@adonisjs/mail/commands')
   })
 
   /**
