@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import edge from 'edge.js'
 import { EmitterFactory } from '@adonisjs/core/factories/events'
 import { LoggerFactory } from '@adonisjs/core/factories/logger'
-import { ViewFactory } from '@adonisjs/view/factories'
 import { Application } from '@adonisjs/core/app'
 
 import { SmtpDriver } from '../src/drivers/smtp/driver.js'
@@ -59,7 +59,7 @@ export class MailManagerFactory<
    */
   create(app: Application<any>) {
     return new MailManager<KnownMailers>(
-      new ViewFactory().create(),
+      edge,
       new EmitterFactory().create(app),
       new LoggerFactory().create(),
       this.#config

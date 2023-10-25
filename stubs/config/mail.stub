@@ -1,7 +1,6 @@
----
-to: {{ app.configPath('mail.ts') }}
----
-
+{{{
+  exports({ to: app.configPath('mail.ts') })
+}}}
 import env from '#start/env'
 import { defineConfig } from "@adonisjs/mail";
 

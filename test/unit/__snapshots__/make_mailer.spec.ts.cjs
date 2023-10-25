@@ -1,23 +1,18 @@
-{{#var mailerName = generators.mailerName(entity.name)}}
-{{#var mailerFileName = generators.mailerFileName(entity.name)}}
-{{{
-  exports({ to: app.mailersPath(entity.path, mailerFileName) })
-}}}
-import { BaseMailer, Message } from '@adonisjs/mail'
+exports[`Make mailer command > create mailer stub 1`] = `"import { BaseMailer, Message } from '@adonisjs/mail'
 
-export default class {{mailerName}} extends BaseMailer {
+export default class OrderNotification extends BaseMailer {
   /**
    * WANT TO USE A DIFFERENT MAILER?
    *
    * Uncomment the following line of code to use a different
-   * mailer and chain the ".options" method to pass custom
+   * mailer and chain the \\".options\\" method to pass custom
    * options to the send method
    */
   // public mailer = this.mail.use()
 
   /**
    * The prepare method is invoked automatically when you run
-   * "{{mailerName}}.send".
+   * \\"OrderNotification.send\\".
    *
    * Use this method to prepare the email message. The method can
    * also be async.
@@ -25,4 +20,5 @@ export default class {{mailerName}} extends BaseMailer {
   public prepare(message: Message) {
     message.subject('The email subject').from('admin@example.com').to('user@example.com')
   }
-}
+}"`
+

@@ -1,6 +1,6 @@
----
-to: {{ app.makePath('types/mail.ts') }}
----
+{{{
+  exports({ to: app.makePath('types/mail.ts') })
+}}}
 import mail from '#config/mail';
 
 declare module '@adonisjs/mail/types' {

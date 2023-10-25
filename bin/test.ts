@@ -11,6 +11,7 @@ import { assert } from '@japa/assert'
 import { fileSystem } from '@japa/file-system'
 import { processCLIArgs, configure, run } from '@japa/runner'
 import { expectTypeOf } from '@japa/expect-type'
+import { snapshot } from '@japa/snapshot'
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,7 @@ import { expectTypeOf } from '@japa/expect-type'
 */
 processCLIArgs(process.argv.slice(2))
 configure({
-  plugins: [assert(), fileSystem(), expectTypeOf()],
+  plugins: [assert(), fileSystem(), expectTypeOf(), snapshot()],
   suites: [
     {
       name: 'unit',

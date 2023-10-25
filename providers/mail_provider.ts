@@ -17,6 +17,7 @@ import { MailgunDriver } from '../src/drivers/mailgun/driver.js'
 import { BrevoDriver } from '../src/drivers/brevo/driver.js'
 import { ResendDriver } from '../src/drivers/resend/driver.js'
 import { defineReplBindings } from '../src/bindings.js'
+import edge from 'edge.js'
 
 /**
  * Mail provider to register mail specific bindings
@@ -46,11 +47,10 @@ export default class MailProvider {
       const { MailManager } = await import('../src/managers/mail_manager.js')
 
       const logger = await this.app.container.make('logger')
-      const view = await this.app.container.make('view')
       const emitter = await this.app.container.make('emitter')
 
       const config = this.app.config.get<any>('mail', {})
-      return new MailManager(view, emitter, logger, config)
+      return new MailManager(edge, emitter, logger, config)
     })
   }
 

@@ -84,6 +84,8 @@ function getEnvValues(drivers: (keyof typeof DRIVER_ENV_VALUES)[]) {
  * Configures the package
  */
 export async function configure(command: Configure) {
+  const codemods = await command.createCodemods()
+
   /**
    * Get mail drivers
    */
@@ -111,13 +113,14 @@ export async function configure(command: Configure) {
    * Add environment variables to the `.env` file
    */
   const envValues = getEnvValues(mailDrivers)
-  await command.defineEnvVariables(envValues)
+  await codemods.defineEnvVariables(envValues)
 
   /**
    * Add the provider to the RC file
    */
-  await command.updateRcFile((rcFile) => {
-    rcFile.addProvider('@adonisjs/mail/mail_provider').addCommand('@adonisjs/mail/commands')
+  await codemods.updateRcFile((rcFile) => {
+    rcFile.addCommand('@adonisjs/mail/commands')
+    rcFile.addProvider('@adonisjs/mail/mail_provider')
   })
 
   /**

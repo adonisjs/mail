@@ -26,10 +26,10 @@ export default class MakeMailer extends BaseCommand {
   protected stubPath: string = 'make/mailer.stub'
 
   async run() {
-    await this.makeUsingStub(
-      this.stubPath,
-      { entity: this.app.generators.createEntity(this.name) },
-      stubsRoot
-    )
+    const codemods = await this.createCodemods()
+    await codemods.makeUsingStub(stubsRoot, this.stubPath, {
+      entity: this.app.generators.createEntity(this.name),
+      flags: this.parsed.flags,
+    })
   }
 }

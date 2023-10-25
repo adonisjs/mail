@@ -72,14 +72,16 @@ test.group('Configure', (group) => {
     )
   })
 
-  test('add MailProvider to the rc file', async ({ assert }) => {
+  test('add MailProvider to the rc file', async ({ assert, fs }) => {
     const { command } = await setupConfigureCommand()
+
+    await fs.create('adonisrc.ts', `export default defineConfig({})`)
 
     command.prompt.trap('askDrivers').chooseOptions([0, 1])
     await command.exec()
 
-    await assert.fileExists('.adonisrc.json')
-    await assert.fileContains('.adonisrc.json', '"@adonisjs/mail/mail_provider"')
+    await assert.fileExists('adonisrc.ts')
+    await assert.fileContains('adonisrc.ts', '@adonisjs/mail/mail_provider')
   })
 
   test('add env variables for the selected drivers', async ({ assert, fs }) => {

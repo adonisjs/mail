@@ -7,28 +7,25 @@
  * file that was distributed with this source code.
  */
 
-import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { test } from '@japa/runner'
-import { AppFactory } from '@adonisjs/application/factories'
+import { AceFactory } from '@adonisjs/core/factories'
+import MakeMailer from '../../commands/make_mailer.js'
 
-import { stubsRoot } from '../../stubs/index.js'
+test.group('Make mailer command', (group) => {
+  group.each.teardown(async () => {
+    delete process.env.ADONIS_ACE_CWD
+  })
 
-const BASE_URL = new URL('./tmp/', import.meta.url)
-const BASE_PATH = fileURLToPath(BASE_URL)
+  test('create mailer stub', async ({ assert, fs }) => {
+    const ace = await new AceFactory().make(fs.baseUrl, { importer: () => {} })
+    await ace.app.init()
+    ace.ui.switchMode('raw')
 
-test.group('Make mailer command', () => {
-  test('create mailer stub', async ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
-    await app.init()
+    const command = await ace.create(MakeMailer, ['order'])
+    await command.exec()
 
-    const stub = await app.stubs.build('make/mailer.stub', { source: stubsRoot })
-    const { contents, destination } = await stub.prepare({
-      entity: app.generators.createEntity('order'),
-    })
-
-    assert.equal(destination, join(BASE_PATH, 'app/mailers/order_notification.ts'))
-    assert.match(contents, /export default class OrderNotification/)
+    command.assertLog('green(DONE:)    create app/mailers/order_notification.ts')
+    const file = await fs.contents('app/mailers/order_notification.ts')
+    assert.snapshot(file).match()
   })
 })

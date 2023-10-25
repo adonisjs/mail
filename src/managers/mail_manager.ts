@@ -14,7 +14,7 @@ import fastq from 'fastq'
 import { Logger } from '@adonisjs/core/logger'
 import { Emitter } from '@adonisjs/core/events'
 import { RuntimeException } from '@poppinss/utils'
-import { ViewContract } from '@adonisjs/view/types'
+import type { Edge } from 'edge.js'
 
 import { Mailer } from '../mailer.js'
 import {
@@ -88,7 +88,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
   prettyPrint = prettyPrint
 
   constructor(
-    public view: ViewContract,
+    public view: Edge,
     public emitter: Emitter<any>,
     public logger: Logger,
     config: { default?: keyof KnownMailers; list: KnownMailers; from?: RecipientNode }

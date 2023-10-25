@@ -10,7 +10,7 @@
 import { test } from '@japa/runner'
 import { CustomDriver, createMailManager } from '../../../test_helpers/index.js'
 
-test.group('Mail Manager | Views', () => {
+test.group('Mail Manager | Views', (group) => {
   test('make html view before sending the email', async ({ assert }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
@@ -26,6 +26,8 @@ test.group('Mail Manager | Views', () => {
       message.subject('Greetings')
       message.htmlView('welcome', { username: 'virk' })
     })
+
+    manager.view.removeTemplate('welcome')
 
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
@@ -52,6 +54,8 @@ test.group('Mail Manager | Views', () => {
       message.html('<p>Hello everyone</p>')
     })
 
+    manager.view.removeTemplate('welcome')
+
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
       from: { address: 'baz@bar.com' },
@@ -75,6 +79,8 @@ test.group('Mail Manager | Views', () => {
       message.subject('Greetings')
       message.textView('welcome', { username: 'virk' })
     })
+
+    manager.view.removeTemplate('welcome')
 
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
@@ -101,6 +107,8 @@ test.group('Mail Manager | Views', () => {
       message.text('Hello everyone')
     })
 
+    manager.view.removeTemplate('welcome')
+
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
       from: { address: 'baz@bar.com' },
@@ -124,6 +132,8 @@ test.group('Mail Manager | Views', () => {
       message.subject('Greetings')
       message.watchView('welcome', { username: 'virk' })
     })
+
+    manager.view.removeTemplate('welcome')
 
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
@@ -149,6 +159,8 @@ test.group('Mail Manager | Views', () => {
       message.watchView('welcome', { username: 'virk' })
       message.watch('Hello everyone')
     })
+
+    manager.view.removeTemplate('welcome')
 
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],

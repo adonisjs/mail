@@ -38,11 +38,11 @@ export class Mailer<
   }
 
   /**
-   * Ensure "@adonisjs/view" is installed
+   * Ensure "edge" is installed
    */
   #ensureView(methodName: string) {
     if (!this.manager.view) {
-      throw new Error(`"@adonisjs/view" must be installed before using "message.${methodName}"`)
+      throw new Error(`"edge.js" must be installed before using "message.${methodName}"`)
     }
   }
 

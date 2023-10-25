@@ -27,10 +27,7 @@ test.group('Mail Provider', () => {
       .merge({
         config: { views: { cache: false } },
         rcFileContents: {
-          providers: [
-            '../../providers/mail_provider.js',
-            '@adonisjs/view/providers/views_provider',
-          ],
+          providers: ['../../providers/mail_provider.js', '@adonisjs/core/providers/edge_provider'],
         },
       })
       .create(BASE_URL, { importer: (filePath) => import(filePath) })
@@ -51,10 +48,7 @@ test.group('Mail Provider', () => {
       .merge({
         config: { views: { cache: false } },
         rcFileContents: {
-          providers: [
-            '../../providers/mail_provider.js',
-            '@adonisjs/view/providers/views_provider',
-          ],
+          providers: ['../../providers/mail_provider.js', '@adonisjs/core/providers/edge_provider'],
         },
       })
       .create(BASE_URL, { importer: (filePath) => import(filePath) })
@@ -76,10 +70,7 @@ test.group('Mail Provider', () => {
       .merge({
         config: { views: { cache: false } },
         rcFileContents: {
-          providers: [
-            '../../providers/mail_provider.js',
-            '@adonisjs/view/providers/views_provider',
-          ],
+          providers: ['../../providers/mail_provider.js', '@adonisjs/core/providers/edge_provider'],
         },
       })
       .create(BASE_URL, { importer: (filePath) => import(filePath) })
@@ -105,10 +96,7 @@ test.group('Mail Provider', () => {
       .merge({
         config: { views: { cache: false } },
         rcFileContents: {
-          providers: [
-            '../../providers/mail_provider.js',
-            '@adonisjs/view/providers/views_provider',
-          ],
+          providers: ['../../providers/mail_provider.js', '@adonisjs/core/providers/edge_provider'],
         },
       })
       .create(BASE_URL, { importer: (filePath) => import(filePath) })
