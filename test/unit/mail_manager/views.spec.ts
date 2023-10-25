@@ -10,7 +10,7 @@
 import { test } from '@japa/runner'
 import { CustomDriver, createMailManager } from '../../../test_helpers/index.js'
 
-test.group('Mail Manager | Views', (group) => {
+test.group('Mail Manager | Views', () => {
   test('make html view before sending the email', async ({ assert }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
