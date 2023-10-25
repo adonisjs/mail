@@ -81,7 +81,6 @@
     "@poppinss/utils": "^6.5.0",
     "fastq": "^1.15.0",
     "formdata-node": "^5.0.1",
-    "get-stream": "^7.0.1",
     "got": "^13.0.0",
     "ical-generator": "^5.0.0",
     "nodemailer": "^6.9.7"
