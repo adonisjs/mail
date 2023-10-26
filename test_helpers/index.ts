@@ -3,6 +3,8 @@ import { MailManagerFactory } from '../factories/mail_manager.js'
 import { MailManagerDriverFactory } from '../src/define_config.js'
 import { SmtpDriver } from '../src/drivers/smtp/driver.js'
 import { MailDriverContract, MessageNode, RecipientNode } from '../src/types/main.js'
+import type { Application } from '@adonisjs/core/app'
+import type { MailManager } from '../src/managers/mail_manager.js'
 
 export const BASE_URL = new URL('./tmp/', import.meta.url)
 
@@ -42,11 +44,16 @@ export class CustomDriverAsync implements MailDriverContract {
   async close() {}
 }
 
+// TODO: Check to remove explicit return type
 export async function createMailManager<
   KnownMailers extends Record<string, MailManagerDriverFactory> = {
     smtp: () => SmtpDriver
   },
->(config?: { default?: keyof KnownMailers; mailers: KnownMailers; from?: RecipientNode }) {
+>(config?: {
+  default?: keyof KnownMailers
+  mailers: KnownMailers
+  from?: RecipientNode
+}): Promise<{ app: Application<Record<any, any>>; manager: MailManager<KnownMailers> }> {
   const app = new AppFactory().create(BASE_URL, () => {})
 
   let factory = new MailManagerFactory<KnownMailers>()
