@@ -21,7 +21,6 @@ export type BrevoRuntimeConfig = {
  * Brevo driver config
  */
 export type BrevoConfig = {
-  driver: 'brevo'
   key: string
 
   /**

@@ -38,7 +38,6 @@ export type SmtpSimpleAuth = {
  */
 export type SmtpConfig = {
   host: string
-  driver: 'smtp'
   port?: number | string
   secure?: boolean
 

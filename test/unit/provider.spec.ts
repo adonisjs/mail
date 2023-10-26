@@ -10,12 +10,9 @@
 import { IgnitorFactory } from '@adonisjs/core/factories'
 import { test } from '@japa/runner'
 
-import driversList from '../../src/drivers_list.js'
 import { SmtpDriver } from '../../src/drivers/smtp/driver.js'
-import { MailgunDriver } from '../../src/drivers/mailgun/driver.js'
-import { SesDriver } from '../../src/drivers/ses/driver.js'
-import { SparkPostDriver } from '../../src/drivers/sparkpost/driver.js'
 import { MailManager } from '../../src/managers/mail_manager.js'
+import { defineConfig, mailers } from '../../src/define_config.js'
 
 const BASE_URL = new URL('./tmp/', import.meta.url)
 
@@ -25,7 +22,13 @@ test.group('Mail Provider', () => {
       .withCoreConfig()
       .withCoreProviders()
       .merge({
-        config: { views: { cache: false } },
+        config: {
+          views: { cache: false },
+          mail: defineConfig({
+            default: 'smtp',
+            mailers: { smtp: mailers.smtp({ host: '' }) },
+          }),
+        },
         rcFileContents: {
           providers: ['../../providers/mail_provider.js', '@adonisjs/core/providers/edge_provider'],
         },
@@ -41,34 +44,18 @@ test.group('Mail Provider', () => {
     assert.instanceOf(manager, MailManager)
   })
 
-  test('should extends the drivers list with builtin drivers', async ({ assert }) => {
-    const ignitor = new IgnitorFactory()
-      .withCoreConfig()
-      .withCoreProviders()
-      .merge({
-        config: { views: { cache: false } },
-        rcFileContents: {
-          providers: ['../../providers/mail_provider.js', '@adonisjs/core/providers/edge_provider'],
-        },
-      })
-      .create(BASE_URL, { importer: (filePath) => import(filePath) })
-
-    const app = ignitor.createApp('web')
-    await app.init()
-    await app.boot()
-
-    assert.instanceOf(driversList.create('smtp', {} as any), SmtpDriver)
-    assert.instanceOf(driversList.create('mailgun', {} as any), MailgunDriver)
-    assert.instanceOf(driversList.create('ses', {} as any), SesDriver)
-    assert.instanceOf(driversList.create('sparkpost', {} as any), SparkPostDriver)
-  })
-
   test('register repl binding', async ({ assert }) => {
     const ignitor = new IgnitorFactory()
       .withCoreConfig()
       .withCoreProviders()
       .merge({
-        config: { views: { cache: false } },
+        config: {
+          views: { cache: false },
+          mail: defineConfig({
+            default: 'smtp',
+            mailers: { smtp: mailers.smtp({ host: '' }) },
+          }),
+        },
         rcFileContents: {
           providers: ['../../providers/mail_provider.js', '@adonisjs/core/providers/edge_provider'],
         },
@@ -94,7 +81,13 @@ test.group('Mail Provider', () => {
       .withCoreConfig()
       .withCoreProviders()
       .merge({
-        config: { views: { cache: false } },
+        config: {
+          views: { cache: false },
+          mail: defineConfig({
+            default: 'smtp',
+            mailers: { smtp: mailers.smtp({ host: '' }) },
+          }),
+        },
         rcFileContents: {
           providers: ['../../providers/mail_provider.js', '@adonisjs/core/providers/edge_provider'],
         },

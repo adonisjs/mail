@@ -13,7 +13,6 @@ import type { PostSentEnvelopeNode } from '../../types/main.js'
  * Ses driver config
  */
 export type SesConfig = {
-  driver: 'ses'
   apiVersion: string
   key: string
   secret: string

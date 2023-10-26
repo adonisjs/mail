@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import { ManagerDriverFactory } from '../define_config.js'
+import { MailManagerDriverFactory } from '../define_config.js'
 import { MailDriverContract } from './main.js'
 
-export type MailDriversListContract = Record<string, ManagerDriverFactory>
+export type MailDriversListContract = Record<string, MailManagerDriverFactory>
 
 /**
  * Unwraps value of a promise type

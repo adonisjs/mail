@@ -7,44 +7,21 @@
  * file that was distributed with this source code.
  */
 
-import type { SmtpConfig } from '../drivers/smtp/types.js'
-import type { MailgunConfig } from '../drivers/mailgun/types.js'
-import type { SesConfig } from '../drivers/ses/types.js'
-import type { SparkPostConfig } from '../drivers/sparkpost/types.js'
-import type { ManagerDriverFactory } from '../define_config.js'
+import type { MailManagerDriverFactory } from '../define_config.js'
 import type { MailManager } from '../managers/mail_manager.js'
-import type { MailgunDriver } from '../drivers/mailgun/driver.js'
-import type { SesDriver } from '../drivers/ses/driver.js'
-import type { SmtpDriver } from '../drivers/smtp/driver.js'
-import type { SparkPostDriver } from '../drivers/sparkpost/driver.js'
 import type { MessageNode, MessageContentViewsNode } from './message.js'
 import type { MailDriversListContract, MailerResponseType, DriverOptionsType } from './helpers.js'
 import type { Message } from '../message.js'
-import type { BrevoConfig } from '../drivers/brevo/types.js'
-import type { BrevoDriver } from '../drivers/brevo/driver.js'
-import type { ResendConfig } from '../drivers/resend/types.js'
-import type { ResendDriver } from '../drivers/resend/driver.js'
 
 /**
  * A list of known mailers inferred from the user config
  */
 export interface MailersList {}
-export type InferMailers<T extends { list: Record<string, ManagerDriverFactory> }> = T['list']
+export type InferMailers<T extends { mailers: Record<string, MailManagerDriverFactory> }> =
+  T['mailers']
 
 export interface MailerService
   extends MailManager<MailersList extends MailDriversListContract ? MailersList : never> {}
-
-/**
- * A list of globally available mail drivers
- */
-export interface MailDriversList {
-  smtp: (config: SmtpConfig) => SmtpDriver
-  mailgun: (config: MailgunConfig) => MailgunDriver
-  sparkpost: (config: SparkPostConfig) => SparkPostDriver
-  ses: (config: SesConfig) => SesDriver
-  brevo: (config: BrevoConfig) => BrevoDriver
-  resend: (config: ResendConfig) => ResendDriver
-}
 
 /*
 |--------------------------------------------------------------------------

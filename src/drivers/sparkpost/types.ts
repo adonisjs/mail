@@ -26,7 +26,6 @@ export type SparkPostRuntimeConfig = {
  * Spark post config
  */
 export type SparkPostConfig = SparkPostRuntimeConfig & {
-  driver: 'sparkpost'
   baseUrl: string
   key: string
 }

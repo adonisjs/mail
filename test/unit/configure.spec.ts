@@ -9,7 +9,6 @@
 
 import { fileURLToPath } from 'node:url'
 import { test } from '@japa/runner'
-import { MemoryRenderer } from '@poppinss/cliui'
 import { IgnitorFactory } from '@adonisjs/core/factories'
 import Configure from '@adonisjs/core/commands/configure'
 
@@ -36,27 +35,26 @@ async function setupConfigureCommand() {
   const ace = await app.container.make('ace')
   const command = await ace.create(Configure, ['../../index.js'])
 
-  command.ui.useRenderer(new MemoryRenderer())
-
   return { command }
 }
 
 test.group('Configure', (group) => {
-  group.each.setup(({ context }) => {
+  group.each.setup(async ({ context }) => {
     context.fs.baseUrl = BASE_URL
     context.fs.basePath = fileURLToPath(BASE_URL)
+    await context.fs.create('adonisrc.ts', `export default defineConfig({})`)
+    await context.fs.createJson('tsconfig.json', {})
   })
 
-  test('publish config file based on driver selection', async ({ assert }) => {
+  test('publish config file based on driver selection', async ({ assert, fs }) => {
     const { command } = await setupConfigureCommand()
 
     command.prompt.trap('askDrivers').chooseOptions([0, 1])
     await command.exec()
 
     await assert.fileExists('config/mail.ts')
-    await assert.fileContains('config/mail.ts', 'export default defineConfig({')
-    await assert.fileContains('config/mail.ts', "driver: 'smtp'")
-    await assert.fileContains('config/mail.ts', "driver: 'ses'")
+    const file = await fs.contents('config/mail.ts')
+    assert.snapshot(file).match()
   })
 
   test('create the types file', async ({ assert }) => {
@@ -75,13 +73,12 @@ test.group('Configure', (group) => {
   test('add MailProvider to the rc file', async ({ assert, fs }) => {
     const { command } = await setupConfigureCommand()
 
-    await fs.create('adonisrc.ts', `export default defineConfig({})`)
-
     command.prompt.trap('askDrivers').chooseOptions([0, 1])
     await command.exec()
 
     await assert.fileExists('adonisrc.ts')
-    await assert.fileContains('adonisrc.ts', '@adonisjs/mail/mail_provider')
+    const file = await fs.contents('adonisrc.ts')
+    assert.snapshot(file).match()
   })
 
   test('add env variables for the selected drivers', async ({ assert, fs }) => {

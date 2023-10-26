@@ -25,7 +25,7 @@ import {
   RecipientNode,
 } from '../types/main.js'
 import debug from '../debug.js'
-import { ManagerDriverFactory } from '../define_config.js'
+import { MailManagerDriverFactory } from '../define_config.js'
 import { BaseMailer } from '../base_mailer.js'
 import { FakeMailManager } from './fake_mail_manager.js'
 import { FakeDriver } from '../drivers/fake/driver.js'
@@ -36,13 +36,13 @@ import { prettyPrint } from '../pretty_print.js'
  * Mail manager config with the list of mailers in
  * use
  */
-export class MailManager<KnownMailers extends Record<string, ManagerDriverFactory>> {
+export class MailManager<KnownMailers extends Record<string, MailManagerDriverFactory>> {
   /**
    * List of configured mailers
    */
   #config: {
     default?: keyof KnownMailers
-    list: KnownMailers
+    mailers: KnownMailers
   }
 
   /**
@@ -91,7 +91,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
     public view: Edge,
     public emitter: Emitter<any>,
     public logger: Logger,
-    config: { default?: keyof KnownMailers; list: KnownMailers; from?: RecipientNode }
+    config: { default?: keyof KnownMailers; mailers: KnownMailers; from?: RecipientNode }
   ) {
     this.#config = config
 
@@ -106,7 +106,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
   /**
    * Creates an instance of a mail driver
    */
-  #createDriver<DriverFactory extends ManagerDriverFactory>(
+  #createDriver<DriverFactory extends MailManagerDriverFactory>(
     factory: DriverFactory
   ): ReturnType<DriverFactory> {
     // @ts-ignore
@@ -158,7 +158,7 @@ export class MailManager<KnownMailers extends Record<string, ManagerDriverFactor
       return cachedMailer
     }
 
-    const driverFactory = this.#config.list[mailerToUse]
+    const driverFactory = this.#config.mailers[mailerToUse]
 
     if (!driverFactory) {
       throw new RuntimeException(

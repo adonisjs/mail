@@ -10,12 +10,10 @@
 import { test } from '@japa/runner'
 
 import { Mailer } from '../../../src/mailer.js'
-import driversList from '../../../src/drivers_list.js'
+import { MessageNode } from '../../../src/types/message.js'
 import { SesDriver } from '../../../src/drivers/ses/driver.js'
 import { SmtpDriver } from '../../../src/drivers/smtp/driver.js'
-import { defineConfig } from '../../../src/define_config.js'
 import { CustomDriver, CustomDriverAsync, createMailManager } from '../../../test_helpers/index.js'
-import { MessageNode } from '../../../src/types/message.js'
 
 test.group('Mail Manager | Base', () => {
   test('create mailer instance from the manager', async ({ assert }) => {
@@ -33,8 +31,8 @@ test.group('Mail Manager | Base', () => {
 
     const { manager } = await createMailManager({
       default: 'foo',
-      list: {
-        smtp: () => new SmtpDriver({ driver: 'smtp', host: 'test' }),
+      mailers: {
+        smtp: () => new SmtpDriver({ host: 'test' }),
         foo: () => new FooDriver(),
       },
     })
@@ -49,8 +47,8 @@ test.group('Mail Manager | Base', () => {
   test('use default driver', async ({ assert }) => {
     const { manager } = await createMailManager({
       default: 'smtp',
-      list: {
-        smtp: () => new SmtpDriver({ driver: 'smtp', host: 'test' }),
+      mailers: {
+        smtp: () => new SmtpDriver({ host: 'test' }),
       },
     })
 
@@ -61,7 +59,7 @@ test.group('Mail Manager | Base', () => {
   test('send() config should be inferred from the use mailer name', async ({ expectTypeOf }) => {
     const { manager } = await createMailManager({
       default: 'smtp',
-      list: {
+      mailers: {
         smtp: () =>
           new (class {
             async send(message: MessageNode, config?: { foo: string }) {
@@ -77,37 +75,16 @@ test.group('Mail Manager | Base', () => {
     expectTypeOf(mailer.send).parameter(1).toEqualTypeOf<{ foo: string } | undefined>()
   })
 
-  test('extend mailer with a custom driver', async ({ assert }) => {
-    assert.plan(1)
-
-    const config = defineConfig({
-      default: 'marketing',
-      list: { marketing: { driver: 'mydriver' } } as any,
-    })
-
-    // @ts-ignore
-    driversList.extend('mydriver', () => ({ send: () => assert.isTrue(true) }))
-
-    const { manager } = await createMailManager(config)
-    const mailer = manager.use('marketing')
-
-    await mailer.send(() => {})
-  })
-
   test('raise error when trying to create a unknown driver', async ({ assert }) => {
-    const { manager } = await createMailManager({ list: {} })
+    const { manager } = await createMailManager({ mailers: {} })
     assert.throws(() => manager.use('unknown' as any), '"unknown" is not a valid mailer name')
-  })
-
-  test('raise error when trying to create an unknown driver from driverList', ({ assert }) => {
-    assert.throws(() => driversList.create('unknown' as any, {} as any), 'Unknown mail driver')
   })
 
   test('global settings should be effective', async ({ assert }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'smtp',
-      list: { smtp: () => customDriver },
+      mailers: { smtp: () => customDriver },
     })
 
     manager.alwaysFrom('jul@adonisjs.com', 'Jul')
@@ -127,7 +104,7 @@ test.group('Mail Manager | Base', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'smtp',
-      list: { smtp: () => customDriver },
+      mailers: { smtp: () => customDriver },
     })
 
     manager.alwaysTo('jul1@adonisjs.com', 'jul1')
@@ -149,7 +126,7 @@ test.group('Mail Manager | Base', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'smtp',
-      list: { smtp: () => customDriver },
+      mailers: { smtp: () => customDriver },
       from: { address: 'julr@adonisjs.com', name: 'jul' },
     })
 
@@ -174,7 +151,7 @@ test.group('Mail manager | send', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     await manager.use().send((message) => {
@@ -194,7 +171,7 @@ test.group('Mail manager | send', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     await manager.use().send(
@@ -215,7 +192,7 @@ test.group('Mail manager | sendLater', () => {
     const customDriver = new CustomDriverAsync()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     manager.monitorQueue(() => {
@@ -238,7 +215,7 @@ test.group('Mail manager | sendLater', () => {
     const customDriver = new CustomDriverAsync()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     manager.monitorQueue(() => {
@@ -254,7 +231,7 @@ test.group('Mail Manager | Cache', () => {
   test('cache mailer instance', async ({ assert, expectTypeOf }) => {
     const { manager } = await createMailManager({
       default: 'smtp',
-      list: {
+      mailers: {
         smtp: () => new SmtpDriver({} as any),
         smtp1: () => new SmtpDriver({} as any),
         ses: () => new SesDriver({} as any),

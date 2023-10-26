@@ -20,7 +20,6 @@ export type ResendRuntimeConfig = {
  * Resend driver config
  */
 export type ResendConfig = {
-  driver: 'resend'
   key: string
 
   /**

@@ -23,7 +23,6 @@ export type MailgunRuntimeConfig = {
 }
 
 export type MailgunConfig = MailgunRuntimeConfig & {
-  driver: 'mailgun'
   baseUrl: string
   key: string
   domain: string

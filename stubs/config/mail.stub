@@ -2,7 +2,7 @@
   exports({ to: app.configPath('mail.ts') })
 }}}
 import env from '#start/env'
-import { defineConfig } from "@adonisjs/mail";
+import { defineConfig, mailers } from "@adonisjs/mail";
 
 export default defineConfig({
   /*
@@ -29,7 +29,7 @@ export default defineConfig({
   | sending transactional and promotional emails
   |
   */
-  list: {
+  mailers: {
 		{{#if smtp}}
     /*
     |--------------------------------------------------------------------------
@@ -39,8 +39,7 @@ export default defineConfig({
     | Uses SMTP protocol for sending email
     |
     */
-    smtp: {
-      driver: 'smtp',
+    smtp: mailers.smtp({
       host: env.get('SMTP_HOST'),
       port: env.get('SMTP_PORT'),
 			auth: {
@@ -48,7 +47,7 @@ export default defineConfig({
 				pass: env.get('SMTP_PASSWORD'),
 				type: 'login',
 			}
-    },
+    }),
 		{{/if}}
 		{{#if ses}}
     /*
@@ -62,8 +61,7 @@ export default defineConfig({
     | npm i @aws-sdk/client-ses
     |
     */
-    ses: {
-      driver: 'ses',
+    ses: mailers.ses({
       apiVersion: '2010-12-01',
       key: env.get('SES_ACCESS_KEY'),
       secret: env.get('SES_ACCESS_SECRET'),
@@ -71,7 +69,7 @@ export default defineConfig({
       sslEnabled: true,
       sendingRate: 10,
       maxConnections: 5,
-    },
+    }),
 		{{/if}}
 		{{#if mailgun}}
     /*
@@ -85,12 +83,12 @@ export default defineConfig({
     | europe endpoint (https://api.eu.mailgun.net/v3).
     |
     */
-    mailgun: {
+    mailgun: mailers.mailgun({
       driver: 'mailgun',
       baseUrl: 'https://api.mailgun.net/v3',
       key: env.get('MAILGUN_API_KEY'),
       domain: env.get('MAILGUN_DOMAIN'),
-    },
+    }),
 		{{/if}}
 		{{#if sparkpost}}
     /*
@@ -101,11 +99,10 @@ export default defineConfig({
 		| Uses Sparkpost service for sending emails.
     |
     */
-    sparkpost: {
-      driver: 'sparkpost',
+    sparkpost: mailers.sparkpost({
       baseUrl: 'https://api.sparkpost.com/api/v1',
       key: env.get('SPARKPOST_API_KEY'),
-    },
+    }),
 		{{/if}}
     {{#if brevo}}
     /*
@@ -116,10 +113,9 @@ export default defineConfig({
     | Uses Brevo for sending emails.
     |
     */
-    brevo: {
-      driver: 'brevo',
+    brevo: mailers.brevo({
       key: env.get('BREVO_API_KEY'),
-    },
+    }),
     {{/if}}
     {{#if resend}}
     /*
@@ -130,10 +126,9 @@ export default defineConfig({
     | Uses Resend for sending emails.
     |
     */
-    resend: {
-      driver: 'resend',
+    resend: mailers.resend({
       key: env.get('RESEND_API_KEY'),
-    },
+    }),
     {{/if}}
   },
 })

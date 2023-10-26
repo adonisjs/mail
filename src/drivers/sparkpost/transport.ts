@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { buffer } from 'node:stream/consumers'
+import { text } from 'node:stream/consumers'
 import got from 'got'
 
 import { ObjectBuilder } from '../../utils.js'
@@ -82,9 +82,9 @@ export class SparkPostTransport {
 
       /**
        * The sparkpost API doesn't accept the multipart stream and hence we
-       * need to convert the stream to a buffer
+       * need to convert the stream to a string
        */
-      const emailBody = await buffer(mail.message.createReadStream())
+      const emailBody = await text(mail.message.createReadStream())
       const response = await got.post<{ results?: { id: string } }>(url, {
         json: {
           recipients: this.#getRecipients(addresses),

@@ -20,7 +20,7 @@ test.group('Mailer', () => {
     const application = new AppFactory().create(BASE_URL, () => {})
     const manager = new MailManagerFactory({
       default: 'test',
-      list: { test: () => new CustomDriver() },
+      mailers: { test: () => new CustomDriver() },
     }).create(application)
 
     const emitter = manager.emitter.fake()
@@ -50,7 +50,7 @@ test.group('Mailer', () => {
     const application = new AppFactory().create(BASE_URL, () => {})
     const manager = new MailManagerFactory({
       default: 'test',
-      list: { test: () => new CustomDriver() },
+      mailers: { test: () => new CustomDriver() },
     }).create(application)
 
     const emitter = manager.emitter.fake()

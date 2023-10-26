@@ -9,7 +9,7 @@
 
 import { Message } from './message.js'
 import { MailManager } from './managers/mail_manager.js'
-import { ManagerDriverFactory } from './define_config.js'
+import { MailManagerDriverFactory } from './define_config.js'
 import {
   CompiledMailNode,
   DriverOptionsType,
@@ -19,7 +19,7 @@ import {
 } from './types/main.js'
 
 export class Mailer<
-  KnownMailers extends Record<string, ManagerDriverFactory>,
+  KnownMailers extends Record<string, MailManagerDriverFactory>,
   Name extends keyof KnownMailers,
 > implements MailerContract<KnownMailers, Name>
 {

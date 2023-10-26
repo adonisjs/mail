@@ -7,94 +7,55 @@
  * file that was distributed with this source code.
  */
 
+import edge from 'edge.js'
 import { test } from '@japa/runner'
-import { defineConfig } from '../../src/define_config.js'
-import driversList from '../../src/drivers_list.js'
-import { MailgunDriver } from '../../src/drivers/mailgun/driver.js'
-import { MessageComposeCallback } from '../../src/types/main.js'
-import { SesDriver } from '../../src/drivers/ses/driver.js'
-import { MailManagerFactory } from '../../factories/mail_manager.js'
+import { AppFactory } from '@adonisjs/core/factories/app'
+import { EmitterFactory } from '@adonisjs/core/factories/events'
+import { LoggerFactory } from '@adonisjs/core/factories/logger'
+import { defineConfig, mailers } from '../../src/define_config.js'
+import { SmtpDriver } from '../../src/drivers/smtp/driver.js'
+import { Mailer } from '../../src/mailer.js'
+import { MailManager } from '../../src/managers/mail_manager.js'
+import type { ApplicationService } from '@adonisjs/core/types'
+
+const BASE_URL = new URL('./', import.meta.url)
+const app = new AppFactory().create(BASE_URL, () => {}) as ApplicationService
+const emitter = new EmitterFactory().create(app)
+const logger = new LoggerFactory().create()
 
 test.group('Define config', () => {
-  test('raise error when list of drivers is empty', ({ assert }) => {
-    assert.throws(() => defineConfig({} as any), 'Missing "list" property inside the mail config')
-  })
-
-  test('raise error when default driver is not in the list', ({ assert }) => {
-    assert.throws(
-      // @ts-ignore
-      () => defineConfig({ list: {}, default: 'smtp' as any }),
-      '"smtp" is not a valid mailer name'
-    )
-  })
-
-  test('returns a list of driver factory with defined drivers', ({ assert }) => {
-    const config = defineConfig({
+  test('defineConfig to lazily register mail drivers', async ({ assert, expectTypeOf }) => {
+    const config = await defineConfig({
       default: 'smtp',
-      list: {
-        smtp: { driver: 'smtp', host: 'test' },
-        mailgun: { driver: 'mailgun', baseUrl: 'test', domain: 'test', key: 'test' },
+      mailers: {
+        smtp: mailers.smtp({ host: 'smtp.io' }),
       },
-    })
+    }).resolver(app)
 
-    assert.deepEqual(Object.keys(config.list), ['smtp', 'mailgun'])
-    assert.isFunction(config.list.smtp)
-    assert.isFunction(config.list.mailgun)
+    expectTypeOf(config).toMatchTypeOf<{
+      default: 'smtp'
+      mailers: {
+        smtp: () => SmtpDriver
+      }
+    }>()
+
+    const mailer = new MailManager(edge, emitter, logger, config)
+    assert.instanceOf(mailer.use('smtp'), Mailer)
+    expectTypeOf(mailer.use).parameters.toMatchTypeOf<['smtp'?]>()
   })
 
-  test('use driversList to create instance', ({ assert }) => {
-    assert.plan(1)
+  test('raise error when mailers is not defined', async () => {
+    // @ts-expect-error
+    await defineConfig({}).resolver(app)
+  }).throws('Missing "mailers" property inside the mail config')
 
-    driversList.extend('smtp', (): any => {
-      assert.isTrue(true)
-    })
-
-    const config = defineConfig({
+  test('raise error when default mailer is not defined in the list', async () => {
+    await defineConfig({
+      // @ts-expect-error
       default: 'smtp',
-      list: { smtp: { driver: 'smtp', host: 'test' } },
-    })
-
-    config.list.smtp(null as any)
-  })
-
-  test('factory should use mailer configuration', ({ assert }) => {
-    assert.plan(2)
-
-    const config = defineConfig({
-      default: 'smtp',
-      list: { smtp: { driver: 'smtp', host: 'foo' } },
-    })
-
-    driversList.extend('smtp', (c: any): any => {
-      assert.isTrue(true)
-      assert.equal(c.host, 'foo')
-    })
-
-    config.list.smtp(null as any)
-  })
-
-  test('send() types should be inferred from config', ({ expectTypeOf }) => {
-    const config = defineConfig({
-      default: 'mailgun',
-      list: {
-        ses: { driver: 'ses', apiVersion: 'test', key: 'test', region: 'test', secret: 'test' },
-        mailgun: { driver: 'mailgun', baseUrl: 'test', domain: 'test', key: 'test' },
-      },
-    })
-
-    driversList.extend('ses', (c) => new SesDriver(c))
-    driversList.extend('mailgun', (c) => new MailgunDriver(c, {} as any))
-
-    const manager = new MailManagerFactory(config).create(null as any)
-
-    expectTypeOf(manager.use('mailgun').send).parameter(0).toEqualTypeOf<MessageComposeCallback>()
-    expectTypeOf(manager.use('mailgun').send)
-      .parameter(1)
-      .toEqualTypeOf<Parameters<MailgunDriver['send']>[1]>()
-
-    expectTypeOf(manager.use('ses').send).parameter(0).toEqualTypeOf<MessageComposeCallback>()
-    expectTypeOf(manager.use('ses').send)
-      .parameter(1)
-      .toEqualTypeOf<Parameters<SesDriver['send']>[1]>()
-  })
+      mailers: {},
+    }).resolver(app)
+  }).throws('"mailers.smtp" is not a valid mailer name. Double check the config file')
 })
+
+// TODO: Add Service Registration Test (see Ally codebase)

@@ -7,15 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import { configProvider } from '@adonisjs/core'
 import { ApplicationService } from '@adonisjs/core/types'
 
-import driversList from '../src/drivers_list.js'
-import { SesDriver } from '../src/drivers/ses/driver.js'
-import { SmtpDriver } from '../src/drivers/smtp/driver.js'
-import { SparkPostDriver } from '../src/drivers/sparkpost/driver.js'
-import { MailgunDriver } from '../src/drivers/mailgun/driver.js'
-import { BrevoDriver } from '../src/drivers/brevo/driver.js'
-import { ResendDriver } from '../src/drivers/resend/driver.js'
 import { defineReplBindings } from '../src/bindings.js'
 import edge from 'edge.js'
 
@@ -24,20 +18,6 @@ import edge from 'edge.js'
  */
 export default class MailProvider {
   constructor(protected app: ApplicationService) {}
-
-  /**
-   * Register built-in mailers in the driversList
-   */
-  async #registerDrivers() {
-    const logger = await this.app.container.make('logger')
-
-    driversList.extend('ses', (config) => new SesDriver(config))
-    driversList.extend('smtp', (config) => new SmtpDriver(config))
-    driversList.extend('mailgun', (config) => new MailgunDriver(config, logger))
-    driversList.extend('sparkpost', (config) => new SparkPostDriver(config, logger))
-    driversList.extend('brevo', (config) => new BrevoDriver(config, logger))
-    driversList.extend('resend', (config) => new ResendDriver(config, logger))
-  }
 
   /**
    * Register mail manager singleton
@@ -49,7 +29,16 @@ export default class MailProvider {
       const logger = await this.app.container.make('logger')
       const emitter = await this.app.container.make('emitter')
 
-      const config = this.app.config.get<any>('mail', {})
+      const mailConfigProvider = this.app.config.get('mail', {})
+
+      const config = await configProvider.resolve<any>(this.app, mailConfigProvider)
+
+      if (!config) {
+        throw new Error(
+          'Invalid config exported from "config/mail.ts" file. Make sure to use the defineConfig method'
+        )
+      }
+
       return new MailManager(edge, emitter, logger, config)
     })
   }
@@ -72,13 +61,6 @@ export default class MailProvider {
   async register() {
     this.#registerMailManager()
     this.#registerReplBindings()
-  }
-
-  /**
-   * Register drivers
-   */
-  async boot() {
-    await this.#registerDrivers()
   }
 
   /**

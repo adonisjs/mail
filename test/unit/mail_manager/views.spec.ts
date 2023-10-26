@@ -11,12 +11,14 @@ import { test } from '@japa/runner'
 import { CustomDriver, createMailManager } from '../../../test_helpers/index.js'
 
 test.group('Mail Manager | Views', () => {
-  test('make html view before sending the email', async ({ assert }) => {
+  test('make html view before sending the email', async ({ assert, cleanup }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
+
+    cleanup(() => void manager.view.removeTemplate('welcome'))
 
     manager.view!.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
 
@@ -27,8 +29,6 @@ test.group('Mail Manager | Views', () => {
       message.htmlView('welcome', { username: 'virk' })
     })
 
-    manager.view.removeTemplate('welcome')
-
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
       from: { address: 'baz@bar.com' },
@@ -37,12 +37,14 @@ test.group('Mail Manager | Views', () => {
     })
   })
 
-  test('do not make html view when inline html is defined', async ({ assert }) => {
+  test('do not make html view when inline html is defined', async ({ assert, cleanup }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
+
+    cleanup(() => void manager.view.removeTemplate('welcome'))
 
     manager.view!.registerTemplate('welcome', { template: '<p>Hello {{ username }}</p>' })
 
@@ -54,8 +56,6 @@ test.group('Mail Manager | Views', () => {
       message.html('<p>Hello everyone</p>')
     })
 
-    manager.view.removeTemplate('welcome')
-
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
       from: { address: 'baz@bar.com' },
@@ -64,12 +64,14 @@ test.group('Mail Manager | Views', () => {
     })
   })
 
-  test('make text view before sending the email', async ({ assert }) => {
+  test('make text view before sending the email', async ({ assert, cleanup }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
+
+    cleanup(() => void manager.view.removeTemplate('welcome'))
 
     manager.view!.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
@@ -80,8 +82,6 @@ test.group('Mail Manager | Views', () => {
       message.textView('welcome', { username: 'virk' })
     })
 
-    manager.view.removeTemplate('welcome')
-
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
       from: { address: 'baz@bar.com' },
@@ -90,12 +90,14 @@ test.group('Mail Manager | Views', () => {
     })
   })
 
-  test('do not make text view when inline text is defined', async ({ assert }) => {
+  test('do not make text view when inline text is defined', async ({ assert, cleanup }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
+
+    cleanup(() => void manager.view.removeTemplate('welcome'))
 
     manager.view!.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
@@ -107,8 +109,6 @@ test.group('Mail Manager | Views', () => {
       message.text('Hello everyone')
     })
 
-    manager.view.removeTemplate('welcome')
-
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
       from: { address: 'baz@bar.com' },
@@ -117,12 +117,14 @@ test.group('Mail Manager | Views', () => {
     })
   })
 
-  test('make watch view before sending the email', async ({ assert }) => {
+  test('make watch view before sending the email', async ({ assert, cleanup }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
+
+    cleanup(() => void manager.view.removeTemplate('welcome'))
 
     manager.view!.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
@@ -133,8 +135,6 @@ test.group('Mail Manager | Views', () => {
       message.watchView('welcome', { username: 'virk' })
     })
 
-    manager.view.removeTemplate('welcome')
-
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],
       from: { address: 'baz@bar.com' },
@@ -143,12 +143,14 @@ test.group('Mail Manager | Views', () => {
     })
   })
 
-  test('do not make watch view when inline watch is defined', async ({ assert }) => {
+  test('do not make watch view when inline watch is defined', async ({ assert, cleanup }) => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
+
+    cleanup(() => void manager.view.removeTemplate('welcome'))
 
     manager.view!.registerTemplate('welcome', { template: 'Hello {{ username }}' })
 
@@ -159,8 +161,6 @@ test.group('Mail Manager | Views', () => {
       message.watchView('welcome', { username: 'virk' })
       message.watch('Hello everyone')
     })
-
-    manager.view.removeTemplate('welcome')
 
     assert.deepEqual(customDriver.message, {
       to: [{ address: 'foo@bar.com' }],

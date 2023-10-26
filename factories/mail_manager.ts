@@ -15,11 +15,11 @@ import { Application } from '@adonisjs/core/app'
 import { SmtpDriver } from '../src/drivers/smtp/driver.js'
 import { MailManager } from '../src/managers/mail_manager.js'
 import { RecipientNode } from '../src/types/main.js'
-import { ManagerDriverFactory } from '../src/define_config.js'
+import { MailManagerDriverFactory } from '../src/define_config.js'
 
-type Config<KnownMailers extends Record<string, ManagerDriverFactory>> = {
+type Config<KnownMailers extends Record<string, MailManagerDriverFactory>> = {
   default?: keyof KnownMailers
-  list: KnownMailers
+  mailers: KnownMailers
 }
 
 /**
@@ -27,7 +27,7 @@ type Config<KnownMailers extends Record<string, ManagerDriverFactory>> = {
  * for testing
  */
 export class MailManagerFactory<
-  KnownMailers extends Record<string, ManagerDriverFactory> = {
+  KnownMailers extends Record<string, MailManagerDriverFactory> = {
     smtp: () => SmtpDriver
   },
 > {
@@ -36,10 +36,14 @@ export class MailManagerFactory<
    */
   #config: Config<KnownMailers>
 
-  constructor(config?: { default?: keyof KnownMailers; list: KnownMailers; from?: RecipientNode }) {
+  constructor(config?: {
+    default?: keyof KnownMailers
+    mailers: KnownMailers
+    from?: RecipientNode
+  }) {
     const defaultConfig = {
       default: 'smtp',
-      list: { smtp: () => new SmtpDriver({ driver: 'smtp', host: 'smtp.io' }) },
+      mailers: { smtp: () => new SmtpDriver({ host: 'smtp.io' }) },
     } as unknown as Config<KnownMailers>
 
     this.#config = config || defaultConfig
@@ -48,7 +52,7 @@ export class MailManagerFactory<
   /**
    * Merge factory parameters
    */
-  merge<Mailers extends Record<string, ManagerDriverFactory>>(
+  merge<Mailers extends Record<string, MailManagerDriverFactory>>(
     config: Config<Mailers>
   ): MailManagerFactory<Mailers> {
     return new MailManagerFactory(config)

@@ -33,7 +33,7 @@ test.group('Mail Manager | Queue', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     manager.monitorQueue((error, response) => {
@@ -71,7 +71,7 @@ test.group('Mail Manager | Queue', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     manager.monitorQueue((error) => {

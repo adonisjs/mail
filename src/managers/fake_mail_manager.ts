@@ -8,10 +8,10 @@
  */
 
 import { AssertionError } from 'node:assert'
-import { ManagerDriverFactory } from '../define_config.js'
+import { MailManagerDriverFactory } from '../define_config.js'
 import { MessageSearchNode, MessageNode, MailerContract } from '../types/main.js'
 
-export class FakeMailManager<KnownMailers extends Record<string, ManagerDriverFactory>> {
+export class FakeMailManager<KnownMailers extends Record<string, MailManagerDriverFactory>> {
   fakedMailers: Map<keyof KnownMailers, MailerContract<any, any>> = new Map()
 
   /**

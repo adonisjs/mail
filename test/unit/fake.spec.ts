@@ -15,7 +15,7 @@ test.group('Fake mail manager', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     const fakeMail = manager.fake()
@@ -41,7 +41,7 @@ test.group('Fake mail manager', () => {
 
     const { manager } = await createMailManager({
       default: 'smtp',
-      list: { smtp: () => customRealDriver, custom: () => customDriver },
+      mailers: { smtp: () => customRealDriver, custom: () => customDriver },
     })
 
     const fakeMail = manager.fake('custom')
@@ -84,7 +84,7 @@ test.group('Fake mail manager', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     const fakeMail = manager.fake()
@@ -107,7 +107,7 @@ test.group('Fake mail manager', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     const fakeMail = manager.fake()
@@ -139,7 +139,7 @@ test.group('Fake mail manager', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     const fakeMail = manager.fake()
@@ -162,7 +162,7 @@ test.group('Fake mail manager', () => {
     const customDriver = new CustomDriver()
     const { manager } = await createMailManager({
       default: 'custom',
-      list: { custom: () => customDriver },
+      mailers: { custom: () => customDriver },
     })
 
     const fakeMail = manager.fake()

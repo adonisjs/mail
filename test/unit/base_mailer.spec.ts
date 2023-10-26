@@ -13,8 +13,12 @@ import { BaseMailer } from '../../src/base_mailer.js'
 import { createMailManager } from '../../test_helpers/index.js'
 import { SmtpDriver } from '../../src/drivers/smtp/driver.js'
 import { Message } from '../../src/message.js'
-import driversList from '../../src/drivers_list.js'
-import { defineConfig } from '../../index.js'
+import { defineConfig, mailers } from '../../index.js'
+import { AppFactory } from '@adonisjs/core/factories/app'
+import type { ApplicationService } from '@adonisjs/core/types'
+
+const BASE_URL = new URL('./', import.meta.url)
+const app = new AppFactory().create(BASE_URL, () => {}) as ApplicationService
 
 test.group('BaseMailer', () => {
   test('send email using the mailer class', async ({ assert }) => {
@@ -40,15 +44,14 @@ test.group('BaseMailer', () => {
   test('use a custom mailer', async ({ assert }) => {
     assert.plan(1)
 
-    const config = defineConfig({
+    const config = await defineConfig({
       default: 'marketing',
-      list: {
-        marketing: { driver: 'smtp', host: 'smtp.io' },
-        transactional: { driver: 'smtp', host: 'smtp.io' },
+      mailers: {
+        marketing: mailers.smtp({ host: 'smtp.io' }),
+        transactional: mailers.smtp({ host: 'smtp.io' }),
       },
-    })
+    }).resolver(app)
 
-    driversList.extend('smtp', (c) => new SmtpDriver(c))
     const { manager } = await createMailManager(config)
     manager.fake('transactional')
 
@@ -75,6 +78,5 @@ test.group('BaseMailer', () => {
     }
 
     await mailer.send()
-    driversList.list['smtp'] = undefined
   })
 })
