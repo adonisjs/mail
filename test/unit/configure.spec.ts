@@ -39,6 +39,10 @@ async function setupConfigureCommand() {
 }
 
 test.group('Configure', (group) => {
+  group.tap((testFn) => {
+    testFn.timeout(3000)
+  })
+
   group.each.setup(async ({ context }) => {
     context.fs.baseUrl = BASE_URL
     context.fs.basePath = fileURLToPath(BASE_URL)

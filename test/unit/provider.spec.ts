@@ -10,7 +10,6 @@
 import { IgnitorFactory } from '@adonisjs/core/factories'
 import { test } from '@japa/runner'
 
-import { SmtpDriver } from '../../src/drivers/smtp/driver.js'
 import { MailManager } from '../../src/managers/mail_manager.js'
 import { defineConfig, mailers } from '../../src/define_config.js'
 
