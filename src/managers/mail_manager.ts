@@ -294,7 +294,6 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
     const account = await nodemailer.createTestAccount()
 
     const smtpDriver = new SmtpDriver({
-      driver: 'smtp',
       host: account.smtp.host,
       port: account.smtp.port,
       secure: account.smtp.secure,

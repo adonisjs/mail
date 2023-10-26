@@ -24,7 +24,6 @@ test.group('SparkPost Driver', (group) => {
   test('send email using sparkpost driver', async ({ assert }) => {
     const sparkpost = new SparkPostDriver(
       {
-        driver: 'sparkpost',
         key: process.env.SPARKPOST_API_KEY!,
         baseUrl: process.env.SPARKPOST_BASE_URL!,
       },

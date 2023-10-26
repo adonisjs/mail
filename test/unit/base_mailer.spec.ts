@@ -11,7 +11,6 @@ import { test } from '@japa/runner'
 
 import { BaseMailer } from '../../src/base_mailer.js'
 import { createMailManager } from '../../test_helpers/index.js'
-import { SmtpDriver } from '../../src/drivers/smtp/driver.js'
 import { Message } from '../../src/message.js'
 import { defineConfig, mailers } from '../../index.js'
 import { AppFactory } from '@adonisjs/core/factories/app'
@@ -66,7 +65,7 @@ test.group('BaseMailer', () => {
 
     const mailer = new MyMailer()
     // @ts-ignore
-    mailer.mailer.send = async function send(callback: any, c: any) {
+    mailer.mailer.send = async function send(callback: any, _c: any) {
       const message = new Message(false)
       await callback(message)
 

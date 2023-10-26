@@ -28,7 +28,6 @@ test.group('Mailgun Driver', (group) => {
   test('send email using mailgun driver', async ({ assert }) => {
     const mailgun = new MailgunDriver(
       {
-        driver: 'mailgun',
         key: process.env.MAILGUN_ACCESS_KEY!,
         baseUrl: process.env.MAILGUN_BASE_URL!,
         domain: process.env.MAILGUN_DOMAIN!,
@@ -55,7 +54,6 @@ test.group('Mailgun Driver', (group) => {
   test('enable tracking', async ({ assert }) => {
     const mailgun = new MailgunDriver(
       {
-        driver: 'mailgun',
         key: process.env.MAILGUN_ACCESS_KEY!,
         baseUrl: process.env.MAILGUN_BASE_URL!,
         domain: process.env.MAILGUN_DOMAIN!,
@@ -83,7 +81,6 @@ test.group('Mailgun Driver', (group) => {
   test('attach tags', async ({ assert }) => {
     const mailgun = new MailgunDriver(
       {
-        driver: 'mailgun',
         key: process.env.MAILGUN_ACCESS_KEY!,
         baseUrl: process.env.MAILGUN_BASE_URL!,
         domain: process.env.MAILGUN_DOMAIN!,

@@ -16,21 +16,20 @@ import { Message } from '../../src/message.js'
 import { SesDriver } from '../../src/drivers/ses/driver.js'
 import { sleep } from '../../test_helpers/index.js'
 
+const ses = new SesDriver({
+  apiVersion: '2010-12-01',
+  key: process.env.AWS_ACCESS_KEY_ID!,
+  secret: process.env.AWS_SECRET_ACCESS_KEY!,
+  region: process.env.AWS_REGION!,
+  sslEnabled: true,
+})
+
 test.group('Ses Driver', (group) => {
   group.setup(() => {
     dotenv.config({ path: join(getDirname(import.meta.url), '..', '..', '.env') })
   })
 
   test('send email using ses driver', async ({ assert }) => {
-    const ses = new SesDriver({
-      driver: 'ses',
-      apiVersion: '2010-12-01',
-      key: process.env.AWS_ACCESS_KEY_ID!,
-      secret: process.env.AWS_SECRET_ACCESS_KEY!,
-      region: process.env.AWS_REGION!,
-      sslEnabled: true,
-    })
-
     const message = new Message()
     message.from(process.env.AWS_FROM_EMAIL!)
     message.to(process.env.TEST_EMAILS_RECIPIENT!)
@@ -51,15 +50,6 @@ test.group('Ses Driver', (group) => {
 
   test('define email tags', async ({ assert }) => {
     assert.plan(1)
-
-    const ses = new SesDriver({
-      driver: 'ses',
-      apiVersion: '2010-12-01',
-      key: process.env.AWS_ACCESS_KEY_ID!,
-      secret: process.env.AWS_SECRET_ACCESS_KEY!,
-      region: process.env.AWS_REGION!,
-      sslEnabled: true,
-    })
 
     const message = new Message()
     message.from(process.env.AWS_FROM_EMAIL!)

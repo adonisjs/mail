@@ -22,7 +22,6 @@ test.group('Smtp Driver', (group) => {
 
   test('send email using smtp driver', async ({ assert }) => {
     const smtp = new SmtpDriver({
-      driver: 'smtp',
       host: process.env.MAILTRAP_SMTP_HOST!,
       auth: {
         type: 'login' as const,
