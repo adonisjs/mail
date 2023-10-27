@@ -26,28 +26,28 @@ const DRIVER_PROMPTS = [
  */
 const DRIVER_ENV_VALUES = {
   smtp: {
-    SMTP_HOST: 'localhost',
-    SMTP_PORT: '587',
-    SMTP_USERNAME: '<username>',
-    SMTP_PASSWORD: '<password>',
+    SMTP_HOST: { value: 'localhost', validation: 'Env.schema.string()' },
+    SMTP_PORT: { value: '587', validation: 'Env.schema.number()' },
+    SMTP_USERNAME: { value: '<username>', validation: 'Env.schema.string()' },
+    SMTP_PASSWORD: { value: '<password>', validation: 'Env.schema.string()' },
   },
   ses: {
-    SES_ACCESS_KEY: '<aws-access-key>',
-    SES_ACCESS_SECRET: '<aws-secret>',
-    SES_REGION: 'us-east-1',
+    SES_ACCESS_KEY: { value: '<aws-access-key>', validation: 'Env.schema.string()' },
+    SES_ACCESS_SECRET: { value: '<aws-access-secret>', validation: 'Env.schema.string()' },
+    SES_REGION: { value: '<aws-region>', validation: 'Env.schema.string()' },
   },
   mailgun: {
-    MAILGUN_API_KEY: '<mailgun-api-key>',
-    MAILGUN_DOMAIN: '<your-domain>',
+    MAILGUN_API_KEY: { value: '<mailgun-api-key>', validation: 'Env.schema.string()' },
+    MAILGUN_DOMAIN: { value: '<mailgun-domain>', validation: 'Env.schema.string()' },
   },
   sparkpost: {
-    SPARKPOST_API_KEY: '<sparkpost-api-key>',
+    SPARKPOST_API_KEY: { value: '<sparkpost-api-key>', validation: 'Env.schema.string()' },
   },
   brevo: {
-    BREVO_API_KEY: '<brevo-api-key>',
+    BREVO_API_KEY: { value: '<brevo-api-key>', validation: 'Env.schema.string()' },
   },
   resend: {
-    RESEND_API_KEY: '<resend-api-key>',
+    RESEND_API_KEY: { value: '<resend-api-key>', validation: 'Env.schema.string()' },
   },
 }
 
@@ -74,10 +74,17 @@ function getMailDrivers(command: Configure) {
  * Returns the environment variables for the select drivers
  */
 function getEnvValues(drivers: (keyof typeof DRIVER_ENV_VALUES)[]) {
-  return drivers.reduce((values, driver) => {
-    Object.assign(values, DRIVER_ENV_VALUES[driver])
-    return values
-  }, {})
+  const validations: any = {}
+  const variables: any = {}
+
+  for (const driver of drivers) {
+    Object.entries(DRIVER_ENV_VALUES[driver]).forEach(([key, props]) => {
+      validations[key] = props.validation
+      variables[key] = props.value
+    })
+  }
+
+  return { validations, variables }
 }
 
 /**
@@ -107,8 +114,12 @@ export async function configure(command: Configure) {
   /**
    * Add environment variables to the `.env` file
    */
-  const envValues = getEnvValues(mailDrivers)
-  await codemods.defineEnvVariables(envValues)
+  const { variables, validations } = getEnvValues(mailDrivers)
+  await codemods.defineEnvVariables(variables)
+  await codemods.defineEnvValidations({
+    variables: validations,
+    leadingComment: 'Variables for @adonisjs/mail',
+  })
 
   /**
    * Add the provider to the RC file

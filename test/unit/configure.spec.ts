@@ -48,6 +48,8 @@ test.group('Configure', (group) => {
     context.fs.basePath = fileURLToPath(BASE_URL)
     await context.fs.create('adonisrc.ts', `export default defineConfig({})`)
     await context.fs.createJson('tsconfig.json', {})
+    await context.fs.create('.env', '')
+    await context.fs.create('start/env.ts', `export default Env.create(new URL('./'), {})`)
   })
 
   test('publish config file based on driver selection', async ({ assert, fs }) => {
@@ -72,18 +74,27 @@ test.group('Configure', (group) => {
     assert.snapshot(file).match()
   })
 
-  test('add env variables for the selected drivers', async ({ assert, fs }) => {
+  test('add env variables for the selected drivers', async ({ assert }) => {
     const { command } = await setupConfigureCommand()
-
-    await fs.create('.env', '')
 
     command.prompt.trap('askDrivers').chooseOptions([0, 1])
     await command.exec()
 
     await assert.fileContains('.env', 'SMTP_HOST=localhost')
     await assert.fileContains('.env', 'SMTP_PORT=587')
-
     await assert.fileContains('.env', 'SES_ACCESS_KEY=<aws-access-key>')
-    await assert.fileContains('.env', 'SES_ACCESS_SECRET=<aws-secret>')
+    await assert.fileContains('.env', 'SES_ACCESS_SECRET=<aws-access-secret>')
+  })
+
+  test('add env variables validation for the selected drivers', async ({ assert }) => {
+    const { command } = await setupConfigureCommand()
+
+    command.prompt.trap('askDrivers').chooseOptions([0, 1])
+    await command.exec()
+
+    await assert.fileContains('start/env.ts', 'SMTP_HOST: Env.schema.string(),')
+    await assert.fileContains('start/env.ts', 'SMTP_PORT: Env.schema.number(),')
+    await assert.fileContains('start/env.ts', 'SES_ACCESS_KEY: Env.schema.string(),')
+    await assert.fileContains('start/env.ts', 'SES_ACCESS_SECRET: Env.schema.string(),')
   })
 })
