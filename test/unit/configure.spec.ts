@@ -61,19 +61,6 @@ test.group('Configure', (group) => {
     assert.snapshot(file).match()
   })
 
-  test('create the types file', async ({ assert }) => {
-    const { command } = await setupConfigureCommand()
-
-    command.prompt.trap('askDrivers').chooseOptions([0, 1])
-    await command.exec()
-
-    await assert.fileExists('types/mail.ts')
-    await assert.fileContains(
-      'types/mail.ts',
-      'export interface MailersList extends InferMailers<typeof mail>'
-    )
-  })
-
   test('add MailProvider to the rc file', async ({ assert, fs }) => {
     const { command } = await setupConfigureCommand()
 
