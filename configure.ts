@@ -105,11 +105,6 @@ export async function configure(command: Configure) {
   })
 
   /**
-   * Create the mail types file
-   */
-  await command.publishStub('types/mail.stub')
-
-  /**
    * Add environment variables to the `.env` file
    */
   const envValues = getEnvValues(mailDrivers)

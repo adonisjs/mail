@@ -12,13 +12,15 @@ import type { MailManager } from '../managers/mail_manager.js'
 import type { MessageNode, MessageContentViewsNode } from './message.js'
 import type { MailDriversListContract, MailerResponseType, DriverOptionsType } from './helpers.js'
 import type { Message } from '../message.js'
+import { ConfigProvider } from '@adonisjs/core/types'
 
 /**
  * A list of known mailers inferred from the user config
  */
 export interface MailersList {}
-export type InferMailers<T extends { mailers: Record<string, MailManagerDriverFactory> }> =
-  T['mailers']
+export type InferMailers<
+  T extends ConfigProvider<{ mailers: Record<string, MailManagerDriverFactory> }>,
+> = Awaited<ReturnType<T['resolver']>>['mailers']
 
 export interface MailerService
   extends MailManager<MailersList extends MailDriversListContract ? MailersList : never> {}

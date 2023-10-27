@@ -4,7 +4,7 @@
 import env from '#start/env'
 import { defineConfig, mailers } from "@adonisjs/mail";
 
-export default defineConfig({
+const mailConfig = defineConfig({
   /*
   |--------------------------------------------------------------------------
   | Default mailer
@@ -132,3 +132,9 @@ export default defineConfig({
     {{/if}}
   },
 })
+
+export default mailConfig
+
+declare module '@adonisjs/mail/types' {
+  export interface MailersList extends InferMailers<typeof mailConfig> {}
+}
