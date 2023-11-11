@@ -11,7 +11,7 @@ import nodemailer from 'nodemailer'
 
 import type { Logger } from '@adonisjs/core/logger'
 import type { BrevoResponse } from '../brevo/types.js'
-import type { MailDriverContract } from '../../types/main.js'
+import type { MailDriverContract } from '../../types.js'
 import type { MessageNode } from '../../types/message.js'
 import type { ResendConfig, ResendRuntimeConfig } from './types.js'
 

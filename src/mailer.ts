@@ -7,166 +7,187 @@
  * file that was distributed with this source code.
  */
 
+import { RuntimeException } from '@poppinss/utils'
+
+import debug from './debug.js'
 import { Message } from './message.js'
-import { MailManager } from './managers/mail_manager.js'
-import { MailManagerDriverFactory } from './define_config.js'
 import {
-  CompiledMailNode,
-  DriverOptionsType,
-  MailerContract,
-  MailerResponseType,
+  MailerConfig,
+  MailerMessenger,
+  NodeMailerMessage,
+  MailDriverContract,
+  MessageBodyTemplates,
+  MailerTemplateEngine,
   MessageComposeCallback,
-} from './types/main.js'
+} from './types.js'
+import { MemoryQueueMessenger } from './messengers/memory_queue.js'
 
-export class Mailer<
-  KnownMailers extends Record<string, MailManagerDriverFactory>,
-  Name extends keyof KnownMailers,
-> implements MailerContract<KnownMailers, Name>
-{
-  #driverOptions?: DriverOptionsType<ReturnType<KnownMailers[Name]>>
+export class Mailer<Driver extends MailDriverContract> {
+  /**
+   * Mailer config
+   */
+  #config: MailerConfig
 
-  #useQueue: boolean
+  /**
+   * Optional template engine to use for rendering
+   * templates
+   */
+  #templateEngine?: MailerTemplateEngine
+
+  /**
+   * Messenger to use for queuing emails
+   */
+  #messenger: MailerMessenger = new MemoryQueueMessenger(this)
 
   constructor(
-    public name: Name,
-    public manager: MailManager<KnownMailers>,
-    useQueue: boolean,
-
-    public driver: ReturnType<KnownMailers[Name]>
+    public name: string,
+    public driver: Driver,
+    config: MailerConfig
   ) {
-    this.#useQueue = useQueue
+    this.#config = config
   }
 
   /**
-   * Ensure "edge" is installed
+   * Returns the configured template engine object or
+   * throws an error when no template engine is
+   * configured
    */
-  #ensureView(methodName: string) {
-    if (!this.manager.view) {
-      throw new Error(`"edge.js" must be installed before using "message.${methodName}"`)
+  #getTemplateEngine() {
+    if (!this.#templateEngine) {
+      throw new RuntimeException(
+        'Cannot render templates without a template engine. Make sure to call "mailer.setTemplateEngine" first'
+      )
     }
+
+    return this.#templateEngine
   }
 
   /**
    * Set the email contents by rendering the views. Views are only
    * rendered when inline values are not defined.
    */
-  async #setEmailContent({ message, views }: CompiledMailNode<KnownMailers>) {
+  async #setEmailContent({
+    message,
+    views,
+  }: {
+    message: NodeMailerMessage
+    views: MessageBodyTemplates
+  }) {
     if (!message.html && views.html) {
-      this.#ensureView('htmlView')
-      message.html = await this.manager.view!.render(views.html.template, views.html.data)
+      debug('computing mail html contents %O', views.html)
+      message.html = await this.#getTemplateEngine().render(views.html.template, views.html.data)
     }
 
     if (!message.text && views.text) {
-      this.#ensureView('textView')
-      message.text = await this.manager.view!.render(views.text.template, views.text.data)
+      debug('computing mail text contents %O', views.text)
+      message.text = await this.#getTemplateEngine().render(views.text.template, views.text.data)
     }
 
     if (!message.watch && views.watch) {
-      this.#ensureView('watchView')
-      message.watch = await this.manager.view!.render(views.watch.template, views.watch.data)
+      debug('computing mail watch contents %O', views.watch)
+      message.watch = await this.#getTemplateEngine().render(views.watch.template, views.watch.data)
     }
   }
 
   /**
-   * Override mail node settings with global settings
+   * Configure the template engine to use for rendering
+   * email templates
    */
-  #setGlobalSettings(message: CompiledMailNode<KnownMailers>) {
-    const globalSettings = this.manager.getGlobalSettings()
-
-    if (globalSettings.from) {
-      message.message.from = globalSettings.from
-    }
-
-    if (globalSettings.to) {
-      message.message.to = globalSettings.to
-    }
+  setTemplateEngine(engine: MailerTemplateEngine): this {
+    this.#templateEngine = engine
+    return this
   }
 
   /**
-   * Sends email using a pre-compiled message. You should use [[MailerContract.send]], unless
-   * you are pre-compiling messages yourself
+   * Configure the messenger to use for sending email asynchronously
    */
-  async sendCompiled(mail: CompiledMailNode<KnownMailers>) {
-    const eventsData = {
-      message: mail.message,
-      views: Object.keys(mail.views).map((view) => (mail.views as any)[view].template),
-      mailer: mail.mailer,
-    }
+  setMessenger(messenger: MailerMessenger): this {
+    this.#messenger = messenger
+    return this
+  }
 
+  /**
+   * Sends a compiled email using the underlying driver
+   */
+  async sendCompiled(
+    mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
+    sendConfig?: unknown
+  ) {
     /**
-     * Set content by rendering views
+     * Mutates the "compiledMessage.message" object based upon
+     * the configured templates
      */
     await this.#setEmailContent(mail)
 
     /**
-     * Set global `from` and `to` when defined
+     * Send the message using the driver
      */
-    this.#setGlobalSettings(mail)
-
-    /**
-     * Emit mail:sending event
-     */
-    this.manager.emitter.emit('mail:sending', eventsData)
-
-    /**
-     * Send email for real
-     */
-    const response = await this.driver.send(mail.message, mail.config)
-
-    /**
-     * Emit mail:sent event
-     */
-    this.manager.emitter.emit('mail:sent', { ...eventsData, response: response })
-
-    return response as unknown as Promise<MailerResponseType<Name, KnownMailers>>
-  }
-
-  /**
-   * Define options to be forwarded to the underlying driver
-   */
-  options(options: DriverOptionsType<ReturnType<KnownMailers[Name]>>): this {
-    this.#driverOptions = options
-    return this
+    return this.driver.send(mail.message, sendConfig) as Promise<ReturnType<Driver['send']>>
   }
 
   /**
    * Sends email
    */
-  async send(callback: MessageComposeCallback, config?: DriverOptionsType<KnownMailers[Name]>) {
-    const message = new Message(false)
+  async send(
+    callback: MessageComposeCallback,
+    config?: Parameters<Driver['send']>[1]
+  ): Promise<ReturnType<Driver['send']>> {
+    const message = new Message()
+
+    /**
+     * Set the default from address, the user can override it
+     * inside the callback
+     */
+    if (this.#config.from) {
+      message.from(this.#config.from)
+    }
+
+    /**
+     * Invoke callback to configure the mail message
+     */
     await callback(message)
 
-    const compiledMessage = message.toJSON()
-    return this.sendCompiled({
-      message: compiledMessage.message,
-      views: compiledMessage.views,
-      mailer: this.name,
-      config: config || this.#driverOptions,
-    })
+    /**
+     * Compile the message to an object
+     */
+    const compiledMessage = message.toObject()
+
+    return this.sendCompiled(compiledMessage, config)
   }
 
   /**
-   * Send email later by queuing it inside an in-memory queue
+   * Send an email asynchronously using the mail messenger. The
+   * default messenger uses an in-memory queue, unless you have
+   * configured a custom messenger.
    */
   async sendLater(
     callback: MessageComposeCallback,
-    config?: DriverOptionsType<KnownMailers[Name]>
-  ) {
-    if (!this.#useQueue) {
-      await this.send(callback, config)
-      return
+    config?: Parameters<Driver['send']>[1]
+  ): Promise<void> {
+    const message = new Message()
+
+    /**
+     * Set the default from address, the user can override it
+     * inside the callback
+     */
+    if (this.#config.from) {
+      message.from(this.#config.from)
     }
 
-    const message = new Message(true)
+    /**
+     * Invoke callback to configure the mail message
+     */
     await callback(message)
 
-    const compiledMessage = message.toJSON()
-    return this.manager.scheduleEmail({
-      message: compiledMessage.message,
-      views: compiledMessage.views,
-      mailer: this.name,
-      config: config || this.#driverOptions,
-    })
+    /**
+     * Compile the message to an object
+     */
+    const compiledMessage = message.toObject()
+
+    /**
+     * Queuing email
+     */
+    this.#messenger?.queue(compiledMessage, config)
   }
 
   /**

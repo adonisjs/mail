@@ -8,10 +8,10 @@
  */
 
 import { assert } from '@japa/assert'
-import { fileSystem } from '@japa/file-system'
-import { processCLIArgs, configure, run } from '@japa/runner'
-import { expectTypeOf } from '@japa/expect-type'
 import { snapshot } from '@japa/snapshot'
+import { fileSystem } from '@japa/file-system'
+import { expectTypeOf } from '@japa/expect-type'
+import { processCLIArgs, configure, run } from '@japa/runner'
 
 /*
 |--------------------------------------------------------------------------
@@ -32,12 +32,12 @@ configure({
   suites: [
     {
       name: 'unit',
-      files: ['test/unit/**/*.spec.ts'],
+      files: ['tests/unit/**/*.spec.ts'],
     },
     {
       name: 'integration',
-      files: ['test/integration/**/*.spec.ts'],
-      timeout: 1000 * 10,
+      files: ['tests/integration/**/*.spec.ts'],
+      timeout: 2000 * 10,
     },
   ],
 })

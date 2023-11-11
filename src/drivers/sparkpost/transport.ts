@@ -7,16 +7,17 @@
  * file that was distributed with this source code.
  */
 
-import { text } from 'node:stream/consumers'
 import got from 'got'
+import { text } from 'node:stream/consumers'
+import { ObjectBuilder } from '@poppinss/utils'
+import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
-import { ObjectBuilder } from '../../utils.js'
-import { EmailTransportException } from '../../exceptions/email_transport_exception.js'
-import { SparkPostConfig } from './types.js'
-import { Logger } from '@adonisjs/core/logger'
+import debug from '../../debug.js'
+import { E_MAIL_TRANSPORT_ERROR } from '../../errors.js'
+import type { SparkPostConfig, SparkPostSentMessageInfo } from '../../types.js'
 
 /**
- * Sparkpost transport for node mailer. Uses the `/message.mime` to send MIME
+ * Sparkpost transport for nodemailer. Uses the `/message.mime` to send MIME
  * representation of the email
  */
 export class SparkPostTransport {
@@ -24,11 +25,9 @@ export class SparkPostTransport {
   version = '1.0.0'
 
   #config: SparkPostConfig
-  #logger: Logger
 
-  constructor(config: SparkPostConfig, logger: Logger) {
+  constructor(config: SparkPostConfig) {
     this.#config = config
-    this.#logger = logger
   }
 
   /**
@@ -39,26 +38,74 @@ export class SparkPostTransport {
   }
 
   /**
+   * Formatting recipients for sparkpost API call
+   */
+  #formatRecipients(
+    recipients?: MailMessage['data']['to'] | MailMessage['data']['cc'] | MailMessage['data']['bcc']
+  ): { address: { name?: string; email: string } }[] {
+    if (!recipients) {
+      return []
+    }
+
+    /**
+     * Normalizing an array of recipients
+     */
+    if (Array.isArray(recipients)) {
+      return recipients.map((recipient) => {
+        if (typeof recipient === 'string') {
+          return {
+            address: { email: recipient },
+          }
+        }
+
+        return {
+          address: {
+            email: recipient.address,
+            ...(recipient.name ? { name: recipient.name } : {}),
+          },
+        }
+      })
+    }
+
+    /**
+     * Normalizing a string based recipient
+     */
+    if (typeof recipients === 'string') {
+      return [
+        {
+          address: { email: recipients },
+        },
+      ]
+    }
+
+    /**
+     * Normalizing an object based string
+     */
+    return [
+      {
+        address: {
+          email: recipients.address,
+          ...(recipients.name ? { name: recipients.name } : {}),
+        },
+      },
+    ]
+  }
+
+  /**
    * Returns an array of recipients accepted by the SparkPost API
    */
-  #getRecipients(
-    recipients: { address: string; name?: string }[]
-  ): { address: { name?: string; email: string } }[] {
-    return recipients.map((recipient) => {
-      return {
-        address: {
-          email: recipient.address,
-          ...(recipient.name ? { name: recipient.name } : {}),
-        },
-      }
-    })
+  #getRecipients(mail: MailMessage): { address: { name?: string; email: string } }[] {
+    return this.#formatRecipients(mail.data.to)
+      .concat(this.#formatRecipients(mail.data.cc))
+      .concat(this.#formatRecipients(mail.data.bcc))
   }
 
   /**
    * Returns an object of options accepted by the sparkpost mail API
    */
   #getOptions(config: SparkPostConfig) {
-    const options = new ObjectBuilder()
+    const options = new ObjectBuilder<Record<string, any>>({})
+
     options.add('start_time', config.startTime)
     options.add('open_tracking', config.openTracking)
     options.add('click_tracking', config.clickTracking)
@@ -66,43 +113,58 @@ export class SparkPostTransport {
     options.add('sandbox', config.sandbox)
     options.add('skip_suppression', config.skipSuppression)
     options.add('ip_pool', config.ipPool)
+
+    return options.toObject()
   }
 
   /**
    * Send email
    */
-  async send(mail: any, callback: any) {
+  async send(
+    mail: MailMessage,
+    callback: (err: Error | null, info: SparkPostSentMessageInfo) => void
+  ) {
     const url = `${this.#getBaseUrl()}/transmissions`
     const options = this.#getOptions(this.#config)
     const envelope = mail.message.getEnvelope()
-    const addresses = (mail.data.to || []).concat(mail.data.cc || []).concat(mail.data.bcc || [])
+    const recipients = this.#getRecipients(mail)
+
+    debug('sparkpost mail url "%s"', url)
+    debug('sparkpost mail options %O', options)
+    debug('sparkpost mail envelope %O', envelope)
+    debug('sparkpost mail recipients %O', recipients)
 
     try {
-      this.#logger.trace({ url, options }, 'sparkpost email')
-
       /**
        * The sparkpost API doesn't accept the multipart stream and hence we
        * need to convert the stream to a string
        */
-      const emailBody = await text(mail.message.createReadStream())
-      const response = await got.post<{ results?: { id: string } }>(url, {
+      const mimeMessage = await text(mail.message.createReadStream())
+      const response = await got.post<{
+        results: Omit<SparkPostSentMessageInfo, 'messageId' | 'envelope'>
+      }>(url, {
         json: {
-          recipients: this.#getRecipients(addresses),
-          options: options,
-          content: { email_rfc822: emailBody },
+          options,
+          recipients,
+          content: { email_rfc822: mimeMessage },
         },
-
         responseType: 'json',
         headers: { Authorization: this.#config.key },
       })
 
-      const messageId = (response.body.results?.id || mail.message.messageId()).replace(
-        /^<|>$/g,
-        ''
-      )
-      callback(null, { messageId, envelope })
+      const sparkPostMessageId = response.body.results.id
+      const messageId = sparkPostMessageId
+        ? sparkPostMessageId.replace(/^<|>$/g, '')
+        : mail.message.messageId()
+
+      callback(null, { messageId, envelope, ...response.body.results })
     } catch (error) {
-      callback(EmailTransportException.apiFailure(error))
+      callback(
+        new E_MAIL_TRANSPORT_ERROR('Unable to send email using the sparkpost driver', {
+          cause: error,
+        }),
+        undefined as any
+      )
     }
   }
 }

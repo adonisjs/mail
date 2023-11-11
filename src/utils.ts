@@ -7,22 +7,6 @@
  * file that was distributed with this source code.
  */
 
-export class ObjectBuilder {
-  #result: { [key: string]: any } = {}
-
-  add(key: string, value: any): this {
-    if (value === undefined) {
-      return this
-    }
-    this.#result[key] = value
-    return this
-  }
-
-  toObject() {
-    return this.#result
-  }
-}
-
 /**
  * Copy/paste from Japa assert module
  * https://github.com/japa/assert/blob/develop/src/Assert/utils.ts

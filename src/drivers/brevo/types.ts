@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { PostSentEnvelopeNode } from '../../types/main.js'
+import type { ResponseEnvelope } from '../../types.js'
 import type { DateTime } from 'luxon'
 
 export type BrevoRuntimeConfig = {
@@ -33,6 +33,6 @@ export type BrevoConfig = {
  * Mail response from Brevo
  */
 export interface BrevoResponse {
-  envelope: PostSentEnvelopeNode
+  envelope: ResponseEnvelope
   messageId: string
 }

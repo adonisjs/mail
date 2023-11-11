@@ -7,13 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import { Logger } from '@adonisjs/core/logger'
 import got from 'got'
 import { Transport } from 'nodemailer'
 import { Address } from 'nodemailer/lib/mailer/index.js'
 import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
-import { EmailTransportException } from '../../exceptions/email_transport_exception.js'
-import { ResendApiResponse, ResendConfig } from './types.js'
+
+import type { ResendConfig } from '../../types.js'
 
 /**
  * Resend transport for Nodemailer
@@ -23,11 +22,9 @@ export class ResendTransport implements Transport {
   version = '1.0.0'
 
   #config: ResendConfig
-  #logger: Logger
 
-  constructor(config: ResendConfig, logger: Logger) {
+  constructor(config: ResendConfig) {
     this.#config = config
-    this.#logger = logger
   }
 
   /**
@@ -107,10 +104,7 @@ export class ResendTransport implements Transport {
    * Get resend api url to send email
    */
   #getUrl() {
-    const defaultUrl = 'https://api.resend.com/'
-    const baseUrl = (this.#config.baseUrl || defaultUrl).replace(/\/$/, '')
-
-    return `${baseUrl}/emails`
+    return `${this.#config.baseUrl.replace(/\/$/, '')}/emails`
   }
 
   /**
@@ -120,8 +114,6 @@ export class ResendTransport implements Transport {
     const url = this.#getUrl()
     const envelope = mail.message.getEnvelope()
     const payload = this.#preparePayload(mail)
-
-    this.#logger.trace({ url, payload }, 'resend email')
 
     try {
       const result = await got
