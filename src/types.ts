@@ -130,6 +130,29 @@ export type MailManagerDriverFactory = () => MailDriverContract
  */
 export type MessageComposeCallback = (message: Message) => void | Promise<void>
 
+/**
+ * Events emitted by the mailer
+ */
+export type MailEvents = {
+  'mail:sending': {
+    message: NodeMailerMessage
+    views: MessageBodyTemplates
+  }
+  'mail:sent': {
+    message: NodeMailerMessage
+    views: MessageBodyTemplates
+    response: MailResponse<unknown>
+  }
+  'mail:queueing': {
+    message: NodeMailerMessage
+    views: MessageBodyTemplates
+  }
+  'mail:queued': {
+    message: NodeMailerMessage
+    views: MessageBodyTemplates
+  }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Mailgun driver types

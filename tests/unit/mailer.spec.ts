@@ -75,7 +75,7 @@ test.group('Mailer', () => {
 
     await assert.rejects(
       send,
-      'Cannot render templates without a template engine. Make sure to call "mailer.setTemplateEngine" first'
+      'Cannot render templates without a template engine. Make sure to call the "mailer.setTemplateEngine" method first'
     )
   })
 

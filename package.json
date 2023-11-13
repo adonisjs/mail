@@ -20,7 +20,8 @@
     "./messengers/memory": "./build/src/messengers/memory_queue.js"
   },
   "scripts": {
-    "test": "c8 npm run vscode:test",
+    "pretest": "npm run lint",
+    "test": "c8 npm run quick:test",
     "lint": "eslint .",
     "clean": "del-cli build",
     "copy:templates": "copyfiles \"stubs/**/**/*.stub\" build",
@@ -33,7 +34,7 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands",
-    "quick:test": "cross-env NODE_DEBUG=\"adonisjs:mail\" c8 node --enable-source-maps --loader=ts-node/esm bin/test.ts",
+    "quick:test": "NODE_DEBUG=\"adonisjs:mail\" c8 node --enable-source-maps --loader=ts-node/esm bin/test.ts",
     "sync-labels": "github-label-sync --labels .github/labels.json adonisjs/mail"
   },
   "devDependencies": {

@@ -25,11 +25,6 @@ import type {
  */
 export class Message {
   /**
-   * Will this message be deferred
-   */
-  // #deferred = false
-
-  /**
    * Templates to use for rendering email body for
    * HTML, plain text and watch
    */
@@ -39,10 +34,6 @@ export class Message {
    * Reference to the underlying node mailer message
    */
   nodeMailerMessage: NodeMailerMessage = {}
-
-  constructor() {
-    // this.#deferred = deferred
-  }
 
   /**
    * Returns formatted address

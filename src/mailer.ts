@@ -11,6 +11,7 @@ import { RuntimeException } from '@poppinss/utils'
 
 import debug from './debug.js'
 import { Message } from './message.js'
+import { MemoryQueueMessenger } from './messengers/memory_queue.js'
 import {
   MailerConfig,
   MailerMessenger,
@@ -20,8 +21,11 @@ import {
   MailerTemplateEngine,
   MessageComposeCallback,
 } from './types.js'
-import { MemoryQueueMessenger } from './messengers/memory_queue.js'
 
+/**
+ * The Mailer acts as an adapter that wraps a driver and exposes
+ * consistent API for sending and queueing emails
+ */
 export class Mailer<Driver extends MailDriverContract> {
   /**
    * Mailer config
@@ -55,7 +59,7 @@ export class Mailer<Driver extends MailDriverContract> {
   #getTemplateEngine() {
     if (!this.#templateEngine) {
       throw new RuntimeException(
-        'Cannot render templates without a template engine. Make sure to call "mailer.setTemplateEngine" first'
+        'Cannot render templates without a template engine. Make sure to call the "mailer.setTemplateEngine" method first'
       )
     }
 
@@ -187,7 +191,8 @@ export class Mailer<Driver extends MailDriverContract> {
     /**
      * Queuing email
      */
-    this.#messenger?.queue(compiledMessage, config)
+    debug('queueing email')
+    await this.#messenger.queue(compiledMessage, config)
   }
 
   /**

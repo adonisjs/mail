@@ -7,9 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import fastq from 'fastq'
+import fastq, { type done } from 'fastq'
 
+import debug from '../debug.js'
 import type { Mailer } from '../mailer.js'
+import type { MailResponse } from '../mail_response.js'
 import type { MailDriverContract, MessageBodyTemplates, NodeMailerMessage } from '../types.js'
 
 /**
@@ -20,9 +22,13 @@ function sendEmail(
   task: {
     mail: { message: NodeMailerMessage; views: MessageBodyTemplates }
     sendConfig?: unknown
-  }
+  },
+  cb: done
 ) {
-  return this.mailer.sendCompiled(task.mail, task.sendConfig)
+  this.mailer
+    .sendCompiled(task.mail, task.sendConfig)
+    .then((result) => cb(null, result))
+    .catch((error) => cb(error))
 }
 
 /**
@@ -31,7 +37,18 @@ function sendEmail(
  */
 export class MemoryQueueMessenger {
   #queue = fastq(this, sendEmail, 10)
+  #jobCompletedCallback?: (error: Error | null, result: MailResponse<unknown>) => void
+
   constructor(public mailer: Mailer<MailDriverContract>) {}
+
+  /**
+   * Register a callback to get notified when a job is
+   * completed
+   */
+  monitor(jobCompletionNotifier: (error: Error | null, result: MailResponse<unknown>) => void) {
+    this.#jobCompletedCallback = jobCompletionNotifier
+    return this
+  }
 
   /**
    * Queues the email within memory
@@ -40,9 +57,13 @@ export class MemoryQueueMessenger {
     mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
     sendConfig?: unknown
   ) {
-    this.#queue.push({
-      mail,
-      sendConfig,
-    })
+    debug('pushing email to in-memory queue')
+    this.#queue.push(
+      {
+        mail,
+        sendConfig,
+      },
+      this.#jobCompletedCallback
+    )
   }
 }
