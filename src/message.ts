@@ -10,8 +10,12 @@
 import { basename } from 'node:path'
 import { Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
+import Macroable from '@poppinss/macroable'
+import { AssertionError } from 'node:assert'
 import type { SendMailOptions } from 'nodemailer'
 import ical, { type ICalCalendar } from 'ical-generator'
+import { Attachment } from 'nodemailer/lib/mailer/index.js'
+
 import type {
   Recipient,
   AttachmentOptions,
@@ -23,12 +27,22 @@ import type {
 /**
  * Fluent API to construct node mailer message object
  */
-export class Message {
+export class Message extends Macroable {
+  /**
+   * Nodemailer internally mutates the "attachments" object
+   * and removes the path property with the contents of
+   * the file.
+   *
+   * Therefore, we need an additional attachment array we can
+   * use to searching attachments and writing assertions
+   */
+  #attachmentsForSearch: Attachment[] = []
+
   /**
    * Templates to use for rendering email body for
    * HTML, plain text and watch
    */
-  #contentViews: MessageBodyTemplates = {}
+  contentViews: MessageBodyTemplates = {}
 
   /**
    * Reference to the underlying node mailer message
@@ -43,6 +57,79 @@ export class Message {
   }
 
   /**
+   * Converts a recipient email and name to formatted
+   * string
+   */
+  protected formatRecipient(recipient?: Recipient) {
+    if (!recipient) {
+      return undefined
+    }
+
+    if (typeof recipient === 'string') {
+      return recipient
+    }
+
+    if (!recipient.name) {
+      return recipient.address
+    }
+
+    return `${recipient.name} <${recipient.address}>`
+  }
+
+  /**
+   * Check if a given recipient exists for the mentioned
+   * email and name.
+   */
+  hasRecipient(property: 'to' | 'cc' | 'bcc' | 'replyTo', address: string, name?: string) {
+    const recipients = this.nodeMailerMessage[property]
+    if (!recipients) {
+      return false
+    }
+
+    /**
+     * When checking for name and email both
+     */
+    if (name) {
+      return !!recipients.find((recipient) => {
+        if (typeof recipient === 'string') {
+          return false
+        }
+        return recipient.address === address && recipient.name === name
+      })
+    }
+
+    /**
+     * When checking for just the email
+     */
+    return !!recipients.find((recipient) => {
+      if (typeof recipient === 'string') {
+        return recipient === address
+      }
+      return recipient.address === address
+    })
+  }
+
+  /**
+   * Assert the message is sent to the mentioned address
+   */
+  assertRecipient(property: 'to' | 'cc' | 'bcc' | 'replyTo', address: string, name?: string) {
+    if (!this.hasRecipient(property, address, name)) {
+      const expected = this.formatRecipient({ address, name: name || '' })
+      const actual =
+        this.nodeMailerMessage[property]?.map((recipient) => {
+          return this.formatRecipient(recipient)
+        }) || []
+
+      throw new AssertionError({
+        message: `Expected message to be delivered to "${expected}"`,
+        expected: [expected],
+        actual,
+        operator: 'includes',
+      })
+    }
+  }
+
+  /**
    * Add recipient as `to`
    */
   to(address: string, name?: string): this {
@@ -52,11 +139,69 @@ export class Message {
   }
 
   /**
+   * Check if message is sent to the mentioned address
+   */
+  hasTo(address: string, name?: string): boolean {
+    return this.hasRecipient('to', address, name)
+  }
+
+  /**
+   * Assert the message is sent to the mentioned address
+   */
+  assertTo(address: string, name?: string) {
+    return this.assertRecipient('to', address, name)
+  }
+
+  /**
    * Add `from` name and email
    */
   from(address: string, name?: string): this {
     this.nodeMailerMessage.from = this.#getAddress(address, name)
     return this
+  }
+
+  /**
+   * Check if message is sent from the mentioned address
+   */
+  hasFrom(address: string, name?: string): boolean {
+    const fromAddress = this.nodeMailerMessage.from
+    if (!fromAddress) {
+      return false
+    }
+
+    /**
+     * When checking for name and email both
+     */
+    if (name) {
+      if (typeof fromAddress === 'string') {
+        return false
+      }
+      return fromAddress.address === address && fromAddress.name === name
+    }
+
+    /**
+     * When checking for just the email
+     */
+    if (typeof fromAddress === 'string') {
+      return fromAddress === address
+    }
+    return fromAddress.address === address
+  }
+
+  /**
+   * Assert the message is sent from the mentioned address
+   */
+  assertFrom(address: string, name?: string) {
+    if (!this.hasFrom(address, name)) {
+      const expected = this.formatRecipient({ address, name: name || '' })
+      const actual = this.formatRecipient(this.nodeMailerMessage.from)
+
+      throw new AssertionError({
+        message: `Expected message to be sent from "${expected}"`,
+        expected,
+        actual,
+      })
+    }
   }
 
   /**
@@ -69,12 +214,40 @@ export class Message {
   }
 
   /**
+   * Check if message is sent to the mentioned address
+   */
+  hasCc(address: string, name?: string): boolean {
+    return this.hasRecipient('cc', address, name)
+  }
+
+  /**
+   * Assert the message is sent to the mentioned address
+   */
+  assertCc(address: string, name?: string) {
+    return this.assertRecipient('cc', address, name)
+  }
+
+  /**
    * Add recipient as `bcc`
    */
   bcc(address: string, name?: string): this {
     this.nodeMailerMessage.bcc = this.nodeMailerMessage.bcc || []
     this.nodeMailerMessage.bcc.push(this.#getAddress(address, name))
     return this
+  }
+
+  /**
+   * Check if message is sent to the mentioned address
+   */
+  hasBcc(address: string, name?: string): boolean {
+    return this.hasRecipient('bcc', address, name)
+  }
+
+  /**
+   * Assert the message is sent to the mentioned address
+   */
+  assertBcc(address: string, name?: string) {
+    return this.assertRecipient('bcc', address, name)
   }
 
   /**
@@ -94,12 +267,59 @@ export class Message {
   }
 
   /**
+   * Check if the message has the mentioned subject
+   */
+  hasSubject(message: string): boolean {
+    return !!this.nodeMailerMessage.subject && this.nodeMailerMessage.subject === message
+  }
+
+  /**
+   * Assert the message has the mentioned subject
+   */
+  assertSubject(message: string) {
+    if (!this.hasSubject(message)) {
+      throw new AssertionError({
+        message: `Expected message subject to be "${message}"`,
+        expected: message,
+        actual: this.nodeMailerMessage.subject,
+      })
+    }
+  }
+
+  /**
    * Define replyTo email and name
    */
   replyTo(address: string, name?: string): this {
     this.nodeMailerMessage.replyTo = this.nodeMailerMessage.replyTo || []
     this.nodeMailerMessage.replyTo.push(this.#getAddress(address, name))
     return this
+  }
+
+  /**
+   * Check if the mail has the mentioned reply to address
+   */
+  hasReplyTo(address: string, name?: string): boolean {
+    return this.hasRecipient('replyTo', address, name)
+  }
+
+  /**
+   * Assert the mail has the mentioned reply to address
+   */
+  assertReplyTo(address: string, name?: string) {
+    if (!this.hasRecipient('replyTo', address, name)) {
+      const expected = this.formatRecipient({ address, name: name || '' })
+      const actual =
+        this.nodeMailerMessage.replyTo?.map((recipient) => {
+          return this.formatRecipient(recipient)
+        }) || []
+
+      throw new AssertionError({
+        message: `Expected reply-to addresses to include "${expected}"`,
+        expected: [expected],
+        actual,
+        operator: 'includes',
+      })
+    }
   }
 
   /**
@@ -146,7 +366,7 @@ export class Message {
    * Compute email html from defined view
    */
   htmlView(template: string, data?: any): this {
-    this.#contentViews.html = { template, data }
+    this.contentViews.html = { template, data }
     return this
   }
 
@@ -154,7 +374,7 @@ export class Message {
    * Compute email text from defined view
    */
   textView(template: string, data?: any): this {
-    this.#contentViews.text = { template, data }
+    this.contentViews.text = { template, data }
     return this
   }
 
@@ -162,7 +382,7 @@ export class Message {
    * Compute apple watch html from defined view
    */
   watchView(template: string, data?: any): this {
-    this.#contentViews.watch = { template, data }
+    this.contentViews.watch = { template, data }
     return this
   }
 
@@ -191,13 +411,73 @@ export class Message {
   }
 
   /**
+   * Assert content of mail to include substring or match
+   * a given regular expression
+   */
+  assertContent(property: 'text' | 'watch' | 'html', substring: string | RegExp) {
+    const contents = this.nodeMailerMessage[property]
+    if (!contents) {
+      throw new AssertionError({
+        message: `Expected message ${property} body to match substring, but it is undefined`,
+      })
+    }
+
+    if (typeof substring === 'string') {
+      if (!String(contents).includes(substring)) {
+        throw new AssertionError({
+          message: `Expected message ${property} body to include "${substring}"`,
+        })
+      }
+      return
+    }
+
+    if (!substring.test(String(contents))) {
+      throw new AssertionError({
+        message: `Expected message ${property} body to match "${substring}"`,
+      })
+    }
+  }
+
+  /**
+   * Assert message plain text contents to include
+   * substring or match the given regular expression
+   */
+  assertTextIncludes(substring: string | RegExp) {
+    return this.assertContent('text', substring)
+  }
+
+  /**
+   * Assert message HTML contents to include substring
+   * or match the given regular expression
+   */
+  assertHtmlIncludes(substring: string | RegExp) {
+    return this.assertContent('html', substring)
+  }
+
+  /**
+   * Assert message watch contents to include substring
+   * or match the given regular expression
+   */
+  assertWatchIncludes(substring: string | RegExp) {
+    return this.assertContent('watch', substring)
+  }
+
+  /**
    * Define one or attachments
    */
-  attach(file: string | URL, options?: AttachmentOptions): this {
+  attach(
+    file: string | URL,
+    options?: Omit<AttachmentOptions, 'raw' | 'content' | 'cid' | 'path'>
+  ): this {
     const filePath = typeof file === 'string' ? file : fileURLToPath(file)
 
     this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
     this.nodeMailerMessage.attachments.push({
+      path: filePath,
+      filename: basename(filePath),
+      ...options,
+    })
+    this.#attachmentsForSearch.push({
       path: filePath,
       filename: basename(filePath),
       ...options,
@@ -207,9 +487,79 @@ export class Message {
   }
 
   /**
+   * Check if a file attachment exists by the mentioned
+   * file path or URL.
+   */
+  hasAttachment(file: string | URL, options?: { filename?: string; cid?: string }): boolean
+  hasAttachment(finder: (attachment: Attachment) => boolean): boolean
+  hasAttachment(
+    file: ((attachment: Attachment) => boolean) | string | URL,
+    options?: { filename?: string; cid?: string }
+  ): boolean {
+    const attachments = this.#attachmentsForSearch
+    if (!attachments) {
+      return false
+    }
+
+    if (typeof file === 'function') {
+      return !!attachments.find(file)
+    }
+
+    const filePath = typeof file === 'string' ? file : fileURLToPath(file)
+    return !!attachments.find((attachment) => {
+      const hasMatchingPath = attachment.path ? String(attachment.path).endsWith(filePath) : false
+      if (!options) {
+        return hasMatchingPath
+      }
+
+      if (options.filename && attachment.filename !== options.filename) {
+        return false
+      }
+
+      if (options.cid && attachment.cid !== options.cid) {
+        return false
+      }
+
+      return true
+    })
+  }
+
+  /**
+   * Assert a file attachment exists by the mentioned
+   * file path or URL.
+   */
+  assertAttachment(file: string | URL, options?: { filename?: string; cid?: string }): void
+  assertAttachment(finder: (attachment: Attachment) => boolean): void
+  assertAttachment(
+    file: ((attachment: Attachment) => boolean) | string | URL,
+    options?: { filename?: string; cid?: string }
+  ): void {
+    if (typeof file === 'function') {
+      if (!this.hasAttachment(file)) {
+        throw new AssertionError({
+          message: `Expected assertion callback to find an attachment`,
+        })
+      }
+      return
+    }
+
+    if (!this.hasAttachment(file, options)) {
+      throw new AssertionError({
+        message: `Expected message attachments to include "${file}"`,
+        expected: [{ path: file, ...options }],
+        actual: this.nodeMailerMessage.attachments,
+        operator: 'includes',
+      })
+    }
+  }
+
+  /**
    * Define attachment from raw data
    */
-  attachData(content: Readable | Buffer, options?: AttachmentOptions): this {
+  attachData(
+    content: Readable | Buffer,
+    options?: Omit<AttachmentOptions, 'raw' | 'content' | 'cid' | 'path'>
+  ): this {
     this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
     this.nodeMailerMessage.attachments.push({
       content,
@@ -222,13 +572,24 @@ export class Message {
   /**
    * Embed attachment inside content using `cid`
    */
-  embed(file: string | URL, cid: string, options?: AttachmentOptions): this {
+  embed(
+    file: string | URL,
+    cid: string,
+    options?: Omit<AttachmentOptions, 'raw' | 'content' | 'cid' | 'path'>
+  ): this {
     const filePath = typeof file === 'string' ? file : fileURLToPath(file)
 
     this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
     this.nodeMailerMessage.attachments.push({
       path: filePath,
       cid,
+      filename: basename(filePath),
+      ...options,
+    })
+    this.#attachmentsForSearch.push({
+      path: filePath,
+      cid,
+      filename: basename(filePath),
       ...options,
     })
 
@@ -238,7 +599,11 @@ export class Message {
   /**
    * Embed attachment from raw data inside content using `cid`
    */
-  embedData(content: Readable | Buffer, cid: string, options?: AttachmentOptions): this {
+  embedData(
+    content: Readable | Buffer,
+    cid: string,
+    options?: Omit<AttachmentOptions, 'raw' | 'content' | 'cid' | 'path'>
+  ): this {
     this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
     this.nodeMailerMessage.attachments.push({
       content,
@@ -262,6 +627,57 @@ export class Message {
     }
 
     return this
+  }
+
+  /**
+   * Check if a header has been defined and optionally
+   * check for values as well.
+   */
+  hasHeader(key: string, value?: string | string[]): boolean {
+    const headers = this.nodeMailerMessage.headers
+    if (!headers || Array.isArray(headers)) {
+      return false
+    }
+
+    const headerValue = headers[key]
+    if (!headerValue) {
+      return false
+    }
+
+    if (value) {
+      return !!(Array.isArray(value) ? value : [value]).every((one) => {
+        return typeof headerValue === 'string'
+          ? headerValue === one
+          : Array.isArray(headerValue)
+          ? headerValue.includes(one)
+          : headerValue.value === one
+      })
+    }
+
+    return true
+  }
+
+  /**
+   * Assert a header has been defined and optionally
+   * check for values as well.
+   */
+  assertHeader(key: string, value?: string | string[]) {
+    if (!this.hasHeader(key, value)) {
+      const headers = this.nodeMailerMessage.headers
+      const actual = headers && !Array.isArray(headers) ? headers[key] : undefined
+
+      if (!value || !actual) {
+        throw new AssertionError({
+          message: `Expected message headers to include "${key}"`,
+        })
+      }
+
+      throw new AssertionError({
+        message: `Expected message headers to include "${key}" with value "${value}"`,
+        actual,
+        expected: value,
+      })
+    }
   }
 
   /**
@@ -319,7 +735,9 @@ export class Message {
   toObject(): { message: NodeMailerMessage; views: MessageBodyTemplates } {
     return {
       message: this.nodeMailerMessage,
-      views: this.#contentViews,
+      views: {
+        ...this.contentViews,
+      },
     }
   }
 

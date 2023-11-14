@@ -10,6 +10,7 @@
 import nodemailer from 'nodemailer'
 import type JSONTransport from 'nodemailer/lib/json-transport/index.js'
 
+import debug from '../../debug.js'
 import { MailResponse } from '../../mail_response.js'
 import type { MailDriverContract, NodeMailerMessage } from '../../types.js'
 
@@ -49,6 +50,7 @@ export class JSONDriver implements MailDriverContract {
       return
     }
 
+    debug('closing json transport')
     this.#transporter.close()
     this.#transporter = undefined
   }

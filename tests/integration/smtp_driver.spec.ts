@@ -7,18 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import dotenv from 'dotenv'
 import { test } from '@japa/runner'
 
 import { Message } from '../../src/message.js'
 import { SMTPDriver } from '../../src/drivers/smtp/main.js'
 
-test.group('SMTP Driver', (group) => {
-  group.setup(() => {
-    dotenv.config({ path: new URL('../../.env', import.meta.url) })
-  })
-
-  test('send email using the SMTP driver', async ({ assert }) => {
+test.group('SMTP Driver', () => {
+  test('send email using the SMTP driver', async ({ assert, cleanup }) => {
     const smtp = new SMTPDriver({
       host: process.env.MAILTRAP_SMTP_HOST!,
       auth: {
@@ -27,6 +22,7 @@ test.group('SMTP Driver', (group) => {
         pass: process.env.MAILTRAP_PASSWORD!,
       },
     })
+    cleanup(() => smtp.close())
 
     const message = new Message()
     message.from(process.env.MAILTRAP_EMAIL!)

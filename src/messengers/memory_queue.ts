@@ -10,9 +10,13 @@
 import fastq, { type done } from 'fastq'
 
 import debug from '../debug.js'
-import type { Mailer } from '../mailer.js'
 import type { MailResponse } from '../mail_response.js'
-import type { MailDriverContract, MessageBodyTemplates, NodeMailerMessage } from '../types.js'
+import type {
+  MailerContract,
+  NodeMailerMessage,
+  MailDriverContract,
+  MessageBodyTemplates,
+} from '../types.js'
 
 /**
  * Worker to send emails
@@ -39,7 +43,7 @@ export class MemoryQueueMessenger {
   #queue = fastq(this, sendEmail, 10)
   #jobCompletedCallback?: (error: Error | null, result: MailResponse<unknown>) => void
 
-  constructor(public mailer: Mailer<MailDriverContract>) {}
+  constructor(public mailer: MailerContract<MailDriverContract>) {}
 
   /**
    * Register a callback to get notified when a job is

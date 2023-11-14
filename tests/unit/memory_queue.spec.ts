@@ -8,13 +8,20 @@
  */
 
 import { test } from '@japa/runner'
+import { Emitter } from '@adonisjs/core/events'
+import { AppFactory } from '@adonisjs/core/factories/app'
+
 import { Mailer } from '../../src/mailer.js'
+import { MailEvents } from '../../src/types.js'
 import { JSONDriver } from '../../src/drivers/json/main.js'
 import { MemoryQueueMessenger } from '../../src/messengers/memory_queue.js'
 
+const app = new AppFactory().create(new URL('./', import.meta.url), () => {})
+
 test.group('Memory queue', () => {
   test('queue email using the memory driver', async ({ assert }, done) => {
-    const mailer = new Mailer('marketing', new JSONDriver(), { from: 'foo@global.com' })
+    const emitter = new Emitter<MailEvents>(app)
+    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
     const messenger = new MemoryQueueMessenger(mailer)
     mailer.setMessenger(messenger)
 

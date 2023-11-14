@@ -7,11 +7,14 @@
  * file that was distributed with this source code.
  */
 
+import dotenv from 'dotenv'
 import { assert } from '@japa/assert'
 import { snapshot } from '@japa/snapshot'
 import { fileSystem } from '@japa/file-system'
 import { expectTypeOf } from '@japa/expect-type'
 import { processCLIArgs, configure, run } from '@japa/runner'
+
+dotenv.config({ path: new URL('../.env', import.meta.url) })
 
 /*
 |--------------------------------------------------------------------------

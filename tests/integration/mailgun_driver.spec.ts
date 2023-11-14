@@ -8,7 +8,6 @@
  */
 
 import got from 'got'
-import dotenv from 'dotenv'
 import retry from 'async-retry'
 import { test } from '@japa/runner'
 
@@ -40,11 +39,7 @@ function getMailgunMessage(messageId: string) {
   )
 }
 
-test.group('Mailgun Driver', (group) => {
-  group.setup(() => {
-    dotenv.config({ path: new URL('../../.env', import.meta.url) })
-  })
-
+test.group('Mailgun Driver', () => {
   test('send email using mailgun driver', async ({ assert }) => {
     const mailgun = new MailgunDriver({
       key: process.env.MAILGUN_ACCESS_KEY!,

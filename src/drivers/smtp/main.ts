@@ -10,6 +10,7 @@
 import nodemailer from 'nodemailer'
 import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
 
+import debug from '../../debug.js'
 import { MailResponse } from '../../mail_response.js'
 import type { SMTPConfig, NodeMailerMessage, MailDriverContract } from '../../types.js'
 
@@ -54,6 +55,7 @@ export class SMTPDriver implements MailDriverContract {
       return
     }
 
+    debug('closing smtp transport')
     this.#transporter.close()
     this.#transporter = undefined
   }

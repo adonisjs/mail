@@ -11,6 +11,7 @@ import nodemailer from 'nodemailer'
 import SES from '@aws-sdk/client-ses'
 import SESTransport from 'nodemailer/lib/ses-transport/index.js'
 
+import debug from '../../debug.js'
 import { MailResponse } from '../../mail_response.js'
 import type { SESConfig, NodeMailerMessage, MailDriverContract } from '../../types.js'
 
@@ -81,6 +82,7 @@ export class SESDriver implements MailDriverContract {
       return
     }
 
+    debug('closing ses transport')
     this.#transporter.close()
     this.#transporter = undefined
   }

@@ -14,6 +14,7 @@ import type MimeNode from 'nodemailer/lib/mime-node/index.js'
 
 import type { Message } from './message.js'
 import { MailResponse } from './mail_response.js'
+import { BaseMail } from './base_mail.js'
 
 /**
  * Shape of the envelope node after the email has been
@@ -91,12 +92,6 @@ export type NodeMailerMessage = {
   watch?: SendMailOptions['watchHtml']
 }
 
-/**
- * The properties that can be used to search for mail messages
- * inside fakes
- */
-export type MessageSearchOptions = Omit<NodeMailerMessage, 'attachments' | 'icalEvent'>
-
 /*
 |--------------------------------------------------------------------------
 | Drivers Interface
@@ -130,27 +125,126 @@ export type MailManagerDriverFactory = () => MailDriverContract
  */
 export type MessageComposeCallback = (message: Message) => void | Promise<void>
 
+/*
+|--------------------------------------------------------------------------
+| Mailer types
+|--------------------------------------------------------------------------
+*/
+
 /**
  * Events emitted by the mailer
  */
 export type MailEvents = {
   'mail:sending': {
+    mailerName: string
     message: NodeMailerMessage
     views: MessageBodyTemplates
   }
   'mail:sent': {
+    mailerName: string
     message: NodeMailerMessage
     views: MessageBodyTemplates
     response: MailResponse<unknown>
   }
   'mail:queueing': {
+    mailerName: string
     message: NodeMailerMessage
     views: MessageBodyTemplates
   }
   'mail:queued': {
+    mailerName: string
     message: NodeMailerMessage
     views: MessageBodyTemplates
   }
+}
+
+/**
+ * Mailer contract represents a mailer that can be
+ * used to send emails
+ */
+export interface MailerContract<Driver extends MailDriverContract> {
+  /**
+   * Configure the template engine to use for rendering
+   * email templates
+   */
+  setTemplateEngine(engine: MailerTemplateEngine): this
+
+  /**
+   * Configure the messenger to use for sending email asynchronously
+   */
+  setMessenger(messenger: MailerMessenger): this
+
+  /**
+   * Sends a compiled email using the underlying driver
+   */
+  sendCompiled(
+    mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
+    sendConfig?: unknown
+  ): Promise<Awaited<ReturnType<Driver['send']>>>
+
+  /**
+   * Sends email
+   */
+  send(
+    callbackOrMail: MessageComposeCallback | BaseMail,
+    config?: Parameters<Driver['send']>[1]
+  ): Promise<Awaited<ReturnType<Driver['send']>>>
+
+  /**
+   * Send an email asynchronously using the mail messenger. The
+   * default messenger uses an in-memory queue, unless you have
+   * configured a custom messenger.
+   */
+  sendLater(
+    callbackOrMail: MessageComposeCallback | BaseMail,
+    config?: Parameters<Driver['send']>[1]
+  ): Promise<void>
+
+  /**
+   * Invokes `close` method on the driver
+   */
+  close(): Promise<void>
+}
+
+export type MailerConfig = {
+  /**
+   * Define a global email address to always use when
+   * sending emails
+   */
+  from?: Recipient
+}
+
+/**
+ * Template engine accepted by the mailer to render
+ * templates to compute mail body contents
+ */
+export interface MailerTemplateEngine {
+  /**
+   * Render a template to contents
+   */
+  render(templatePath: string, data?: any): Promise<string> | string
+}
+
+/**
+ * Messenger accepted by the mailer to send emails asynchronously
+ */
+export interface MailerMessenger {
+  queue(
+    mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
+    sendConfig?: unknown
+  ): Promise<any>
+}
+
+/*
+|--------------------------------------------------------------------------
+| Fake Mailer types
+|--------------------------------------------------------------------------
+*/
+export type MessageSearchOptions = {
+  subject?: string
+  to?: string
+  from?: string
+  attachments?: string[]
 }
 
 /*
@@ -333,40 +427,6 @@ export type ResendRuntimeConfig = {
 export type ResendConfig = ResendRuntimeConfig & {
   key: string
   baseUrl: string
-}
-
-/*
-|--------------------------------------------------------------------------
-| Mailer types
-|--------------------------------------------------------------------------
-*/
-export type MailerConfig = {
-  /**
-   * Define a global email address to always use when
-   * sending emails
-   */
-  from?: string
-}
-
-/**
- * Template engine accepted by the mailer to render
- * templates to compute mail body contents
- */
-export interface MailerTemplateEngine {
-  /**
-   * Render a template to contents
-   */
-  render(templatePath: string, data?: any): Promise<string> | string
-}
-
-/**
- * Messenger accepted by the mailer to send emails asynchronously
- */
-export interface MailerMessenger {
-  queue(
-    mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
-    sendConfig?: unknown
-  ): Promise<any>
 }
 
 /*

@@ -7,20 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import dotenv from 'dotenv'
-import { join } from 'node:path'
 import { test } from '@japa/runner'
-import { getDirname } from '@poppinss/utils'
-
 import { Message } from '../../src/message.js'
 import { SESDriver } from '../../src/drivers/ses/main.js'
 
-test.group('SES Driver', (group) => {
-  group.setup(() => {
-    dotenv.config({ path: join(getDirname(import.meta.url), '..', '..', '.env') })
-  })
-
-  test('send email using the SES driver', async ({ assert }) => {
+test.group('SES Driver', () => {
+  test('send email using the SES driver', async ({ assert, cleanup }) => {
     const ses = new SESDriver({
       apiVersion: '2010-12-01',
       key: process.env.AWS_ACCESS_KEY_ID!,
@@ -28,6 +20,7 @@ test.group('SES Driver', (group) => {
       region: process.env.AWS_REGION!,
       sslEnabled: true,
     })
+    cleanup(() => ses.close())
 
     const message = new Message()
     message.from(process.env.AWS_FROM_EMAIL!)
@@ -45,5 +38,5 @@ test.group('SES Driver', (group) => {
       process.env.TEST_EMAILS_RECIPIENT!,
       process.env.TEST_EMAILS_CC!,
     ])
-  })
+  }).skip(true, 'We do not have SES account for testing')
 })

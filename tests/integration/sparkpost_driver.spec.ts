@@ -7,17 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import dotenv from 'dotenv'
 import { test } from '@japa/runner'
 
 import { Message } from '../../src/message.js'
 import { SparkPostDriver } from '../../src/drivers/sparkpost/main.js'
 
-test.group('SparkPost Driver', (group) => {
-  group.setup(() => {
-    dotenv.config({ path: new URL('../../.env', import.meta.url) })
-  })
-
+test.group('SparkPost Driver', () => {
   test('send email using sparkpost driver', async ({ assert }) => {
     const sparkpost = new SparkPostDriver({
       key: process.env.SPARKPOST_API_KEY!,
