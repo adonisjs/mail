@@ -5,15 +5,15 @@ import env from '#start/env'
 import { defineConfig, drivers } from '@adonisjs/mail'
 
 const mailConfig = defineConfig({
-  default: '{{primaryDriver}}',
+  default: '{{drivers[0]}}',
 
    /**
     * The mailers object can be used to configure multiple mailers
-    * each using a different driver or connection settings.
+    * each using a different driver or same driver with different
+    * options.
    */
-  mailers: {
-		{{#if drivers.includes('smtp')}}
-    smtp: mailers.smtp({
+  mailers: { {{#if drivers.includes('smtp')}}
+    smtp: drivers.smtp({
       host: env.get('SMTP_HOST'),
       port: env.get('SMTP_PORT'),
 			auth: {
@@ -22,9 +22,8 @@ const mailConfig = defineConfig({
 				pass: env.get('SMTP_PASSWORD'),
 			}
     }),
-		{{/if}}
-		{{#if drivers.includes('ses')}}
-    ses: mailers.ses({
+		{{/if}} {{#if drivers.includes('ses')}}
+    ses: drivers.ses({
       apiVersion: '2010-12-01',
       key: env.get('SES_ACCESS_KEY'),
       secret: env.get('SES_ACCESS_SECRET'),
@@ -33,27 +32,23 @@ const mailConfig = defineConfig({
       sendingRate: 10,
       maxConnections: 5,
     }),
-		{{/if}}
-		{{#if drivers.includes('mailgun')}}
-    mailgun: mailers.mailgun({
+		{{/if}} {{#if drivers.includes('mailgun')}}
+    mailgun: drivers.mailgun({
       key: env.get('MAILGUN_API_KEY'),
       baseUrl: 'https://api.mailgun.net/v3',
       domain: env.get('MAILGUN_DOMAIN'),
     }),
-		{{/if}}
-		{{#if drivers.includes('sparkpost')}}
-    sparkpost: mailers.sparkpost({
+		{{/if}} {{#if drivers.includes('sparkpost')}}
+    sparkpost: drivers.sparkpost({
       key: env.get('SPARKPOST_API_KEY'),
       baseUrl: 'https://api.sparkpost.com/api/v1',
     }),
-		{{/if}}
-    {{#if drivers.includes('brevo')}}
-    brevo: mailers.brevo({
+		{{/if}} {{#if drivers.includes('brevo')}}
+    brevo: drivers.brevo({
       key: env.get('BREVO_API_KEY'),
     }),
-    {{/if}}
-    {{#if drivers.includes('resend')}}
-    resend: mailers.resend({
+    {{/if}} {{#if drivers.includes('resend')}}
+    resend: drivers.resend({
       key: env.get('RESEND_API_KEY'),
       baseUrl: 'https://api.resend.com',
     }),
