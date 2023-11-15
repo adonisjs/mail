@@ -24,10 +24,10 @@ test.group('Configure', (group) => {
     const ignitor = new IgnitorFactory()
       .withCoreProviders()
       .withCoreConfig()
-      .create(BASE_URL, {
+      .create(fs.baseUrl, {
         importer: (filePath) => {
           if (filePath.startsWith('./') || filePath.startsWith('../')) {
-            return import(new URL(filePath, BASE_URL).href)
+            return import(new URL(filePath, fs.baseUrl).href)
           }
 
           return import(filePath)
@@ -54,7 +54,6 @@ test.group('Configure', (group) => {
     await assert.fileContains('adonisrc.ts', '@adonisjs/mail/mail_provider')
     await assert.fileContains('config/mail.ts', 'defineConfig')
     await assert.fileContains('config/mail.ts', `declare module '@adonisjs/mail/types' {`)
-    console.log(await fs.contents('config/mail.ts'))
 
     await assert.fileContains(
       'config/mail.ts',
