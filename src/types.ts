@@ -15,6 +15,7 @@ import type MimeNode from 'nodemailer/lib/mime-node/index.js'
 import type { Message } from './message.js'
 import { MailResponse } from './mail_response.js'
 import { BaseMail } from './base_mail.js'
+import { MailManager } from './mail_manager.js'
 
 /**
  * Shape of the envelope node after the email has been
@@ -429,6 +430,15 @@ export type ResendConfig = ResendRuntimeConfig & {
   baseUrl: string
 }
 
+/**
+ * Response returned by the Resend API
+ */
+export type ResendSentMessageInfo = {
+  id: string
+  messageId: string
+  envelope: ResponseEnvelope
+}
+
 /*
 |--------------------------------------------------------------------------
 | Mailer service types
@@ -447,3 +457,12 @@ export interface MailersList {}
 export type InferMailers<
   T extends ConfigProvider<{ mailers: Record<string, MailManagerDriverFactory> }>,
 > = Awaited<ReturnType<T['resolver']>>['mailers']
+
+/**
+ * Mailer service is a singleton instance of mail
+ * manager configured using user app's config
+ */
+export interface MailService
+  extends MailManager<
+    MailersList extends Record<string, MailManagerDriverFactory> ? MailersList : never
+  > {}

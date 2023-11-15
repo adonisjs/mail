@@ -8,6 +8,7 @@
  */
 
 import { RuntimeException } from '@poppinss/utils'
+import type { Emitter } from '@adonisjs/core/events'
 
 import debug from './debug.js'
 import { Message } from './message.js'
@@ -24,7 +25,6 @@ import type {
   MailerTemplateEngine,
   MessageComposeCallback,
 } from './types.js'
-import { Emitter } from '@adonisjs/core/events'
 
 /**
  * The Mailer acts as an adapter that wraps a driver and exposes

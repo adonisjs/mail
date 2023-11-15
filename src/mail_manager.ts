@@ -7,12 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { Emitter } from '@adonisjs/core/events'
 import { RuntimeException } from '@poppinss/utils'
+import type { Emitter } from '@adonisjs/core/events'
 
 import debug from './debug.js'
 import { Mailer } from './mailer.js'
 import { FakeMailer } from './fake_mailer.js'
+import type { BaseMail } from './base_mail.js'
 import type {
   MailEvents,
   MailerConfig,
@@ -22,7 +23,6 @@ import type {
   MessageComposeCallback,
   MailManagerDriverFactory,
 } from './types.js'
-import { BaseMail } from './base_mail.js'
 
 /**
  * Mail manager exposes the API to configure multiple mailers, manage

@@ -9,10 +9,11 @@
 
 import got from 'got'
 import { Transport } from 'nodemailer'
-import { Address } from 'nodemailer/lib/mailer/index.js'
 import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
-import type { ResendConfig } from '../../types.js'
+import debug from '../../debug.js'
+import { E_MAIL_TRANSPORT_ERROR } from '../../errors.js'
+import type { ResendConfig, ResendSentMessageInfo } from '../../types.js'
 
 /**
  * Resend transport for Nodemailer
@@ -28,30 +29,47 @@ export class ResendTransport implements Transport {
   }
 
   /**
-   * Format the address for Resend API
+   * Formatting recipients for resend API call
    */
-  #formatAddress(rawAddress: string | Address | undefined) {
-    if (!rawAddress) {
-      throw new Error('Missing recipient address')
+  #formatRecipients(
+    recipients?: MailMessage['data']['to'] | MailMessage['data']['cc'] | MailMessage['data']['bcc']
+  ): string[] {
+    if (!recipients) {
+      return []
     }
 
-    if (typeof rawAddress === 'string') {
-      return rawAddress
+    /**
+     * Normalizing an array of recipients
+     */
+    if (Array.isArray(recipients)) {
+      return recipients.map((recipient) => {
+        if (typeof recipient === 'string') {
+          return recipient
+        }
+
+        if (recipient.name) {
+          return `${recipient.name} <${recipient.address}>`
+        }
+
+        return recipient.address
+      })
     }
 
-    if (rawAddress.name) {
-      return `${rawAddress.name} <${rawAddress.address}>`
+    /**
+     * Normalizing a string based recipient
+     */
+    if (typeof recipients === 'string') {
+      return [recipients]
     }
 
-    return rawAddress.address
-  }
+    /**
+     * Normalizing an object based string
+     */
+    if (recipients.name) {
+      return [`${recipients.name} <${recipients.address}>`]
+    }
 
-  /**
-   * Format a list of addresses
-   */
-  #formatAddresses(rawAddresses: string | Address | Array<string | Address> | undefined) {
-    const addresses = Array.isArray(rawAddresses) ? rawAddresses : [rawAddresses]
-    return addresses.map((address) => this.#formatAddress(address))
+    return [recipients.address]
   }
 
   /**
@@ -60,21 +78,21 @@ export class ResendTransport implements Transport {
    */
   #preparePayload(mail: MailMessage) {
     let payload: Record<string, any> = {
-      from: this.#formatAddress(mail.data.from),
-      to: this.#formatAddresses(mail.data.to),
+      from: this.#formatRecipients(mail.data.from)[0],
+      to: this.#formatRecipients(mail.data.to),
       subject: mail.data.subject,
     }
 
     if (mail.data.bcc) {
-      payload.bcc = this.#formatAddresses(mail.data.bcc)
+      payload.bcc = this.#formatRecipients(mail.data.bcc)
     }
 
     if (mail.data.cc) {
-      payload.cc = this.#formatAddresses(mail.data.cc)
+      payload.cc = this.#formatRecipients(mail.data.cc)
     }
 
     if (mail.data.replyTo) {
-      payload.reply_to = this.#formatAddresses(mail.data.replyTo)
+      payload.reply_to = this.#formatRecipients(mail.data.replyTo)
     }
 
     if (mail.data.html) {
@@ -110,26 +128,40 @@ export class ResendTransport implements Transport {
   /**
    * Send the message
    */
-  async send(mail: MailMessage, callback: (err: Error | null, info?: any) => void) {
+  async send(
+    mail: MailMessage,
+    callback: (err: Error | null, info: ResendSentMessageInfo) => void
+  ) {
     const url = this.#getUrl()
     const envelope = mail.message.getEnvelope()
     const payload = this.#preparePayload(mail)
 
-    try {
-      const result = await got
-        .post(url, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.#config.key}`,
-          },
-          json: payload,
-        })
-        .json<ResendApiResponse>()
+    debug('resend mail url "%s"', url)
+    debug('resend mail payload %O', payload)
 
-      const messageId = result.id
-      callback(null, { messageId, envelope })
+    try {
+      const response = await got.post<{ id: string }>(url, {
+        responseType: 'json',
+        json: payload,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.#config.key}`,
+        },
+      })
+
+      const resendMessageId = response.body.id
+      const messageId = resendMessageId
+        ? resendMessageId.replace(/^<|>$/g, '')
+        : mail.message.messageId()
+
+      callback(null, { messageId, envelope, ...response.body })
     } catch (error) {
-      callback(EmailTransportException.apiFailure(error))
+      callback(
+        new E_MAIL_TRANSPORT_ERROR('Unable to send email using the resend driver', {
+          cause: error,
+        }),
+        undefined as any
+      )
     }
   }
 }

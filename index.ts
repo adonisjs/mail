@@ -9,6 +9,8 @@
 
 export * as errors from './src/errors.js'
 
+export { configure } from './configure.js'
+export { stubsRoot } from './stubs/main.js'
 export { Mailer } from './src/mailer.js'
 export { Message } from './src/message.js'
 export { BaseMail } from './src/base_mail.js'

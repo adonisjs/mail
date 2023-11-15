@@ -11,9 +11,12 @@
   "exports": {
     ".": "./build/index.js",
     "./types": "./build/src/types.js",
+    "./services/main": "./build/services/main.js",
+    "./mail_provider": "./build/providers/mail_provider.js",
     "./drivers/ses": "./build/src/drivers/ses/main.js",
     "./drivers/json": "./build/src/drivers/json/main.js",
     "./drivers/smtp": "./build/src/drivers/smtp/main.js",
+    "./drivers/resend": "./build/src/drivers/resend/main.js",
     "./drivers/mailgun": "./build/src/drivers/mailgun/main.js",
     "./drivers/sparkpost": "./build/src/drivers/sparkpost/main.js",
     "./messengers/memory": "./build/src/messengers/memory_queue.js"
@@ -23,9 +26,9 @@
     "test": "c8 npm run quick:test",
     "lint": "eslint .",
     "clean": "del-cli build",
-    "copy:templates": "copyfiles \"stubs/**/**/*.stub\" build",
+    "copy:templates": "copyfiles --up=1 \"stubs/**/**/*.stub\" build",
     "precompile": "npm run lint && npm run clean",
-    "compile": "tsc",
+    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
     "postcompile": "npm run copy:templates && npm run index:commands",
     "build": "npm run compile",
     "release": "np",
@@ -71,6 +74,7 @@
     "prettier": "^3.0.3",
     "sinon": "^17.0.1",
     "ts-node": "^10.9.1",
+    "tsup": "^7.2.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
@@ -136,5 +140,25 @@
       "tests/**",
       "bin/**"
     ]
+  },
+  "tsup": {
+    "entry": [
+      "index.ts",
+      "services/main.ts",
+      "providers/mail_provider.ts",
+      "src/drivers/ses/main.ts",
+      "src/drivers/json/main.ts",
+      "src/drivers/resend/main.ts",
+      "src/drivers/smtp/main.ts",
+      "src/drivers/mailgun/main.ts",
+      "src/drivers/sparkpost/main.ts",
+      "src/messengers/memory_queue.ts"
+    ],
+    "outDir": "./build",
+    "clean": true,
+    "format": "esm",
+    "dts": false,
+    "sourcemap": true,
+    "target": "esnext"
   }
 }
