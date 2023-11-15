@@ -145,6 +145,7 @@
     "entry": [
       "index.ts",
       "services/main.ts",
+      "commands/make_mail.ts",
       "providers/mail_provider.ts",
       "src/drivers/ses/main.ts",
       "src/drivers/json/main.ts",
