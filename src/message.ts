@@ -649,8 +649,8 @@ export class Message extends Macroable {
         return typeof headerValue === 'string'
           ? headerValue === one
           : Array.isArray(headerValue)
-          ? headerValue.includes(one)
-          : headerValue.value === one
+            ? headerValue.includes(one)
+            : headerValue.value === one
       })
     }
 

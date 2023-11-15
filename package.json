@@ -88,9 +88,9 @@
     "nodemailer": "^6.9.7"
   },
   "peerDependencies": {
-    "@adonisjs/core": "^6.1.5-7",
-    "@aws-sdk/client-ses": "^3.341.0",
-    "edge.js": "^6.0.0-10"
+    "@adonisjs/core": "^6.1.5-31",
+    "@aws-sdk/client-ses": "^3.445.0",
+    "edge.js": "^6.0.0"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-ses": {
