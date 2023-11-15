@@ -7,7 +7,11 @@
   },
   "main": "build/index.js",
   "type": "module",
-  "files": [],
+  "files": [
+    "build",
+    "!build/bin",
+    "!build/tests"
+  ],
   "exports": {
     ".": "./build/index.js",
     "./types": "./build/src/types.js",
