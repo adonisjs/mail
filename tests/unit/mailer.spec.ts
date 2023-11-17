@@ -14,13 +14,20 @@ import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
 
 import { Mailer } from '../../src/mailer.js'
+import { Message } from '../../src/message.js'
 import { MailEvents } from '../../src/types.js'
 import { BaseMail } from '../../src/base_mail.js'
 import { JSONDriver } from '../../src/drivers/json/main.js'
 
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {})
 
-test.group('Mailer', () => {
+test.group('Mailer', (group) => {
+  group.each.setup(() => {
+    return () => {
+      Message.templateEngine = undefined
+    }
+  })
+
   test('send email using the driver', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
@@ -56,7 +63,7 @@ test.group('Mailer', () => {
     assert.deepEqual(message.to, [{ address: 'bar@baz.com', name: '' }])
   })
 
-  test('use global from address and anme', async ({ assert }) => {
+  test('use global from address and name', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
     const mailer = new Mailer('marketing', new JSONDriver(), emitter, {
@@ -78,6 +85,33 @@ test.group('Mailer', () => {
     assert.deepEqual(message.to, [{ address: 'bar@baz.com', name: '' }])
   })
 
+  test('use global replyTo address and name', async ({ assert }) => {
+    const emitter = new Emitter<MailEvents>(app)
+
+    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {
+      from: {
+        address: 'foo@global.com',
+        name: 'foo',
+      },
+      replyTo: {
+        address: 'noreply@global.com',
+        name: 'foo',
+      },
+    })
+    const response = await mailer.send((message) => {
+      message.subject('Hello world')
+      message.to('bar@baz.com')
+    })
+
+    const message = JSON.parse(response.original.message)
+
+    assert.equal(message.subject, 'Hello world')
+    assert.equal(message.messageId, response.messageId)
+    assert.deepEqual(message.from, { address: 'foo@global.com', name: 'foo' })
+    assert.deepEqual(message.replyTo, [{ address: 'noreply@global.com', name: 'foo' }])
+    assert.deepEqual(message.to, [{ address: 'bar@baz.com', name: '' }])
+  })
+
   test('overwrite global from address', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
@@ -96,6 +130,59 @@ test.group('Mailer', () => {
     assert.deepEqual(message.to, [{ address: 'bar@baz.com', name: '' }])
   })
 
+  test('render template before sending the email', async ({ assert }) => {
+    const emitter = new Emitter<MailEvents>(app)
+    const edge = new Edge()
+
+    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    Message.templateEngine = {
+      render(template, helpers, data) {
+        return edge.share(helpers).render(template, data)
+      },
+    }
+
+    edge.registerTemplate('foo/bar', {
+      template: `Hello {{ username }}`,
+    })
+
+    const response = await mailer.send((message) => {
+      message.subject('Hello world')
+      message.from('foo@bar.com')
+      message.to('bar@baz.com')
+      message.htmlView('foo/bar', { username: 'virk' })
+    })
+
+    const message = JSON.parse(response.original.message)
+    assert.equal(message.html, 'Hello virk')
+  })
+
+  test('do not render templates when inline contents has been set', async ({ assert }) => {
+    const emitter = new Emitter<MailEvents>(app)
+    const edge = new Edge()
+
+    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    Message.templateEngine = {
+      render(template, helpers, data) {
+        return edge.share(helpers).render(template, data)
+      },
+    }
+
+    edge.registerTemplate('foo/bar', {
+      template: `Hello {{ username }}`,
+    })
+
+    const response = await mailer.send((message) => {
+      message.subject('Hello world')
+      message.from('foo@bar.com')
+      message.to('bar@baz.com')
+      message.html('Hello world')
+      message.htmlView('foo/bar', { username: 'virk' })
+    })
+
+    const message = JSON.parse(response.original.message)
+    assert.equal(message.html, 'Hello world')
+  })
+
   test('throw error when content view is defined without the template engine', async ({
     assert,
   }) => {
@@ -110,90 +197,7 @@ test.group('Mailer', () => {
         message.htmlView('foo/bar', {})
       })
 
-    await assert.rejects(
-      send,
-      'Cannot render templates without a template engine. Make sure to call the "mailer.setTemplateEngine" method first'
-    )
-  })
-
-  test('render template using the template engine', async ({ assert }) => {
-    const emitter = new Emitter<MailEvents>(app)
-    const edge = new Edge()
-
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
-    mailer.setTemplateEngine(edge)
-
-    edge.registerTemplate('foo/bar', {
-      template: `Hello {{ username }}`,
-    })
-
-    const response = await mailer.send((message) => {
-      message.subject('Hello world')
-      message.from('foo@bar.com')
-      message.to('bar@baz.com')
-      message.htmlView('foo/bar', { username: 'virk' })
-    })
-
-    const message = JSON.parse(response.original.message)
-    assert.equal(message.html, 'Hello virk')
-  })
-
-  test('pre-compute message content using templates', async ({ assert }) => {
-    const emitter = new Emitter<MailEvents>(app)
-    const edge = new Edge()
-
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
-    mailer.setTemplateEngine(edge)
-
-    edge.registerTemplate('foo/text', {
-      template: `Hello {{ username }} from text view`,
-    })
-    edge.registerTemplate('foo/watch', {
-      template: `Hello {{ username }} from watch view`,
-    })
-    edge.registerTemplate('foo/bar', {
-      template: `Hello {{ username }}`,
-    })
-
-    const response = await mailer.send(async (message) => {
-      message.htmlView('foo/bar', { username: 'virk' })
-      message.textView('foo/text', { username: 'virk' })
-      message.watchView('foo/watch', { username: 'virk' })
-
-      await mailer.preComputeContents(message)
-    })
-
-    const message = JSON.parse(response.original.message)
-    assert.equal(message.html, 'Hello virk')
-    assert.equal(message.text, 'Hello virk from text view')
-    assert.equal(message.watch, 'Hello virk from watch view')
-  })
-
-  test('define text and watch contents', async ({ assert }) => {
-    const emitter = new Emitter<MailEvents>(app)
-    const edge = new Edge()
-
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
-    mailer.setTemplateEngine(edge)
-
-    edge.registerTemplate('foo/text', {
-      template: `Hello {{ username }} from text view`,
-    })
-    edge.registerTemplate('foo/watch', {
-      template: `Hello {{ username }} from watch view`,
-    })
-
-    const response = await mailer.send((message) => {
-      message.subject('Hello world')
-      message.from('foo@bar.com')
-      message.to('bar@baz.com')
-      message.textView('foo/text', { username: 'virk' })
-      message.watchView('foo/watch', { username: 'virk' })
-    })
-
-    const message = JSON.parse(response.original.message)
-    assert.equal(message.text, 'Hello virk from text view')
-    assert.equal(message.watch, 'Hello virk from watch view')
+    await assert.rejects(send, 'Cannot render email templates without a template engine')
   })
 
   test('close driver transport', async ({ assert }) => {
@@ -222,10 +226,6 @@ test.group('Mailer', () => {
     mailer.setMessenger({
       async queue(mail) {
         assert.deepEqual(mail.message, {
-          from: {
-            address: 'foo@global.com',
-            name: 'foo',
-          },
           subject: 'Hello world',
           to: ['bar@baz.com'],
         })

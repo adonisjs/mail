@@ -14,7 +14,7 @@ import type Configure from '@adonisjs/core/commands/configure'
  */
 export async function configure(command: Configure) {
   const envVariables = {
-    smtp: ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USERNAME', 'SMTP_PASSWORD'],
+    smtp: ['SMTP_HOST', 'SMTP_PORT'],
     ses: ['SES_ACCESS_KEY', 'SES_ACCESS_SECRET', 'SES_REGION'],
     mailgun: ['MAILGUN_API_KEY', 'MAILGUN_DOMAIN'],
     sparkpost: ['SPARKPOST_API_KEY'],
@@ -39,10 +39,11 @@ export async function configure(command: Configure) {
   const codemods = await command.createCodemods()
 
   /**
-   * Publish provider
+   * Publish provider and command
    */
   await codemods.updateRcFile((rcFile) => {
     rcFile.addProvider('@adonisjs/mail/mail_provider')
+    rcFile.addCommand('@adonisjs/mail/commands')
   })
 
   /**

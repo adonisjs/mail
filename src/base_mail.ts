@@ -17,11 +17,10 @@ import { MailDriverContract, Recipient } from './types.js'
  */
 export abstract class BaseMail {
   /**
-   * Define the global from address
+   * A flag to avoid build email message for
+   * multiple times
    */
-  static from: Recipient
-
-  #built: boolean = false
+  protected built: boolean = false
 
   /**
    * Reference to the mail message object
@@ -39,6 +38,11 @@ export abstract class BaseMail {
   from?: Recipient
 
   /**
+   * Define the replyTo email address
+   */
+  replyTo?: Recipient
+
+  /**
    * Defines the subject on the message using the mail
    * class subject property
    */
@@ -53,11 +57,16 @@ export abstract class BaseMail {
    * class from property
    */
   protected defineSender() {
-    const from = this.from || (this.constructor as typeof BaseMail).from
-    if (from) {
-      typeof from === 'string'
-        ? this.message.from(from)
-        : this.message.from(from.address, from.name)
+    if (this.from) {
+      typeof this.from === 'string'
+        ? this.message.from(this.from)
+        : this.message.from(this.from.address, this.from.name)
+    }
+
+    if (this.replyTo) {
+      typeof this.replyTo === 'string'
+        ? this.message.replyTo(this.replyTo)
+        : this.message.replyTo(this.replyTo.address, this.replyTo.name)
     }
   }
 
@@ -70,14 +79,28 @@ export abstract class BaseMail {
    * Builds the mail message for sending it
    */
   async build(): Promise<void> {
-    if (this.#built) {
+    if (this.built) {
       return
     }
 
-    this.#built = true
+    this.built = true
     this.defineSubject()
     this.defineSender()
     await this.prepare()
+  }
+
+  /**
+   * Builds the mail message with the email contents.
+   * This method will render the templates ahead of
+   * time
+   */
+  async buildWithContents(): Promise<void> {
+    if (this.built) {
+      return
+    }
+
+    await this.build()
+    await this.message.computeContents()
   }
 
   /**
@@ -88,7 +111,7 @@ export abstract class BaseMail {
     config?: Parameters<T['send']>[1]
   ): Promise<Awaited<ReturnType<T['send']>>> {
     await this.build()
-    return mailer.sendCompiled(this.message.toJSON(), config)
+    return mailer.sendCompiled(this.message.toObject(), config)
   }
 
   /**
@@ -100,6 +123,6 @@ export abstract class BaseMail {
     config?: Parameters<T['send']>[1]
   ) {
     await this.build()
-    return mailer.sendLaterCompiled(this.message.toJSON(), config)
+    return mailer.sendLaterCompiled(this.message.toObject(), config)
   }
 }

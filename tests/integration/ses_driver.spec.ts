@@ -15,10 +15,11 @@ test.group('SES Driver', () => {
   test('send email using the SES driver', async ({ assert, cleanup }) => {
     const ses = new SESDriver({
       apiVersion: '2010-12-01',
-      key: process.env.AWS_ACCESS_KEY_ID!,
-      secret: process.env.AWS_SECRET_ACCESS_KEY!,
       region: process.env.AWS_REGION!,
-      sslEnabled: true,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      },
     })
     cleanup(() => ses.close())
 

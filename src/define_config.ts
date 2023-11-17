@@ -12,15 +12,17 @@ import type { ConfigProvider } from '@adonisjs/core/types'
 
 import type { SESDriver } from './drivers/ses/main.js'
 import type { SMTPDriver } from './drivers/smtp/main.js'
+import type { ResendDriver } from './drivers/resend/main.js'
 import type { MailgunDriver } from './drivers/mailgun/main.js'
 import type { SparkPostDriver } from './drivers/sparkpost/main.js'
 import type {
-  MailManagerDriverFactory,
-  MailerConfig,
-  MailgunConfig,
   SESConfig,
   SMTPConfig,
+  MailerConfig,
+  ResendConfig,
+  MailgunConfig,
   SparkPostConfig,
+  MailManagerDriverFactory,
 } from './types.js'
 
 /**
@@ -79,6 +81,7 @@ export const drivers: {
   ses: (config: SESConfig) => ConfigProvider<() => SESDriver>
   mailgun: (config: MailgunConfig) => ConfigProvider<() => MailgunDriver>
   sparkpost: (config: SparkPostConfig) => ConfigProvider<() => SparkPostDriver>
+  resend: (config: ResendConfig) => ConfigProvider<() => ResendDriver>
 } = {
   smtp(config) {
     return configProvider.create(async () => {
@@ -102,6 +105,12 @@ export const drivers: {
     return configProvider.create(async () => {
       const { SparkPostDriver } = await import('./drivers/sparkpost/main.js')
       return () => new SparkPostDriver(config)
+    })
+  },
+  resend(config) {
+    return configProvider.create(async () => {
+      const { ResendDriver } = await import('./drivers/resend/main.js')
+      return () => new ResendDriver(config)
     })
   },
 }

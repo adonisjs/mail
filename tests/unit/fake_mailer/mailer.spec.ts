@@ -75,7 +75,7 @@ test.group('Fake mailer', () => {
   test('do not allow swapping messenger', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
     const mailer = new FakeMailer('mailgun', emitter, {})
-    mailer.setMessenger(new MemoryQueueMessenger(mailer))
+    mailer.setMessenger(new MemoryQueueMessenger(mailer, emitter))
 
     class VerifyEmail extends BaseMail {
       from: string = 'foo@bar.com'

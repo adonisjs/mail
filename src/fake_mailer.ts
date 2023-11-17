@@ -9,13 +9,13 @@
 
 import string from '@poppinss/utils/string'
 import { AssertionError } from 'node:assert'
-import { Emitter } from '@adonisjs/core/events'
-import { SentMessageInfo } from 'nodemailer/lib/json-transport/index.js'
+import type { Emitter } from '@adonisjs/core/events'
+import type { SentMessageInfo } from 'nodemailer/lib/json-transport/index.js'
 
 import { Mailer } from './mailer.js'
-import { Message } from './message.js'
+import type { Message } from './message.js'
 import { BaseMail } from './base_mail.js'
-import { MailResponse } from './mail_response.js'
+import type { MailResponse } from './mail_response.js'
 import { JSONDriver } from './drivers/json/main.js'
 import type {
   MailEvents,

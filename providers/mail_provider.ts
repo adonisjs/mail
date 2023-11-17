@@ -30,6 +30,9 @@ declare module '@adonisjs/core/types' {
 export default class MailProvider {
   constructor(protected app: ApplicationService) {}
 
+  /**
+   * Registering bindings to container
+   */
   register() {
     this.app.container.singleton('mail.manager', async (resolver) => {
       const emitter = await resolver.make('emitter')
@@ -42,5 +45,13 @@ export default class MailProvider {
       const mailManager = await resolver.make('mail.manager')
       return mailManager.use()
     })
+  }
+
+  /**
+   * Cleanup hook
+   */
+  async shutdown() {
+    const mail = await this.app.container.make('mail.manager')
+    await mail.closeAll()
   }
 }

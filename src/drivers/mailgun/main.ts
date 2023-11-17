@@ -43,9 +43,4 @@ export class MailgunDriver implements MailDriverContract {
     const mailgunResponse = await transporter.sendMail(message)
     return new MailResponse(mailgunResponse.messageId, mailgunResponse.envelope, mailgunResponse)
   }
-
-  /**
-   * noop
-   */
-  async close() {}
 }

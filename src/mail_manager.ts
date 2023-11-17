@@ -19,7 +19,6 @@ import type {
   MailerConfig,
   MailerMessenger,
   MailDriverContract,
-  MailerTemplateEngine,
   MessageComposeCallback,
   MailManagerDriverFactory,
 } from './types.js'
@@ -30,22 +29,12 @@ import type {
  */
 export class MailManager<KnownMailers extends Record<string, MailManagerDriverFactory>> {
   #emitter: Emitter<MailEvents>
-  #config: MailerConfig & {
-    default?: keyof KnownMailers
-    mailers: KnownMailers
-  }
 
   /**
    * Messenger to use on all mailers created
    * using the mail manager
    */
   #messenger?: (mailer: Mailer<MailDriverContract>) => MailerMessenger
-
-  /**
-   * Template engine to use on all mailers created
-   * using the mail manager
-   */
-  #templateEngine?: MailerTemplateEngine
 
   /**
    * Reference to the fake mailer (if any)
@@ -59,14 +48,13 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
 
   constructor(
     emitter: Emitter<MailEvents>,
-    config: MailerConfig & {
+    public config: MailerConfig & {
       default?: keyof KnownMailers
       mailers: KnownMailers
     }
   ) {
     debug('creating mail manager %O', config)
     this.#emitter = emitter
-    this.#config = config
   }
 
   /**
@@ -78,18 +66,6 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
     Object.keys(this.#mailersCache).forEach((name) => {
       const mailer = this.#mailersCache[name]!
       mailer.setMessenger(messenger(mailer))
-    })
-    return this
-  }
-
-  /**
-   * Configure the template engine to use for all the
-   * mailers managed by the mail manager class.
-   */
-  setTemplateEngine(engine: MailerTemplateEngine): this {
-    this.#templateEngine = engine
-    Object.keys(this.#mailersCache).forEach((name) => {
-      this.#mailersCache[name]!.setTemplateEngine(engine)
     })
     return this
   }
@@ -113,14 +89,14 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
    * instances are cached for the lifecycle of the process
    */
   use<K extends keyof KnownMailers>(mailerName?: K): Mailer<ReturnType<KnownMailers[K]>> {
-    let mailerToUse: keyof KnownMailers | undefined = mailerName || this.#config.default
+    let mailerToUse: keyof KnownMailers | undefined = mailerName || this.config.default
 
     if (!mailerToUse) {
       throw new RuntimeException(
         'Cannot create mailer instance. No default mailer is defined in the config'
       )
     }
-    if (!this.#config.mailers[mailerToUse]) {
+    if (!this.config.mailers[mailerToUse]) {
       throw new RuntimeException(
         `Unknow mailer "${String(mailerToUse)}". Make sure it is configured inside the config file`
       )
@@ -145,18 +121,15 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
     /**
      * Create driver instance using the factory
      */
-    const driverFactory = this.#config.mailers[mailerToUse]
+    const driverFactory = this.config.mailers[mailerToUse]
 
     /**
      * Create mailer instance with the driver
      */
     debug('creating mailer driver. name: "%s"', mailerToUse)
-    const mailer = new Mailer(mailerToUse as string, driverFactory(), this.#emitter, this.#config)
+    const mailer = new Mailer(mailerToUse as string, driverFactory(), this.#emitter, this.config)
     if (this.#messenger) {
       mailer.setMessenger(this.#messenger(mailer))
-    }
-    if (this.#templateEngine) {
-      mailer.setTemplateEngine(this.#templateEngine)
     }
 
     /**
@@ -175,7 +148,7 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
     this.restore()
 
     debug('creating fake mailer')
-    this.#fakeMailer = new FakeMailer('fake', this.#emitter, this.#config)
+    this.#fakeMailer = new FakeMailer('fake', this.#emitter, this.config)
     return this.#fakeMailer
   }
 
@@ -196,6 +169,7 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
   async close<K extends keyof KnownMailers>(mailerName: K) {
     const mailer = this.#mailersCache[mailerName]!
     if (mailer) {
+      debug('closing mailer %s', mailerName)
       await mailer.close()
       delete this.#mailersCache[mailerName]
     }

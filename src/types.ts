@@ -9,13 +9,14 @@
 
 import type { TlsOptions } from 'node:tls'
 import { SendMailOptions } from 'nodemailer'
+import type { SESClientConfig } from '@aws-sdk/client-ses'
 import type { ConfigProvider } from '@adonisjs/core/types'
 import type MimeNode from 'nodemailer/lib/mime-node/index.js'
 
-import type { Message } from './message.js'
-import { MailResponse } from './mail_response.js'
 import { BaseMail } from './base_mail.js'
+import type { Message } from './message.js'
 import { MailManager } from './mail_manager.js'
+import { MailResponse } from './mail_response.js'
 
 /**
  * Shape of the envelope node after the email has been
@@ -81,6 +82,7 @@ export type NodeMailerMessage = {
   encoding?: SendMailOptions['encoding']
   priority?: SendMailOptions['priority']
   envelope?: SendMailOptions['envelope']
+  list?: SendMailOptions['list']
   icalEvent?: CalendarEventOptions & {
     content?: string
     path?: string
@@ -112,7 +114,7 @@ export interface MailDriverContract {
   /**
    * Cleanup driver long-lived connections
    */
-  close(): void | Promise<void>
+  close?(): void | Promise<void>
 }
 
 /**
@@ -153,9 +155,15 @@ export type MailEvents = {
     views: MessageBodyTemplates
   }
   'mail:queued': {
+    metaData?: any
     mailerName: string
     message: NodeMailerMessage
     views: MessageBodyTemplates
+  }
+  'queued:mail:error': {
+    error: any
+    metaData?: any
+    mailerName: string
   }
 }
 
@@ -164,11 +172,7 @@ export type MailEvents = {
  * used to send emails
  */
 export interface MailerContract<Driver extends MailDriverContract> {
-  /**
-   * Configure the template engine to use for rendering
-   * email templates
-   */
-  setTemplateEngine(engine: MailerTemplateEngine): this
+  name: string
 
   /**
    * Configure the messenger to use for sending email asynchronously
@@ -213,6 +217,12 @@ export type MailerConfig = {
    * sending emails
    */
   from?: Recipient
+
+  /**
+   * Define a global replyTo email address to always use
+   * when sending emails
+   */
+  replyTo?: Recipient
 }
 
 /**
@@ -223,7 +233,7 @@ export interface MailerTemplateEngine {
   /**
    * Render a template to contents
    */
-  render(templatePath: string, data?: any): Promise<string> | string
+  render(templatePath: string, helpers?: any, data?: any): Promise<string> | string
 }
 
 /**
@@ -259,6 +269,7 @@ export type MessageSearchOptions = {
  * time of sending the email
  */
 export type MailgunRuntimeConfig = {
+  oDkim?: boolean
   oTags?: string[]
   oDeliverytime?: Date
   oTestMode?: boolean
@@ -276,7 +287,6 @@ export type MailgunConfig = MailgunRuntimeConfig & {
   baseUrl: string
   key: string
   domain: string
-  oDkim?: boolean
 }
 
 /**
@@ -343,8 +353,6 @@ export type SMTPConfig = {
   pool?: boolean
   maxConnections?: number
   maxMessages?: number
-  rateDelta?: number
-  rateLimit?: number
 
   /**
    * Proxy
@@ -361,12 +369,7 @@ export type SMTPConfig = {
 /**
  * SES driver config
  */
-export type SESConfig = {
-  apiVersion: string
-  key: string
-  secret: string
-  region: string
-  sslEnabled?: boolean
+export type SESConfig = SESClientConfig & {
   sendingRate?: number
   maxConnections?: number
 }
@@ -382,6 +385,7 @@ export type SESConfig = {
  */
 export type SparkPostRuntimeConfig = {
   startTime?: Date
+  initialOpen?: boolean
   openTracking?: boolean
   clickTracking?: boolean
   transactional?: boolean

@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import { RuntimeException } from '@poppinss/utils'
 import type { Emitter } from '@adonisjs/core/events'
 
 import debug from './debug.js'
@@ -22,7 +21,6 @@ import type {
   NodeMailerMessage,
   MailDriverContract,
   MessageBodyTemplates,
-  MailerTemplateEngine,
   MessageComposeCallback,
 } from './types.js'
 
@@ -37,53 +35,18 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
   #emitter: Emitter<MailEvents>
 
   /**
-   * Mailer config
-   */
-  #config: MailerConfig
-
-  /**
-   * Optional template engine to use for rendering
-   * templates
-   */
-  #templateEngine?: MailerTemplateEngine
-
-  /**
    * Messenger to use for queuing emails
    */
-  #messenger: MailerMessenger = new MemoryQueueMessenger(this)
+  #messenger: MailerMessenger
 
   constructor(
     public name: string,
     public driver: Driver,
     emitter: Emitter<MailEvents>,
-    config: MailerConfig
+    public config: MailerConfig
   ) {
     this.#emitter = emitter
-    this.#config = config
-  }
-
-  /**
-   * Returns the configured template engine object or
-   * throws an error when no template engine is
-   * configured
-   */
-  #getTemplateEngine() {
-    if (!this.#templateEngine) {
-      throw new RuntimeException(
-        'Cannot render templates without a template engine. Make sure to call the "mailer.setTemplateEngine" method first'
-      )
-    }
-
-    return this.#templateEngine
-  }
-
-  /**
-   * Configure the template engine to use for rendering
-   * email templates
-   */
-  setTemplateEngine(engine: MailerTemplateEngine): this {
-    this.#templateEngine = engine
-    return this
+    this.#messenger = new MemoryQueueMessenger(this, this.#emitter)
   }
 
   /**
@@ -95,72 +58,28 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
   }
 
   /**
-   * Precomputes the contents of a message by rendering the email
-   * views
-   */
-  async preComputeContents(message: Message) {
-    if (!message.nodeMailerMessage.html && message.contentViews.html) {
-      message.html(
-        await this.#getTemplateEngine().render(
-          message.contentViews.html.template,
-          message.contentViews.html.data
-        )
-      )
-    }
-
-    if (!message.nodeMailerMessage.text && message.contentViews.text) {
-      message.text(
-        await this.#getTemplateEngine().render(
-          message.contentViews.text.template,
-          message.contentViews.text.data
-        )
-      )
-    }
-
-    if (!message.nodeMailerMessage.watch && message.contentViews.watch) {
-      message.watch(
-        await this.#getTemplateEngine().render(
-          message.contentViews.watch.template,
-          message.contentViews.watch.data
-        )
-      )
-    }
-  }
-
-  /**
-   * Defines the email contents by rendering the views. Views are only
-   * rendered when inline values are not defined.
-   */
-  async defineEmailContent({
-    message,
-    views,
-  }: {
-    message: NodeMailerMessage
-    views: MessageBodyTemplates
-  }) {
-    if (!message.html && views.html) {
-      debug('computing mail html contents %O', views.html)
-      message.html = await this.#getTemplateEngine().render(views.html.template, views.html.data)
-    }
-
-    if (!message.text && views.text) {
-      debug('computing mail text contents %O', views.text)
-      message.text = await this.#getTemplateEngine().render(views.text.template, views.text.data)
-    }
-
-    if (!message.watch && views.watch) {
-      debug('computing mail watch contents %O', views.watch)
-      message.watch = await this.#getTemplateEngine().render(views.watch.template, views.watch.data)
-    }
-  }
-
-  /**
    * Sends a compiled email using the underlying driver
    */
   async sendCompiled(
     mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
     sendConfig?: unknown
   ): Promise<Awaited<ReturnType<Driver['send']>>> {
+    /**
+     * Use the global from address when no from address
+     * is defined on the mail
+     */
+    if (!mail.message.from && this.config.from) {
+      mail.message.from = this.config.from
+    }
+
+    /**
+     * Use the global from address when no from address
+     * is defined on the mail
+     */
+    if (!mail.message.replyTo && this.config.replyTo) {
+      mail.message.replyTo = [this.config.replyTo]
+    }
+
     /**
      * Notify, about to send the email
      */
@@ -173,7 +92,7 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
      * Mutates the "compiledMessage.message" object based upon
      * the configured templates
      */
-    await this.defineEmailContent(mail)
+    await Message.computeContentsFor(mail)
 
     /**
      * Send the message using the driver
@@ -213,13 +132,14 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
      * Queuing email
      */
     debug('queueing email')
-    await this.#messenger.queue(compiledMessage, sendConfig)
+    const metaData = await this.#messenger.queue(compiledMessage, sendConfig)
 
     /**
      * Notify, the email has been queued
      */
     this.#emitter.emit('mail:queued', {
       ...compiledMessage,
+      metaData,
       mailerName: this.name,
     })
   }
@@ -241,10 +161,10 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
      * Set the default from address, the user can override it
      * inside the callback
      */
-    if (this.#config.from) {
-      typeof this.#config.from === 'string'
-        ? message.from(this.#config.from)
-        : message.from(this.#config.from.address, this.#config.from.name)
+    if (this.config.from) {
+      typeof this.config.from === 'string'
+        ? message.from(this.config.from)
+        : message.from(this.config.from.address, this.config.from.name)
     }
 
     /**
@@ -275,16 +195,6 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
     const message = new Message()
 
     /**
-     * Set the default from address, the user can override it
-     * inside the callback
-     */
-    if (this.#config.from) {
-      typeof this.#config.from === 'string'
-        ? message.from(this.#config.from)
-        : message.from(this.#config.from.address, this.#config.from.name)
-    }
-
-    /**
      * Invoke callback to configure the mail message
      */
     await callbackOrMail(message)
@@ -300,6 +210,6 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
    * Invokes `close` method on the driver
    */
   async close() {
-    await this.driver.close()
+    await this.driver.close?.()
   }
 }

@@ -19,6 +19,7 @@ import { SMTPDriver } from '../../src/drivers/smtp/main.js'
 import { MailgunDriver } from '../../src/drivers/mailgun/main.js'
 import { defineConfig, drivers } from '../../src/define_config.js'
 import { SparkPostDriver } from '../../src/drivers/sparkpost/main.js'
+import { ResendDriver } from '../../src/drivers/resend/main.js'
 
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {}) as ApplicationService
 
@@ -29,7 +30,12 @@ test.group('Define config', () => {
     assert.instanceOf(smtpFactory(), SMTPDriver)
     expectTypeOf(smtpFactory()).toMatchTypeOf<SMTPDriver>()
 
-    const sesProvider = drivers.ses({ key: '', region: '', secret: '', apiVersion: '' })
+    const sesProvider = drivers.ses({
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      },
+    })
     const sesFactory = await sesProvider.resolver(app)
     assert.instanceOf(sesFactory(), SESDriver)
     expectTypeOf(sesFactory()).toMatchTypeOf<SESDriver>()
@@ -43,6 +49,11 @@ test.group('Define config', () => {
     const sparkpostFactory = await sparkpostProvider.resolver(app)
     assert.instanceOf(sparkpostFactory(), SparkPostDriver)
     expectTypeOf(sparkpostFactory()).toMatchTypeOf<SparkPostDriver>()
+
+    const resendProvider = drivers.resend({ key: '', baseUrl: '' })
+    const resendFactory = await resendProvider.resolver(app)
+    assert.instanceOf(resendFactory(), ResendDriver)
+    expectTypeOf(resendFactory()).toMatchTypeOf<ResendDriver>()
   })
 
   test('create mail manager using defineConfig method', async ({ assert, expectTypeOf }) => {
@@ -51,22 +62,32 @@ test.group('Define config', () => {
     const configProvider = defineConfig({
       mailers: {
         smtp: drivers.smtp({ host: '' }),
-        ses: drivers.ses({ key: '', region: '', secret: '', apiVersion: '' }),
+        ses: drivers.ses({
+          credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+          },
+        }),
         mailgun: drivers.mailgun({ key: '', baseUrl: '', domain: '' }),
         sparkpost: drivers.sparkpost({ key: '', baseUrl: '' }),
+        resend: drivers.resend({ key: '', baseUrl: '' }),
       },
     })
 
     const mail = new MailManager(emitter, await configProvider.resolver(app))
-    expectTypeOf(mail.use).parameters.toMatchTypeOf<[('mailgun' | 'smtp' | 'sparkpost' | 'ses')?]>()
+    expectTypeOf(mail.use).parameters.toMatchTypeOf<
+      [('mailgun' | 'smtp' | 'sparkpost' | 'ses' | 'resend')?]
+    >()
     expectTypeOf(mail.use('mailgun').driver).toMatchTypeOf<MailgunDriver>()
     expectTypeOf(mail.use('smtp').driver).toMatchTypeOf<SMTPDriver>()
     expectTypeOf(mail.use('ses').driver).toMatchTypeOf<SESDriver>()
     expectTypeOf(mail.use('sparkpost').driver).toMatchTypeOf<SparkPostDriver>()
+    expectTypeOf(mail.use('resend').driver).toMatchTypeOf<ResendDriver>()
 
     assert.instanceOf(mail.use('smtp').driver, SMTPDriver)
     assert.instanceOf(mail.use('ses').driver, SESDriver)
     assert.instanceOf(mail.use('mailgun').driver, MailgunDriver)
     assert.instanceOf(mail.use('sparkpost').driver, SparkPostDriver)
+    assert.instanceOf(mail.use('resend').driver, ResendDriver)
   })
 })

@@ -107,6 +107,7 @@ export class SparkPostTransport {
     const options = new ObjectBuilder<Record<string, any>>({})
 
     options.add('start_time', config.startTime)
+    options.add('initial_open', config.initialOpen)
     options.add('open_tracking', config.openTracking)
     options.add('click_tracking', config.clickTracking)
     options.add('transactional', config.transactional)

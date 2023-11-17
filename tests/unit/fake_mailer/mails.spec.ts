@@ -12,13 +12,20 @@ import { test } from '@japa/runner'
 import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
 
+import { Message } from '../../../src/message.js'
 import { MailEvents } from '../../../src/types.js'
 import { BaseMail } from '../../../src/base_mail.js'
 import { FakeMailer } from '../../../src/fake_mailer.js'
 
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {})
 
-test.group('Fake mailer | mails | send', () => {
+test.group('Fake mailer | mails | send', (group) => {
+  group.each.setup(() => {
+    return () => {
+      Message.templateEngine = undefined
+    }
+  })
+
   test('assert an email was sent', async ({ assert, expectTypeOf }) => {
     const emitter = new Emitter<MailEvents>(app)
     const mailer = new FakeMailer('mailgun', emitter, {})
@@ -153,9 +160,14 @@ test.group('Fake mailer | mails | send', () => {
 
   test('assert email templates body', async () => {
     const emitter = new Emitter<MailEvents>(app)
-    const edge = new Edge()
     const mailer = new FakeMailer('mailgun', emitter, {})
-    mailer.setTemplateEngine(edge)
+
+    const edge = new Edge()
+    Message.templateEngine = {
+      render(templatePath, helpers, data) {
+        return edge.share(helpers).render(templatePath, data)
+      },
+    }
 
     edge.registerTemplate('foo/bar', {
       template: `Hello {{ username }}`,
@@ -181,7 +193,13 @@ test.group('Fake mailer | mails | send', () => {
   })
 })
 
-test.group('Fake mailer | mails | sendLater', () => {
+test.group('Fake mailer | mails | sendLater', (group) => {
+  group.each.setup(() => {
+    return () => {
+      Message.templateEngine = undefined
+    }
+  })
+
   test('assert an email was queued', async ({ assert, expectTypeOf }) => {
     const emitter = new Emitter<MailEvents>(app)
     const mailer = new FakeMailer('mailgun', emitter, {})
@@ -314,9 +332,14 @@ test.group('Fake mailer | mails | sendLater', () => {
 
   test('assert email templates body', async () => {
     const emitter = new Emitter<MailEvents>(app)
-    const edge = new Edge()
     const mailer = new FakeMailer('mailgun', emitter, {})
-    mailer.setTemplateEngine(edge)
+
+    const edge = new Edge()
+    Message.templateEngine = {
+      render(templatePath, helpers, data) {
+        return edge.share(helpers).render(templatePath, data)
+      },
+    }
 
     edge.registerTemplate('foo/bar', {
       template: `Hello {{ username }}`,

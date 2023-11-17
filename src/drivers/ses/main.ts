@@ -42,14 +42,7 @@ export class SESDriver implements MailDriverContract {
       return this.#transporter
     }
 
-    const SESClient = new SES.SES({
-      apiVersion: this.#config.apiVersion,
-      region: this.#config.region,
-      credentials: {
-        accessKeyId: this.#config.key,
-        secretAccessKey: this.#config.secret,
-      },
-    })
+    const SESClient = new SES.SES(this.#config)
 
     this.#transporter = nodemailer.createTransport({
       SES: { aws: SES, ses: SESClient },

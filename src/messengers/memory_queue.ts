@@ -8,14 +8,17 @@
  */
 
 import fastq, { type done } from 'fastq'
+import type { Emitter } from '@adonisjs/core/events'
 
 import debug from '../debug.js'
 import type { MailResponse } from '../mail_response.js'
 import type {
+  MailEvents,
   MailerContract,
   NodeMailerMessage,
   MailDriverContract,
   MessageBodyTemplates,
+  MailerMessenger,
 } from '../types.js'
 
 /**
@@ -39,19 +42,25 @@ function sendEmail(
  * Memory queue messenger uses "fastq" npm package to keep
  * emails within memory and send them in the chunks of 10
  */
-export class MemoryQueueMessenger {
+export class MemoryQueueMessenger implements MailerMessenger {
+  #emitter: Emitter<MailEvents>
   #queue = fastq(this, sendEmail, 10)
-  #jobCompletedCallback?: (error: Error | null, result: MailResponse<unknown>) => void
+  #jobCompletedCallback?: (error: Error | null, result: MailResponse<unknown>) => void = (
+    error
+  ) => {
+    if (error) {
+      this.#emitter.emit('queued:mail:error', {
+        error,
+        mailerName: this.mailer.name,
+      })
+    }
+  }
 
-  constructor(public mailer: MailerContract<MailDriverContract>) {}
-
-  /**
-   * Register a callback to get notified when a job is
-   * completed
-   */
-  monitor(jobCompletionNotifier: (error: Error | null, result: MailResponse<unknown>) => void) {
-    this.#jobCompletedCallback = jobCompletionNotifier
-    return this
+  constructor(
+    public mailer: MailerContract<MailDriverContract>,
+    emitter: Emitter<MailEvents>
+  ) {
+    this.#emitter = emitter
   }
 
   /**

@@ -12,22 +12,105 @@ import { Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
 import Macroable from '@poppinss/macroable'
 import { AssertionError } from 'node:assert'
+import { cuid } from '@adonisjs/core/helpers'
 import type { SendMailOptions } from 'nodemailer'
+import { RuntimeException } from '@poppinss/utils'
 import ical, { type ICalCalendar } from 'ical-generator'
 import { Attachment } from 'nodemailer/lib/mailer/index.js'
 
+import debug from './debug.js'
 import type {
   Recipient,
   AttachmentOptions,
   NodeMailerMessage,
   CalendarEventOptions,
   MessageBodyTemplates,
+  MailerTemplateEngine,
 } from './types.js'
 
 /**
  * Fluent API to construct node mailer message object
  */
 export class Message extends Macroable {
+  static templateEngine?: MailerTemplateEngine
+
+  /**
+   * Use the configured template engine to compute
+   * the email contents from templates
+   */
+  static async computeContentsFor({
+    message,
+    views,
+  }: {
+    message: NodeMailerMessage
+    views: MessageBodyTemplates
+  }) {
+    const getTemplateEngine = () => {
+      if (!this.templateEngine) {
+        throw new RuntimeException('Cannot render email templates without a template engine')
+      }
+      return this.templateEngine
+    }
+
+    /**
+     * Helpers to be shared with templates
+     */
+    const viewHelpers = {
+      embedImage: (filePath: string, options?: any) => {
+        const cid = cuid()
+        message.attachments = message.attachments || []
+
+        message.attachments.push({
+          path: filePath,
+          cid,
+          filename: basename(filePath),
+          ...options,
+        })
+
+        return `cid:${cid}`
+      },
+      embedImageData: (data: Buffer | Readable, options?: any) => {
+        const cid = cuid()
+        message.attachments = message.attachments || []
+
+        message.attachments.push({
+          content: data,
+          cid,
+          ...options,
+        })
+
+        return `cid:${cid}`
+      },
+    }
+
+    if (!message.html && views.html) {
+      debug('computing mail html contents %O', views.html)
+      message.html = await getTemplateEngine().render(
+        views.html.template,
+        viewHelpers,
+        views.html.data
+      )
+    }
+
+    /**
+     * Do not share view helpers with text image, since they cannot
+     * render images
+     */
+    if (!message.text && views.text) {
+      debug('computing mail text contents %O', views.text)
+      message.text = await getTemplateEngine().render(views.text.template, {}, views.text.data)
+    }
+
+    if (!message.watch && views.watch) {
+      debug('computing mail watch contents %O', views.watch)
+      message.watch = await getTemplateEngine().render(
+        views.watch.template,
+        viewHelpers,
+        views.watch.data
+      )
+    }
+  }
+
   /**
    * Nodemailer internally mutates the "attachments" object
    * and removes the path property with the contents of
@@ -467,7 +550,10 @@ export class Message extends Macroable {
    */
   attach(
     file: string | URL,
-    options?: Omit<AttachmentOptions, 'raw' | 'content' | 'cid' | 'path'>
+    options?: Omit<
+      AttachmentOptions,
+      'raw' | 'content' | 'cid' | 'path' | 'contentTransferEncoding' | 'encoding'
+    >
   ): this {
     const filePath = typeof file === 'string' ? file : fileURLToPath(file)
 
@@ -497,9 +583,6 @@ export class Message extends Macroable {
     options?: { filename?: string; cid?: string }
   ): boolean {
     const attachments = this.#attachmentsForSearch
-    if (!attachments) {
-      return false
-    }
 
     if (typeof file === 'function') {
       return !!attachments.find(file)
@@ -558,7 +641,12 @@ export class Message extends Macroable {
    */
   attachData(
     content: Readable | Buffer,
-    options?: Omit<AttachmentOptions, 'raw' | 'content' | 'cid' | 'path'>
+    options: Omit<
+      AttachmentOptions,
+      'raw' | 'content' | 'cid' | 'path' | 'contentTransferEncoding'
+    > & {
+      filename: string
+    }
   ): this {
     this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
     this.nodeMailerMessage.attachments.push({
@@ -575,7 +663,10 @@ export class Message extends Macroable {
   embed(
     file: string | URL,
     cid: string,
-    options?: Omit<AttachmentOptions, 'raw' | 'content' | 'cid' | 'path'>
+    options?: Omit<
+      AttachmentOptions,
+      'raw' | 'content' | 'cid' | 'path' | 'contentTransferEncoding' | 'encoding'
+    >
   ): this {
     const filePath = typeof file === 'string' ? file : fileURLToPath(file)
 
@@ -602,7 +693,10 @@ export class Message extends Macroable {
   embedData(
     content: Readable | Buffer,
     cid: string,
-    options?: Omit<AttachmentOptions, 'raw' | 'content' | 'cid' | 'path'>
+    options?: Omit<
+      AttachmentOptions,
+      'raw' | 'content' | 'cid' | 'path' | 'contentTransferEncoding'
+    >
   ): this {
     this.nodeMailerMessage.attachments = this.nodeMailerMessage.attachments || []
     this.nodeMailerMessage.attachments.push({
@@ -727,6 +821,17 @@ export class Message extends Macroable {
   icalEventFromUrl(url: string, options?: CalendarEventOptions): this {
     this.nodeMailerMessage.icalEvent = { href: url, ...options }
     return this
+  }
+
+  /**
+   * Computes email contents by rendering the configured
+   * templates
+   */
+  async computeContents() {
+    await Message.computeContentsFor({
+      message: this.nodeMailerMessage,
+      views: this.contentViews,
+    })
   }
 
   /**

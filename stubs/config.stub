@@ -16,19 +16,24 @@ const mailConfig = defineConfig({
     smtp: drivers.smtp({
       host: env.get('SMTP_HOST'),
       port: env.get('SMTP_PORT'),
-			auth: {
-				type: 'login',
-				user: env.get('SMTP_USERNAME'),
-				pass: env.get('SMTP_PASSWORD'),
-			}
+			/**
+       * Uncomment the auth block if your SMTP
+       * server needs authentication
+       */
+      /* auth: {
+        type: 'login',
+        user: env.get('SMTP_USERNAME'),
+        pass: env.get('SMTP_PASSWORD'),
+      }, */
     }),
 		{{/if}} {{#if drivers.includes('ses')}}
     ses: drivers.ses({
       apiVersion: '2010-12-01',
-      key: env.get('SES_ACCESS_KEY'),
-      secret: env.get('SES_ACCESS_SECRET'),
-      region: env.get('SES_REGION'),
-      sslEnabled: true,
+      region: process.env.AWS_REGION!,
+      credentials: {
+        accessKeyId: env.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: env.get('AWS_SECRET_ACCESS_KEY'),
+      },
       sendingRate: 10,
       maxConnections: 5,
     }),

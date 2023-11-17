@@ -8,7 +8,6 @@
  */
 
 import sinon from 'sinon'
-import { Edge } from 'edge.js'
 import { test } from '@japa/runner'
 import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
@@ -17,10 +16,10 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
 import { MailManager } from '../../src/mail_manager.js'
 import { MailResponse } from '../../src/mail_response.js'
 import { SMTPDriver } from '../../src/drivers/smtp/main.js'
+import { JSONDriver } from '../../src/drivers/json/main.js'
 import { MailgunDriver } from '../../src/drivers/mailgun/main.js'
 import { MailEvents, MailgunSentMessageInfo } from '../../src/types.js'
 import { MemoryQueueMessenger } from '../../src/messengers/memory_queue.js'
-import { JSONDriver } from '../../src/drivers/json/main.js'
 
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {})
 
@@ -258,40 +257,10 @@ test.group('Mail manager', () => {
     mail.use('mailgun')
     mail.setMessenger((mailer) => {
       assert.oneOf(mailer.name, ['mailgun', 'smtp'])
-      return new MemoryQueueMessenger(mailer)
+      return new MemoryQueueMessenger(mailer, emitter)
     })
 
     mail.use('smtp')
-  })
-
-  test('configure template engine for mailers', async ({ assert }) => {
-    const emitter = new Emitter<MailEvents>(app)
-    const edge = new Edge()
-
-    const mail = new MailManager(emitter, {
-      mailers: {
-        mailer1: () => new JSONDriver(),
-        mailer2: () => new JSONDriver(),
-      },
-    })
-
-    edge.registerTemplate('foo', {
-      template: `Hello {{ username }}`,
-    })
-
-    const mailer1 = mail.use('mailer1')
-    mail.setTemplateEngine(edge)
-    const mailer2 = mail.use('mailer2')
-
-    const response1 = await mailer1.send((message) => {
-      message.htmlView('foo', { username: 'virk' })
-    })
-    const response2 = await mailer2.send((message) => {
-      message.htmlView('foo', { username: 'virk' })
-    })
-
-    assert.equal(JSON.parse(response1.original.message).html, 'Hello virk')
-    assert.equal(JSON.parse(response2.original.message).html, 'Hello virk')
   })
 
   test('use fakes for testing emails', async ({ assert }) => {
@@ -351,16 +320,13 @@ test.group('Mail manager', () => {
     const mailgun = mail.use('mailgun')
     const smtp = mail.use('smtp')
 
-    const mailgunCloseSpy = sinon.spy(mailgunDriver, 'close')
     const smtpCloseSpy = sinon.spy(smtpDriver, 'close')
-
     await mail.closeAll()
 
     /**
      * Assert the close methods were closed on both
      * the mailer's drivers
      */
-    assert.isTrue(mailgunCloseSpy.calledOnce)
     assert.isTrue(smtpCloseSpy.calledOnce)
 
     /**
