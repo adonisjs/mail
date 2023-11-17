@@ -8,6 +8,7 @@
  */
 
 import { test } from '@japa/runner'
+import nodemailer from 'nodemailer'
 import { Message } from '../../../src/message.js'
 
 test.group('Message | headers', () => {
@@ -75,5 +76,38 @@ test.group('Message | headers', () => {
       () => message.assertHeader('x-ping-servers', ['foo', 'bar', 'baz']),
       'Expected message headers to include "x-ping-servers" with value "foo,bar,baz"'
     )
+  })
+
+  test('define list headers', async ({ assert }) => {
+    const message = new Message()
+    message.listHelp('admin@example.com?subject=help')
+    message.listUnsubscribe({
+      url: 'http://example.com',
+      comment: 'Comment',
+    })
+
+    message.listSubscribe([
+      'admin@example.com?subject=subscribe',
+      {
+        url: 'http://example.com',
+        comment: 'Subscribe',
+      },
+    ])
+
+    const transport = nodemailer.createTransport({
+      streamTransport: true,
+      newline: 'unix',
+      buffer: true,
+    })
+
+    const response = await transport.sendMail(message.toObject().message)
+    const emailText = response.message.toString()
+
+    assert.isTrue(emailText.includes('List-Help: <mailto:admin@example.com?subject=help>'))
+    assert.isTrue(emailText.includes('List-Unsubscribe: <http://example.com> (Comment)'))
+    assert.isTrue(
+      emailText.includes('List-Subscribe: <mailto:admin@example.com?subject=subscribe>')
+    )
+    assert.isTrue(emailText.includes('List-Subscribe: <http://example.com> (Subscribe)'))
   })
 })

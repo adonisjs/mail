@@ -16,7 +16,7 @@ import { cuid } from '@adonisjs/core/helpers'
 import type { SendMailOptions } from 'nodemailer'
 import { RuntimeException } from '@poppinss/utils'
 import ical, { type ICalCalendar } from 'ical-generator'
-import { Attachment } from 'nodemailer/lib/mailer/index.js'
+import { Attachment, ListHeader } from 'nodemailer/lib/mailer/index.js'
 
 import debug from './debug.js'
 import type {
@@ -787,6 +787,41 @@ export class Message extends Macroable {
     }
 
     return this
+  }
+
+  /**
+   * Defines a `List-` prefix header on the email. Calling
+   * this method multiple times for the same key will
+   * override the old value.
+   */
+  addListHeader(key: string, value: ListHeader | ListHeader[] | ListHeader[][]): this {
+    this.nodeMailerMessage.list = this.nodeMailerMessage.list || {}
+    this.nodeMailerMessage.list[key] = value
+    return this
+  }
+
+  /**
+   * Add `List-Help` header. Calling this method multiple
+   * times will override the existing value
+   */
+  listHelp(value: ListHeader | ListHeader[] | ListHeader[][]) {
+    return this.addListHeader('help', value)
+  }
+
+  /**
+   * Add `List-Unsubscribe` header. Calling this method multiple
+   * times will override the existing value
+   */
+  listUnsubscribe(value: ListHeader | ListHeader[] | ListHeader[][]) {
+    return this.addListHeader('unsubscribe', value)
+  }
+
+  /**
+   * Add `List-Subscribe` header. Calling this method multiple
+   * times will override the existing value
+   */
+  listSubscribe(value: ListHeader | ListHeader[] | ListHeader[][]) {
+    return this.addListHeader('subscribe', value)
   }
 
   /**
