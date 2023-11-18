@@ -110,7 +110,7 @@ test.group('Mailgun Transport', () => {
     message.to(process.env.TEST_EMAILS_RECIPIENT!)
     message.cc(process.env.TEST_EMAILS_CC!)
     message.subject('Adonisv5')
-    message.attach(new URL('../package.json', import.meta.url), {
+    message.attach(new URL('../../../package.json', import.meta.url), {
       contentType: 'application/json',
       filename: 'package.json',
     })
