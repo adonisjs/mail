@@ -16,7 +16,7 @@ import { Mailer } from './mailer.js'
 import type { Message } from './message.js'
 import { BaseMail } from './base_mail.js'
 import type { MailResponse } from './mail_response.js'
-import { JSONDriver } from './drivers/json/main.js'
+import { JSONTransport } from './transports/json.js'
 import type {
   MailEvents,
   MailerConfig,
@@ -503,16 +503,16 @@ class MessagesCollection {
 }
 
 /**
- * Fake mailer uses the JSON driver to send emails and
+ * Fake mailer uses the JSON transport to send emails and
  * collects them within memory for a better testing
  * experience.
  */
-export class FakeMailer extends Mailer<JSONDriver> implements MailerContract<JSONDriver> {
+export class FakeMailer extends Mailer<JSONTransport> implements MailerContract<JSONTransport> {
   mails = new MailsCollection()
   messages = new MessagesCollection()
 
   constructor(name: string, emitter: Emitter<MailEvents>, config: MailerConfig) {
-    super(name, new JSONDriver(), emitter, config)
+    super(name, new JSONTransport(), emitter, config)
     super.setMessenger({
       queue: async (mail, sendConfig) => {
         return this.sendCompiled(mail, sendConfig)

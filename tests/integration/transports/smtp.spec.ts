@@ -9,12 +9,12 @@
 
 import { test } from '@japa/runner'
 
-import { Message } from '../../src/message.js'
-import { SMTPDriver } from '../../src/drivers/smtp/main.js'
+import { Message } from '../../../src/message.js'
+import { SMTPTransport } from '../../../src/transports/smtp.js'
 
-test.group('SMTP Driver', () => {
-  test('send email using the SMTP driver', async ({ assert, cleanup }) => {
-    const smtp = new SMTPDriver({
+test.group('SMTP Transport', () => {
+  test('send email using the SMTP transport', async ({ assert, cleanup }) => {
+    const smtp = new SMTPTransport({
       host: process.env.MAILTRAP_SMTP_HOST!,
       auth: {
         type: 'login' as const,

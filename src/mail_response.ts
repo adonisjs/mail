@@ -11,7 +11,7 @@ import { ResponseEnvelope } from './types.js'
 
 /**
  * MailResponse represents a consistent response object returned
- * by all the mail drivers
+ * by all the mail transports
  */
 export class MailResponse<T = undefined> {
   constructor(

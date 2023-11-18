@@ -8,12 +8,12 @@
  */
 
 import { test } from '@japa/runner'
-import { Message } from '../../src/message.js'
-import { SESDriver } from '../../src/drivers/ses/main.js'
+import { Message } from '../../../src/message.js'
+import { SESTransport } from '../../../src/transports/ses.js'
 
-test.group('SES Driver', () => {
-  test('send email using the SES driver', async ({ assert, cleanup }) => {
-    const ses = new SESDriver({
+test.group('SES Transport', () => {
+  test('send email using the SES transport', async ({ assert, cleanup }) => {
+    const ses = new SESTransport({
       apiVersion: '2010-12-01',
       region: process.env.AWS_REGION!,
       credentials: {

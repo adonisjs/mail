@@ -5,8 +5,10 @@
 <br />
 
 <div align="center">
-  <h3>Mailer</h3>
-  <p>AdonisJS mailer built on top of nodemailer. Uses driver based approach to support multiple email providers.</p>
+  <h3>Mail</h3>
+  <p>
+    The AdonisJS Mail package is built on top of Nodemailer with support for queueing emails, better testing experience and an extensive suite of officially maintained transports.
+  </p>
 </div>
 
 <br />

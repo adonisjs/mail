@@ -10,11 +10,11 @@
 import { configProvider } from '@adonisjs/core'
 import type { ConfigProvider } from '@adonisjs/core/types'
 
-import type { SESDriver } from './drivers/ses/main.js'
-import type { SMTPDriver } from './drivers/smtp/main.js'
-import type { ResendDriver } from './drivers/resend/main.js'
-import type { MailgunDriver } from './drivers/mailgun/main.js'
-import type { SparkPostDriver } from './drivers/sparkpost/main.js'
+import type { SESTransport } from './transports/ses.js'
+import type { SMTPTransport } from './transports/smtp.js'
+import type { MailgunTransport } from './transports/mailgun.js'
+import type { ResendTransport } from './transports/resend.js'
+import type { SparkPostTransport } from './transports/sparkpost.js'
 import type {
   SESConfig,
   SMTPConfig,
@@ -22,13 +22,13 @@ import type {
   ResendConfig,
   MailgunConfig,
   SparkPostConfig,
-  MailManagerDriverFactory,
+  MailManagerTransportFactory,
 } from './types.js'
 
 /**
  * Helper to remap known mailers to factory functions
  */
-type ResolvedConfig<KnownMailers extends Record<string, MailManagerDriverFactory>> =
+type ResolvedConfig<KnownMailers extends Record<string, MailManagerTransportFactory>> =
   MailerConfig & {
     default?: keyof KnownMailers
     mailers: {
@@ -42,7 +42,7 @@ type ResolvedConfig<KnownMailers extends Record<string, MailManagerDriverFactory
  * Helper function to define config for the mail
  * service
  */
-export function defineConfig<KnownMailers extends Record<string, MailManagerDriverFactory>>(
+export function defineConfig<KnownMailers extends Record<string, MailManagerTransportFactory>>(
   config: MailerConfig & {
     default?: keyof KnownMailers
     mailers: {
@@ -53,20 +53,20 @@ export function defineConfig<KnownMailers extends Record<string, MailManagerDriv
   return configProvider.create(async (app) => {
     const { mailers, default: defaultMailer, ...rest } = config
     const mailersNames = Object.keys(mailers)
-    const drivers = {} as Record<string, MailManagerDriverFactory>
+    const transports = {} as Record<string, MailManagerTransportFactory>
 
     for (let mailerName of mailersNames) {
-      const mailerDriver = mailers[mailerName]
-      if (typeof mailerDriver === 'function') {
-        drivers[mailerName] = mailerDriver
+      const mailerTransport = mailers[mailerName]
+      if (typeof mailerTransport === 'function') {
+        transports[mailerName] = mailerTransport
       } else {
-        drivers[mailerName] = await mailerDriver.resolver(app)
+        transports[mailerName] = await mailerTransport.resolver(app)
       }
     }
 
     return {
       default: defaultMailer,
-      mailers: drivers,
+      mailers: transports,
       ...rest,
     } as ResolvedConfig<KnownMailers>
   })
@@ -74,43 +74,43 @@ export function defineConfig<KnownMailers extends Record<string, MailManagerDriv
 
 /**
  * Config helpers to create a reference for inbuilt
- * mail drivers
+ * mail transports
  */
-export const drivers: {
-  smtp: (config: SMTPConfig) => ConfigProvider<() => SMTPDriver>
-  ses: (config: SESConfig) => ConfigProvider<() => SESDriver>
-  mailgun: (config: MailgunConfig) => ConfigProvider<() => MailgunDriver>
-  sparkpost: (config: SparkPostConfig) => ConfigProvider<() => SparkPostDriver>
-  resend: (config: ResendConfig) => ConfigProvider<() => ResendDriver>
+export const transports: {
+  smtp: (config: SMTPConfig) => ConfigProvider<() => SMTPTransport>
+  ses: (config: SESConfig) => ConfigProvider<() => SESTransport>
+  mailgun: (config: MailgunConfig) => ConfigProvider<() => MailgunTransport>
+  sparkpost: (config: SparkPostConfig) => ConfigProvider<() => SparkPostTransport>
+  resend: (config: ResendConfig) => ConfigProvider<() => ResendTransport>
 } = {
   smtp(config) {
     return configProvider.create(async () => {
-      const { SMTPDriver } = await import('./drivers/smtp/main.js')
-      return () => new SMTPDriver(config)
+      const { SMTPTransport } = await import('./transports/smtp.js')
+      return () => new SMTPTransport(config)
     })
   },
   ses(config) {
     return configProvider.create(async () => {
-      const { SESDriver } = await import('./drivers/ses/main.js')
-      return () => new SESDriver(config)
+      const { SESTransport } = await import('./transports/ses.js')
+      return () => new SESTransport(config)
     })
   },
   mailgun(config) {
     return configProvider.create(async () => {
-      const { MailgunDriver } = await import('./drivers/mailgun/main.js')
-      return () => new MailgunDriver(config)
+      const { MailgunTransport } = await import('./transports/mailgun.js')
+      return () => new MailgunTransport(config)
     })
   },
   sparkpost(config) {
     return configProvider.create(async () => {
-      const { SparkPostDriver } = await import('./drivers/sparkpost/main.js')
-      return () => new SparkPostDriver(config)
+      const { SparkPostTransport } = await import('./transports/sparkpost.js')
+      return () => new SparkPostTransport(config)
     })
   },
   resend(config) {
     return configProvider.create(async () => {
-      const { ResendDriver } = await import('./drivers/resend/main.js')
-      return () => new ResendDriver(config)
+      const { ResendTransport } = await import('./transports/resend.js')
+      return () => new ResendTransport(config)
     })
   },
 }

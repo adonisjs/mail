@@ -17,7 +17,8 @@ import { Mailer } from '../../src/mailer.js'
 import { Message } from '../../src/message.js'
 import { MailEvents } from '../../src/types.js'
 import { BaseMail } from '../../src/base_mail.js'
-import { JSONDriver } from '../../src/drivers/json/main.js'
+import { JSONTransport } from '../../src/transports/json.js'
+import { SMTPTransport } from '../../src/transports/smtp.js'
 
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {})
 
@@ -28,10 +29,10 @@ test.group('Mailer', (group) => {
     }
   })
 
-  test('send email using the driver', async ({ assert }) => {
+  test('send email using the transport', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {})
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, {})
     const response = await mailer.send((message) => {
       message.subject('Hello world')
       message.from('foo@bar.com')
@@ -49,7 +50,7 @@ test.group('Mailer', (group) => {
   test('use global from address', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, { from: 'foo@global.com' })
     const response = await mailer.send((message) => {
       message.subject('Hello world')
       message.to('bar@baz.com')
@@ -66,7 +67,7 @@ test.group('Mailer', (group) => {
   test('use global from address and name', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, {
       from: {
         address: 'foo@global.com',
         name: 'foo',
@@ -88,7 +89,7 @@ test.group('Mailer', (group) => {
   test('use global replyTo address and name', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, {
       from: {
         address: 'foo@global.com',
         name: 'foo',
@@ -115,7 +116,7 @@ test.group('Mailer', (group) => {
   test('overwrite global from address', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, { from: 'foo@global.com' })
     const response = await mailer.send((message) => {
       message.subject('Hello world')
       message.from('foo@bar.com')
@@ -134,7 +135,7 @@ test.group('Mailer', (group) => {
     const emitter = new Emitter<MailEvents>(app)
     const edge = new Edge()
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, { from: 'foo@global.com' })
     Message.templateEngine = {
       render(template, helpers, data) {
         return edge.share(helpers).render(template, data)
@@ -160,7 +161,7 @@ test.group('Mailer', (group) => {
     const emitter = new Emitter<MailEvents>(app)
     const edge = new Edge()
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, { from: 'foo@global.com' })
     Message.templateEngine = {
       render(template, helpers, data) {
         return edge.share(helpers).render(template, data)
@@ -188,7 +189,7 @@ test.group('Mailer', (group) => {
   }) => {
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, { from: 'foo@global.com' })
     const send = () =>
       mailer.send((message) => {
         message.subject('Hello world')
@@ -200,12 +201,12 @@ test.group('Mailer', (group) => {
     await assert.rejects(send, 'Cannot render email templates without a template engine')
   })
 
-  test('close driver transport', async ({ assert }) => {
-    const jsonDriver = new JSONDriver()
-    const spy = sinon.spy(jsonDriver, 'close')
+  test('close transport transport', async ({ assert }) => {
+    const smtpTransport = new SMTPTransport({ host: '' })
+    const spy = sinon.spy(smtpTransport, 'close')
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', jsonDriver, emitter, { from: 'foo@global.com' })
+    const mailer = new Mailer('marketing', smtpTransport, emitter, { from: 'foo@global.com' })
     await mailer.close()
 
     assert.isTrue(spy.called)
@@ -216,7 +217,7 @@ test.group('Mailer', (group) => {
     assert.plan(2)
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, {
       from: {
         address: 'foo@global.com',
         name: 'foo',
@@ -251,7 +252,7 @@ test.group('Mailer', (group) => {
     assert.plan(1)
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, { from: 'foo@global.com' })
 
     mailer.setMessenger({
       async queue(_, config) {
@@ -272,7 +273,7 @@ test.group('Mailer', (group) => {
   test('send email using the mail class', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {})
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, {})
 
     class VerifyEmail extends BaseMail {
       from: string = 'foo@bar.com'
@@ -297,7 +298,7 @@ test.group('Mailer', (group) => {
 
     const emitter = new Emitter<MailEvents>(app)
 
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, { from: 'foo@global.com' })
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, { from: 'foo@global.com' })
 
     mailer.setMessenger({
       async queue(mail) {

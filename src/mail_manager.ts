@@ -18,23 +18,23 @@ import type {
   MailEvents,
   MailerConfig,
   MailerMessenger,
-  MailDriverContract,
+  MailTransportContract,
   MessageComposeCallback,
-  MailManagerDriverFactory,
+  MailManagerTransportFactory,
 } from './types.js'
 
 /**
  * Mail manager exposes the API to configure multiple mailers, manage
  * their lifecycle and switch between them.
  */
-export class MailManager<KnownMailers extends Record<string, MailManagerDriverFactory>> {
+export class MailManager<KnownMailers extends Record<string, MailManagerTransportFactory>> {
   #emitter: Emitter<MailEvents>
 
   /**
    * Messenger to use on all mailers created
    * using the mail manager
    */
-  #messenger?: (mailer: Mailer<MailDriverContract>) => MailerMessenger
+  #messenger?: (mailer: Mailer<MailTransportContract>) => MailerMessenger
 
   /**
    * Reference to the fake mailer (if any)
@@ -44,7 +44,7 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
   /**
    * Cache of mailers
    */
-  #mailersCache: Partial<Record<keyof KnownMailers, Mailer<MailDriverContract>>> = {}
+  #mailersCache: Partial<Record<keyof KnownMailers, Mailer<MailTransportContract>>> = {}
 
   constructor(
     emitter: Emitter<MailEvents>,
@@ -61,7 +61,7 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
    * Configure the messenger for all the mailers managed
    * by the mail manager class.
    */
-  setMessenger(messenger: (mailer: Mailer<MailDriverContract>) => MailerMessenger): this {
+  setMessenger(messenger: (mailer: Mailer<MailTransportContract>) => MailerMessenger): this {
     this.#messenger = messenger
     Object.keys(this.#mailersCache).forEach((name) => {
       const mailer = this.#mailersCache[name]!
@@ -119,15 +119,15 @@ export class MailManager<KnownMailers extends Record<string, MailManagerDriverFa
     }
 
     /**
-     * Create driver instance using the factory
+     * Create transport instance using the factory
      */
-    const driverFactory = this.config.mailers[mailerToUse]
+    const transportFactory = this.config.mailers[mailerToUse]
 
     /**
-     * Create mailer instance with the driver
+     * Create mailer instance with the transport
      */
-    debug('creating mailer driver. name: "%s"', mailerToUse)
-    const mailer = new Mailer(mailerToUse as string, driverFactory(), this.#emitter, this.config)
+    debug('creating mailer transport. name: "%s"', mailerToUse)
+    const mailer = new Mailer(mailerToUse as string, transportFactory(), this.#emitter, this.config)
     if (this.#messenger) {
       mailer.setMessenger(this.#messenger(mailer))
     }

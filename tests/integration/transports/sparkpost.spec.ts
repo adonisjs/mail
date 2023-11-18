@@ -9,12 +9,12 @@
 
 import { test } from '@japa/runner'
 
-import { Message } from '../../src/message.js'
-import { SparkPostDriver } from '../../src/drivers/sparkpost/main.js'
+import { Message } from '../../../src/message.js'
+import { SparkPostTransport } from '../../../src/transports/sparkpost.js'
 
-test.group('SparkPost Driver', () => {
-  test('send email using sparkpost driver', async ({ assert }) => {
-    const sparkpost = new SparkPostDriver({
+test.group('SparkPost Transport', () => {
+  test('send email using sparkpost transport', async ({ assert }) => {
+    const sparkpost = new SparkPostTransport({
       key: process.env.SPARKPOST_API_KEY!,
       baseUrl: process.env.SPARKPOST_BASE_URL!,
     })

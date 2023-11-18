@@ -11,8 +11,8 @@ import got from 'got'
 import retry from 'async-retry'
 import { test } from '@japa/runner'
 
-import { Message } from '../../src/message.js'
-import { ResendDriver } from '../../src/drivers/resend/main.js'
+import { Message } from '../../../src/message.js'
+import { ResendTransport } from '../../../src/transports/resend.js'
 
 function getEmailById(id: string) {
   return retry(
@@ -30,9 +30,9 @@ function getEmailById(id: string) {
   )
 }
 
-test.group('Resend Driver', () => {
-  test('send email using resend driver', async ({ assert }) => {
-    const resend = new ResendDriver({
+test.group('Resend Transport', () => {
+  test('send email using resend transport', async ({ assert }) => {
+    const resend = new ResendTransport({
       key: process.env.RESEND_API_KEY!,
       baseUrl: process.env.RESEND_BASE_URL!,
     })

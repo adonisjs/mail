@@ -15,10 +15,10 @@ import type { MailResponse } from '../mail_response.js'
 import type {
   MailEvents,
   MailerContract,
-  NodeMailerMessage,
-  MailDriverContract,
-  MessageBodyTemplates,
   MailerMessenger,
+  NodeMailerMessage,
+  MessageBodyTemplates,
+  MailTransportContract,
 } from '../types.js'
 
 /**
@@ -57,7 +57,7 @@ export class MemoryQueueMessenger implements MailerMessenger {
   }
 
   constructor(
-    public mailer: MailerContract<MailDriverContract>,
+    public mailer: MailerContract<MailTransportContract>,
     emitter: Emitter<MailEvents>
   ) {
     this.#emitter = emitter

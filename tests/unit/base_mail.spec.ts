@@ -14,7 +14,7 @@ import { AppFactory } from '@adonisjs/core/factories/app'
 
 import { MailEvents, Recipient } from '../../src/types.js'
 import { BaseMail, Mailer, Message } from '../../index.js'
-import { JSONDriver } from '../../src/drivers/json/main.js'
+import { JSONTransport } from '../../src/transports/json.js'
 
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {})
 
@@ -27,7 +27,7 @@ test.group('Base mail', (group) => {
 
   test('send mail using the mailer', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {})
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, {})
 
     class VerifyEmail extends BaseMail {
       from: string = 'foo@bar.com'
@@ -49,7 +49,7 @@ test.group('Base mail', (group) => {
 
   test('send mail using the global email address', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, {
       from: 'foo@bar.com',
     })
 
@@ -72,7 +72,7 @@ test.group('Base mail', (group) => {
 
   test('use global replyTo email address', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
-    const mailer = new Mailer('marketing', new JSONDriver(), emitter, {
+    const mailer = new Mailer('marketing', new JSONTransport(), emitter, {
       from: 'foo@bar.com',
       replyTo: 'noreply@bar.com',
     })

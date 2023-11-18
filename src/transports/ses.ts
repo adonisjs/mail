@@ -9,17 +9,17 @@
 
 import nodemailer from 'nodemailer'
 import SES from '@aws-sdk/client-ses'
-import SESTransport from 'nodemailer/lib/ses-transport/index.js'
+import NodeMailerTransport from 'nodemailer/lib/ses-transport/index.js'
 
-import debug from '../../debug.js'
-import { MailResponse } from '../../mail_response.js'
-import type { SESConfig, NodeMailerMessage, MailDriverContract } from '../../types.js'
+import debug from '../debug.js'
+import { MailResponse } from '../mail_response.js'
+import type { SESConfig, NodeMailerMessage, MailTransportContract } from '../types.js'
 
 /**
- * SES driver uses the Nodemailer inbuilt transport for sending
+ * SES transport uses the Nodemailer inbuilt transport for sending
  * emails
  */
-export class SESDriver implements MailDriverContract {
+export class SESTransport implements MailTransportContract {
   /**
    * SES config
    */
@@ -28,7 +28,7 @@ export class SESDriver implements MailDriverContract {
   /**
    * The nodemailer transport
    */
-  #transporter?: nodemailer.Transporter<SESTransport.SentMessageInfo>
+  #transporter?: nodemailer.Transporter<NodeMailerTransport.SentMessageInfo>
 
   constructor(config: SESConfig) {
     this.#config = config
@@ -59,7 +59,7 @@ export class SESDriver implements MailDriverContract {
   async send(
     message: NodeMailerMessage,
     options?: Omit<SES.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>
-  ): Promise<MailResponse<SESTransport.SentMessageInfo>> {
+  ): Promise<MailResponse<NodeMailerTransport.SentMessageInfo>> {
     const transporter = this.#createTransporter()
     const mailOptions = Object.assign({}, message, { ses: options })
 

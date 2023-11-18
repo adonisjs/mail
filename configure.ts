@@ -21,7 +21,7 @@ export async function configure(command: Configure) {
     resend: ['RESEND_API_KEY'],
   }
 
-  const drivers = await command.prompt.multiple('Select the mail services you want to use', [
+  const transports = await command.prompt.multiple('Select the mail services you want to use', [
     'smtp',
     'ses',
     'resend',
@@ -33,7 +33,7 @@ export async function configure(command: Configure) {
    * Publish config file
    */
   await command.publishStub('config.stub', {
-    drivers: drivers,
+    transports: transports,
   })
 
   const codemods = await command.createCodemods()
@@ -47,11 +47,11 @@ export async function configure(command: Configure) {
   })
 
   /**
-   * Define env variables for the selected drivers
+   * Define env variables for the selected transports
    */
   await codemods.defineEnvVariables(
-    drivers.reduce<Record<string, string>>((result, driver) => {
-      envVariables[driver].forEach((envVariable) => {
+    transports.reduce<Record<string, string>>((result, transport) => {
+      envVariables[transport].forEach((envVariable) => {
         result[envVariable] = ''
       })
       return result
@@ -59,12 +59,12 @@ export async function configure(command: Configure) {
   )
 
   /**
-   * Define env variables validation for the selected drivers
+   * Define env variables validation for the selected transports
    */
   await codemods.defineEnvValidations({
     leadingComment: 'Variables for configuring the mail package',
-    variables: drivers.reduce<Record<string, string>>((result, driver) => {
-      envVariables[driver].forEach((envVariable) => {
+    variables: transports.reduce<Record<string, string>>((result, transport) => {
+      envVariables[transport].forEach((envVariable) => {
         result[envVariable] = 'Env.schema.string()'
       })
       return result

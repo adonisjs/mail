@@ -8,17 +8,24 @@
  */
 
 import got from 'got'
-import { Transport } from 'nodemailer'
+import { createTransport, type Transport } from 'nodemailer'
 import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
-import debug from '../../debug.js'
-import { E_MAIL_TRANSPORT_ERROR } from '../../errors.js'
-import type { ResendConfig, ResendSentMessageInfo } from '../../types.js'
+import debug from '../debug.js'
+import { MailResponse } from '../mail_response.js'
+import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+import type {
+  ResendConfig,
+  NodeMailerMessage,
+  MailTransportContract,
+  ResendRuntimeConfig,
+  ResendSentMessageInfo,
+} from '../types.js'
 
 /**
- * Resend transport for Nodemailer
+ * Transport for nodemailer
  */
-export class ResendTransport implements Transport {
+class NodeMailerTransport implements Transport {
   name = 'resend'
   version = '1.0.0'
 
@@ -157,11 +164,40 @@ export class ResendTransport implements Transport {
       callback(null, { messageId, envelope, ...response.body })
     } catch (error) {
       callback(
-        new E_MAIL_TRANSPORT_ERROR('Unable to send email using the resend driver', {
+        new E_MAIL_TRANSPORT_ERROR('Unable to send email using the resend transport', {
           cause: error,
         }),
         undefined as any
       )
     }
+  }
+}
+
+/**
+ * Transport for sending using the Resend `/emails` API.
+ */
+export class ResendTransport implements MailTransportContract {
+  #config: ResendConfig
+
+  constructor(config: ResendConfig) {
+    this.#config = config
+  }
+
+  /**
+   * Send message
+   */
+  async send(
+    message: NodeMailerMessage,
+    config?: ResendRuntimeConfig
+  ): Promise<MailResponse<ResendSentMessageInfo>> {
+    const sparkpostTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const transporter = createTransport<ResendSentMessageInfo>(sparkpostTransport)
+
+    const sparkPostResponse = await transporter.sendMail(message)
+    return new MailResponse(
+      sparkPostResponse.messageId,
+      sparkPostResponse.envelope,
+      sparkPostResponse
+    )
   }
 }

@@ -8,19 +8,19 @@
  */
 
 import nodemailer from 'nodemailer'
-import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
+import type NodemailerTransport from 'nodemailer/lib/smtp-transport/index.js'
 
-import debug from '../../debug.js'
-import { MailResponse } from '../../mail_response.js'
-import type { SMTPConfig, NodeMailerMessage, MailDriverContract } from '../../types.js'
+import debug from '../debug.js'
+import { MailResponse } from '../mail_response.js'
+import type { SMTPConfig, NodeMailerMessage, MailTransportContract } from '../types.js'
 
 /**
- * SMTP driver uses the Nodemailer inbuilt transport for sending
+ * SMTP transport uses the Nodemailer inbuilt transport for sending
  * emails
  */
-export class SMTPDriver implements MailDriverContract {
+export class SMTPTransport implements MailTransportContract {
   #config: SMTPConfig
-  #transporter?: nodemailer.Transporter<SMTPTransport.SentMessageInfo>
+  #transporter?: nodemailer.Transporter<NodemailerTransport.SentMessageInfo>
 
   constructor(config: SMTPConfig) {
     this.#config = config
@@ -34,14 +34,16 @@ export class SMTPDriver implements MailDriverContract {
       return this.#transporter
     }
 
-    this.#transporter = nodemailer.createTransport(this.#config as SMTPTransport.Options)
+    this.#transporter = nodemailer.createTransport(this.#config as NodemailerTransport.Options)
     return this.#transporter
   }
 
   /**
    * Send message
    */
-  async send(message: NodeMailerMessage): Promise<MailResponse<SMTPTransport.SentMessageInfo>> {
+  async send(
+    message: NodeMailerMessage
+  ): Promise<MailResponse<NodemailerTransport.SentMessageInfo>> {
     const transporter = this.#createTransporter()
     const smtpResponse = await transporter.sendMail(message)
     return new MailResponse(smtpResponse.messageId, smtpResponse.envelope, smtpResponse)

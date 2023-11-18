@@ -8,21 +8,27 @@
  */
 
 import got from 'got'
-import { Transport } from 'nodemailer'
 import { FormData, File } from 'formdata-node'
 import { ObjectBuilder } from '@poppinss/utils'
+import { type Transport, createTransport } from 'nodemailer'
 import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
-import debug from '../../debug.js'
-import { streamToBlob } from '../../utils.js'
-import { E_MAIL_TRANSPORT_ERROR } from '../../errors.js'
-import type { MailgunConfig, MailgunSentMessageInfo } from '../../types.js'
+import debug from '../debug.js'
+import { streamToBlob } from '../utils.js'
+import { MailResponse } from '../mail_response.js'
+import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+import type {
+  MailgunConfig,
+  NodeMailerMessage,
+  MailTransportContract,
+  MailgunRuntimeConfig,
+  MailgunSentMessageInfo,
+} from '../types.js'
 
 /**
- * Mailgun transport for node mailer. Uses the `/message.mime` to send MIME
- * representation of the email
+ * Transport for nodemailer
  */
-export class MailgunTransport implements Transport<MailgunSentMessageInfo> {
+class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
   name = 'mailgun'
   version = '1.0.0'
 
@@ -202,11 +208,37 @@ export class MailgunTransport implements Transport<MailgunSentMessageInfo> {
       callback(null, { id: mailgunMessageId, messageId, envelope })
     } catch (error) {
       callback(
-        new E_MAIL_TRANSPORT_ERROR('Unable to send email using the mailgun driver', {
+        new E_MAIL_TRANSPORT_ERROR('Unable to send email using the mailgun transport', {
           cause: error,
         }),
         undefined as any
       )
     }
+  }
+}
+
+/**
+ * AdonisJS Mail transport for sending emails using the
+ * Mailgun's `/messages.mime` API endpoint.
+ */
+export class MailgunTransport implements MailTransportContract {
+  #config: MailgunConfig
+
+  constructor(config: MailgunConfig) {
+    this.#config = config
+  }
+
+  /**
+   * Sends message using the transport
+   */
+  async send(
+    message: NodeMailerMessage,
+    config?: MailgunRuntimeConfig
+  ): Promise<MailResponse<MailgunSentMessageInfo>> {
+    const mailgunTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const transporter = createTransport<MailgunSentMessageInfo>(mailgunTransport)
+
+    const mailgunResponse = await transporter.sendMail(message)
+    return new MailResponse(mailgunResponse.messageId, mailgunResponse.envelope, mailgunResponse)
   }
 }

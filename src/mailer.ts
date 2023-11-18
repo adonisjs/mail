@@ -19,16 +19,16 @@ import type {
   MailerContract,
   MailerMessenger,
   NodeMailerMessage,
-  MailDriverContract,
+  MailTransportContract,
   MessageBodyTemplates,
   MessageComposeCallback,
 } from './types.js'
 
 /**
- * The Mailer acts as an adapter that wraps a driver and exposes
+ * The Mailer acts as an adapter that wraps a transport and exposes
  * consistent API for sending and queueing emails
  */
-export class Mailer<Driver extends MailDriverContract> implements MailerContract<Driver> {
+export class Mailer<Transport extends MailTransportContract> implements MailerContract<Transport> {
   /**
    * Reference to AdonisJS application emitter
    */
@@ -41,7 +41,7 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
 
   constructor(
     public name: string,
-    public driver: Driver,
+    public transport: Transport,
     emitter: Emitter<MailEvents>,
     public config: MailerConfig
   ) {
@@ -58,12 +58,12 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
   }
 
   /**
-   * Sends a compiled email using the underlying driver
+   * Sends a compiled email using the underlying transport
    */
   async sendCompiled(
     mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
     sendConfig?: unknown
-  ): Promise<Awaited<ReturnType<Driver['send']>>> {
+  ): Promise<Awaited<ReturnType<Transport['send']>>> {
     /**
      * Use the global from address when no from address
      * is defined on the mail
@@ -95,10 +95,10 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
     await Message.computeContentsFor(mail)
 
     /**
-     * Send the message using the driver
+     * Send the message using the transport
      */
     debug('sending email, subject "%s"', mail.message.subject)
-    const response = await this.driver.send(mail.message, sendConfig)
+    const response = await this.transport.send(mail.message, sendConfig)
     debug('email sent, message id "%s"', response.messageId)
 
     /**
@@ -110,7 +110,7 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
       response,
     })
 
-    return response as Awaited<ReturnType<Driver['send']>>
+    return response as Awaited<ReturnType<Transport['send']>>
   }
 
   /**
@@ -149,8 +149,8 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
    */
   async send(
     callbackOrMail: MessageComposeCallback | BaseMail,
-    config?: Parameters<Driver['send']>[1]
-  ): Promise<Awaited<ReturnType<Driver['send']>>> {
+    config?: Parameters<Transport['send']>[1]
+  ): Promise<Awaited<ReturnType<Transport['send']>>> {
     if (callbackOrMail instanceof BaseMail) {
       return callbackOrMail.send(this, config)
     }
@@ -186,7 +186,7 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
    */
   async sendLater(
     callbackOrMail: MessageComposeCallback | BaseMail,
-    config?: Parameters<Driver['send']>[1]
+    config?: Parameters<Transport['send']>[1]
   ): Promise<void> {
     if (callbackOrMail instanceof BaseMail) {
       return callbackOrMail.sendLater(this, config)
@@ -207,9 +207,9 @@ export class Mailer<Driver extends MailDriverContract> implements MailerContract
   }
 
   /**
-   * Invokes `close` method on the driver
+   * Invokes `close` method on the transport
    */
   async close() {
-    await this.driver.close?.()
+    await this.transport.close?.()
   }
 }

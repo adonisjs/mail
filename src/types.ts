@@ -97,30 +97,30 @@ export type NodeMailerMessage = {
 
 /*
 |--------------------------------------------------------------------------
-| Drivers Interface
+| Transports Interface
 |--------------------------------------------------------------------------
 */
 
 /**
- * Shape of the mail driver. Each driver must adhere to
+ * Shape of the mail transport. Each transport must adhere to
  * this interface
  */
-export interface MailDriverContract {
+export interface MailTransportContract {
   /**
    * Send email
    */
   send(message: NodeMailerMessage, config?: unknown): Promise<MailResponse<unknown>>
 
   /**
-   * Cleanup driver long-lived connections
+   * Cleanup transport long-lived connections
    */
   close?(): void | Promise<void>
 }
 
 /**
- * Factory function to lazily initiate a driver
+ * Factory function to lazily initiate a transport
  */
-export type MailManagerDriverFactory = () => MailDriverContract
+export type MailManagerTransportFactory = () => MailTransportContract
 
 /**
  * Shape of the callback passed to the `send` method to compose the
@@ -171,7 +171,7 @@ export type MailEvents = {
  * Mailer contract represents a mailer that can be
  * used to send emails
  */
-export interface MailerContract<Driver extends MailDriverContract> {
+export interface MailerContract<Transport extends MailTransportContract> {
   name: string
 
   /**
@@ -180,20 +180,20 @@ export interface MailerContract<Driver extends MailDriverContract> {
   setMessenger(messenger: MailerMessenger): this
 
   /**
-   * Sends a compiled email using the underlying driver
+   * Sends a compiled email using the underlying transport
    */
   sendCompiled(
     mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
     sendConfig?: unknown
-  ): Promise<Awaited<ReturnType<Driver['send']>>>
+  ): Promise<Awaited<ReturnType<Transport['send']>>>
 
   /**
    * Sends email
    */
   send(
     callbackOrMail: MessageComposeCallback | BaseMail,
-    config?: Parameters<Driver['send']>[1]
-  ): Promise<Awaited<ReturnType<Driver['send']>>>
+    config?: Parameters<Transport['send']>[1]
+  ): Promise<Awaited<ReturnType<Transport['send']>>>
 
   /**
    * Send an email asynchronously using the mail messenger. The
@@ -202,11 +202,11 @@ export interface MailerContract<Driver extends MailDriverContract> {
    */
   sendLater(
     callbackOrMail: MessageComposeCallback | BaseMail,
-    config?: Parameters<Driver['send']>[1]
+    config?: Parameters<Transport['send']>[1]
   ): Promise<void>
 
   /**
-   * Invokes `close` method on the driver
+   * Invokes `close` method on the transport
    */
   close(): Promise<void>
 }
@@ -260,12 +260,12 @@ export type MessageSearchOptions = {
 
 /*
 |--------------------------------------------------------------------------
-| Mailgun driver types
+| Mailgun transport types
 |--------------------------------------------------------------------------
 */
 
 /**
- * Config accepted by the Mailgun driver at the
+ * Config accepted by the Mailgun transport at the
  * time of sending the email
  */
 export type MailgunRuntimeConfig = {
@@ -281,8 +281,8 @@ export type MailgunRuntimeConfig = {
 }
 
 /**
- * Config accepted by the Mailgun driver at the
- * time of constructing the driver
+ * Config accepted by the Mailgun transport at the
+ * time of constructing the transport
  */
 export type MailgunConfig = MailgunRuntimeConfig & {
   baseUrl: string
@@ -301,7 +301,7 @@ export type MailgunSentMessageInfo = {
 
 /*
 |--------------------------------------------------------------------------
-| SMTP driver types
+| SMTP transport types
 |--------------------------------------------------------------------------
 */
 
@@ -329,7 +329,7 @@ export type SMTPSimpleAuth = {
 }
 
 /**
- * SMTP driver config
+ * SMTP transport config
  */
 export type SMTPConfig = {
   host: string
@@ -363,12 +363,12 @@ export type SMTPConfig = {
 
 /*
 |--------------------------------------------------------------------------
-| SES driver types
+| SES transport types
 |--------------------------------------------------------------------------
 */
 
 /**
- * SES driver config
+ * SES transport config
  */
 export type SESConfig = SESClientConfig & {
   sendingRate?: number
@@ -377,7 +377,7 @@ export type SESConfig = SESClientConfig & {
 
 /*
 |--------------------------------------------------------------------------
-| SparkPost driver types
+| SparkPost transport types
 |--------------------------------------------------------------------------
 */
 
@@ -416,7 +416,7 @@ export type SparkPostSentMessageInfo = {
 
 /*
 |--------------------------------------------------------------------------
-| Resend driver types
+| Resend transport types
 |--------------------------------------------------------------------------
 */
 
@@ -428,7 +428,7 @@ export type ResendRuntimeConfig = {
 }
 
 /**
- * Resend driver config
+ * Resend transport config
  */
 export type ResendConfig = ResendRuntimeConfig & {
   key: string
@@ -460,7 +460,7 @@ export interface MailersList {}
  * inside user app
  */
 export type InferMailers<
-  T extends ConfigProvider<{ mailers: Record<string, MailManagerDriverFactory> }>,
+  T extends ConfigProvider<{ mailers: Record<string, MailManagerTransportFactory> }>,
 > = Awaited<ReturnType<T['resolver']>>['mailers']
 
 /**
@@ -469,5 +469,5 @@ export type InferMailers<
  */
 export interface MailService
   extends MailManager<
-    MailersList extends Record<string, MailManagerDriverFactory> ? MailersList : never
+    MailersList extends Record<string, MailManagerTransportFactory> ? MailersList : never
   > {}

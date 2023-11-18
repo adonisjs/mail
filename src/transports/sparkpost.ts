@@ -10,17 +10,24 @@
 import got from 'got'
 import { text } from 'node:stream/consumers'
 import { ObjectBuilder } from '@poppinss/utils'
+import { type Transport, createTransport } from 'nodemailer'
 import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
-import debug from '../../debug.js'
-import { E_MAIL_TRANSPORT_ERROR } from '../../errors.js'
-import type { SparkPostConfig, SparkPostSentMessageInfo } from '../../types.js'
+import debug from '../debug.js'
+import { MailResponse } from '../mail_response.js'
+import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+import type {
+  SparkPostConfig,
+  NodeMailerMessage,
+  MailTransportContract,
+  SparkPostRuntimeConfig,
+  SparkPostSentMessageInfo,
+} from '../types.js'
 
 /**
- * Sparkpost transport for nodemailer. Uses the `/message.mime` to send MIME
- * representation of the email
+ * Transport for nodemailer.
  */
-export class SparkPostTransport {
+class NodeMailerTransport implements Transport {
   name = 'sparkpost'
   version = '1.0.0'
 
@@ -161,11 +168,41 @@ export class SparkPostTransport {
       callback(null, { messageId, envelope, ...response.body.results })
     } catch (error) {
       callback(
-        new E_MAIL_TRANSPORT_ERROR('Unable to send email using the sparkpost driver', {
+        new E_MAIL_TRANSPORT_ERROR('Unable to send email using the sparkpost transport', {
           cause: error,
         }),
         undefined as any
       )
     }
+  }
+}
+
+/**
+ * AdonisJS mail transport implementation to send emails
+ * using Sparkpost's `/message.mime` API endpoint.
+ */
+export class SparkPostTransport implements MailTransportContract {
+  #config: SparkPostConfig
+
+  constructor(config: SparkPostConfig) {
+    this.#config = config
+  }
+
+  /**
+   * Send message
+   */
+  async send(
+    message: NodeMailerMessage,
+    config?: SparkPostRuntimeConfig
+  ): Promise<MailResponse<SparkPostSentMessageInfo>> {
+    const nodemailerTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const transporter = createTransport<SparkPostSentMessageInfo>(nodemailerTransport)
+
+    const sparkPostResponse = await transporter.sendMail(message)
+    return new MailResponse(
+      sparkPostResponse.messageId,
+      sparkPostResponse.envelope,
+      sparkPostResponse
+    )
   }
 }

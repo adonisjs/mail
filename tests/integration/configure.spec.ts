@@ -58,7 +58,7 @@ test.group('Configure', (group) => {
     await assert.fileContains(
       'config/mail.ts',
       `
-    sparkpost: drivers.sparkpost({
+    sparkpost: transports.sparkpost({
       key: env.get('SPARKPOST_API_KEY'),
       baseUrl: 'https://api.sparkpost.com/api/v1',
     }),`
@@ -66,7 +66,7 @@ test.group('Configure', (group) => {
     await assert.fileContains(
       'config/mail.ts',
       `
-    resend: drivers.resend({
+    resend: transports.resend({
       key: env.get('RESEND_API_KEY'),
       baseUrl: 'https://api.resend.com',
     }),`

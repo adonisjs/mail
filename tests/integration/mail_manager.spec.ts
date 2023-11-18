@@ -11,26 +11,26 @@ import sinon from 'sinon'
 import { test } from '@japa/runner'
 import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
-import SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
+import NodeMailerTransport from 'nodemailer/lib/smtp-transport/index.js'
 
 import { MailManager } from '../../src/mail_manager.js'
 import { MailResponse } from '../../src/mail_response.js'
-import { SMTPDriver } from '../../src/drivers/smtp/main.js'
-import { JSONDriver } from '../../src/drivers/json/main.js'
-import { MailgunDriver } from '../../src/drivers/mailgun/main.js'
+import { SMTPTransport } from '../../src/transports/smtp.js'
+import { JSONTransport } from '../../src/transports/json.js'
+import { MailgunTransport } from '../../src/transports/mailgun.js'
 import { MailEvents, MailgunSentMessageInfo } from '../../src/types.js'
 import { MemoryQueueMessenger } from '../../src/messengers/memory_queue.js'
 
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {})
 
 test.group('Mail manager', () => {
-  test('configure mail manager with multiple drivers', async ({ assert, expectTypeOf }) => {
+  test('configure mail manager with multiple transports', async ({ assert, expectTypeOf }) => {
     const emitter = new Emitter<MailEvents>(app)
 
     const mail = new MailManager(emitter, {
       mailers: {
         smtp: () =>
-          new SMTPDriver({
+          new SMTPTransport({
             host: process.env.MAILTRAP_SMTP_HOST!,
             auth: {
               type: 'login' as const,
@@ -39,7 +39,7 @@ test.group('Mail manager', () => {
             },
           }),
         mailgun: () =>
-          new MailgunDriver({
+          new MailgunTransport({
             key: process.env.MAILGUN_ACCESS_KEY!,
             baseUrl: process.env.MAILGUN_BASE_URL!,
             domain: process.env.MAILGUN_DOMAIN!,
@@ -48,13 +48,15 @@ test.group('Mail manager', () => {
     })
 
     expectTypeOf(mail.use).parameters.toMatchTypeOf<[('mailgun' | 'smtp')?]>()
-    expectTypeOf(mail.use('mailgun').driver).toMatchTypeOf<MailgunDriver>()
-    expectTypeOf(mail.use('smtp').driver).toMatchTypeOf<SMTPDriver>()
+    expectTypeOf(mail.use('mailgun').transport).toMatchTypeOf<MailgunTransport>()
+    expectTypeOf(mail.use('smtp').transport).toMatchTypeOf<SMTPTransport>()
     expectTypeOf(mail.send).returns.toMatchTypeOf<
-      Promise<MailResponse<SMTPTransport.SentMessageInfo> | MailResponse<MailgunSentMessageInfo>>
+      Promise<
+        MailResponse<NodeMailerTransport.SentMessageInfo> | MailResponse<MailgunSentMessageInfo>
+      >
     >()
-    assert.instanceOf(mail.use('mailgun').driver, MailgunDriver)
-    assert.instanceOf(mail.use('smtp').driver, SMTPDriver)
+    assert.instanceOf(mail.use('mailgun').transport, MailgunTransport)
+    assert.instanceOf(mail.use('smtp').transport, SMTPTransport)
   })
 
   test('send email using the default mailer', async ({ assert }) => {
@@ -64,7 +66,7 @@ test.group('Mail manager', () => {
       default: 'smtp',
       mailers: {
         smtp: () =>
-          new SMTPDriver({
+          new SMTPTransport({
             host: process.env.MAILTRAP_SMTP_HOST!,
             auth: {
               type: 'login' as const,
@@ -73,7 +75,7 @@ test.group('Mail manager', () => {
             },
           }),
         mailgun: () =>
-          new MailgunDriver({
+          new MailgunTransport({
             key: process.env.MAILGUN_ACCESS_KEY!,
             baseUrl: process.env.MAILGUN_BASE_URL!,
             domain: process.env.MAILGUN_DOMAIN!,
@@ -106,7 +108,7 @@ test.group('Mail manager', () => {
       default: 'smtp',
       mailers: {
         smtp: () =>
-          new SMTPDriver({
+          new SMTPTransport({
             host: process.env.MAILTRAP_SMTP_HOST!,
             auth: {
               type: 'login' as const,
@@ -115,7 +117,7 @@ test.group('Mail manager', () => {
             },
           }),
         mailgun: () =>
-          new MailgunDriver({
+          new MailgunTransport({
             key: process.env.MAILGUN_ACCESS_KEY!,
             baseUrl: process.env.MAILGUN_BASE_URL!,
             domain: process.env.MAILGUN_DOMAIN!,
@@ -150,7 +152,7 @@ test.group('Mail manager', () => {
     const mail = new MailManager(emitter, {
       mailers: {
         smtp: () =>
-          new SMTPDriver({
+          new SMTPTransport({
             host: process.env.MAILTRAP_SMTP_HOST!,
             auth: {
               type: 'login' as const,
@@ -159,7 +161,7 @@ test.group('Mail manager', () => {
             },
           }),
         mailgun: () =>
-          new MailgunDriver({
+          new MailgunTransport({
             key: process.env.MAILGUN_ACCESS_KEY!,
             baseUrl: process.env.MAILGUN_BASE_URL!,
             domain: process.env.MAILGUN_DOMAIN!,
@@ -179,7 +181,7 @@ test.group('Mail manager', () => {
     const mail = new MailManager(emitter, {
       mailers: {
         smtp: () =>
-          new SMTPDriver({
+          new SMTPTransport({
             host: process.env.MAILTRAP_SMTP_HOST!,
             auth: {
               type: 'login' as const,
@@ -188,7 +190,7 @@ test.group('Mail manager', () => {
             },
           }),
         mailgun: () =>
-          new MailgunDriver({
+          new MailgunTransport({
             key: process.env.MAILGUN_ACCESS_KEY!,
             baseUrl: process.env.MAILGUN_BASE_URL!,
             domain: process.env.MAILGUN_DOMAIN!,
@@ -209,7 +211,7 @@ test.group('Mail manager', () => {
       default: 'smtp',
       mailers: {
         smtp: () =>
-          new SMTPDriver({
+          new SMTPTransport({
             host: process.env.MAILTRAP_SMTP_HOST!,
             auth: {
               type: 'login' as const,
@@ -218,7 +220,7 @@ test.group('Mail manager', () => {
             },
           }),
         mailgun: () =>
-          new MailgunDriver({
+          new MailgunTransport({
             key: process.env.MAILGUN_ACCESS_KEY!,
             baseUrl: process.env.MAILGUN_BASE_URL!,
             domain: process.env.MAILGUN_DOMAIN!,
@@ -237,7 +239,7 @@ test.group('Mail manager', () => {
       default: 'smtp',
       mailers: {
         smtp: () =>
-          new SMTPDriver({
+          new SMTPTransport({
             host: process.env.MAILTRAP_SMTP_HOST!,
             auth: {
               type: 'login' as const,
@@ -246,7 +248,7 @@ test.group('Mail manager', () => {
             },
           }),
         mailgun: () =>
-          new MailgunDriver({
+          new MailgunTransport({
             key: process.env.MAILGUN_ACCESS_KEY!,
             baseUrl: process.env.MAILGUN_BASE_URL!,
             domain: process.env.MAILGUN_DOMAIN!,
@@ -268,8 +270,8 @@ test.group('Mail manager', () => {
 
     const mail = new MailManager(emitter, {
       mailers: {
-        mailer1: () => new JSONDriver(),
-        mailer2: () => new JSONDriver(),
+        mailer1: () => new JSONTransport(),
+        mailer2: () => new JSONTransport(),
       },
     })
 
@@ -296,7 +298,7 @@ test.group('Mail manager', () => {
 
   test('close all mailers and remove from cache', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
-    const smtpDriver = new SMTPDriver({
+    const smtpTransport = new SMTPTransport({
       host: process.env.MAILTRAP_SMTP_HOST!,
       auth: {
         type: 'login' as const,
@@ -304,7 +306,7 @@ test.group('Mail manager', () => {
         pass: process.env.MAILTRAP_PASSWORD!,
       },
     })
-    const mailgunDriver = new MailgunDriver({
+    const mailgunTransport = new MailgunTransport({
       key: process.env.MAILGUN_ACCESS_KEY!,
       baseUrl: process.env.MAILGUN_BASE_URL!,
       domain: process.env.MAILGUN_DOMAIN!,
@@ -312,20 +314,20 @@ test.group('Mail manager', () => {
 
     const mail = new MailManager(emitter, {
       mailers: {
-        smtp: () => smtpDriver,
-        mailgun: () => mailgunDriver,
+        smtp: () => smtpTransport,
+        mailgun: () => mailgunTransport,
       },
     })
 
     const mailgun = mail.use('mailgun')
     const smtp = mail.use('smtp')
 
-    const smtpCloseSpy = sinon.spy(smtpDriver, 'close')
+    const smtpCloseSpy = sinon.spy(smtpTransport, 'close')
     await mail.closeAll()
 
     /**
      * Assert the close methods were closed on both
-     * the mailer's drivers
+     * the mailer's transports
      */
     assert.isTrue(smtpCloseSpy.calledOnce)
 
