@@ -126,10 +126,10 @@ class NodeMailerTransport implements Transport {
   }
 
   /**
-   * Get resend api url to send email
+   * Returns the normalized base URL for the API
    */
-  #getUrl() {
-    return `${this.#config.baseUrl.replace(/\/$/, '')}/emails`
+  #getBaseUrl() {
+    return this.#config.baseUrl.replace(/\/$/, '')
   }
 
   /**
@@ -139,7 +139,7 @@ class NodeMailerTransport implements Transport {
     mail: MailMessage,
     callback: (err: Error | null, info: ResendSentMessageInfo) => void
   ) {
-    const url = this.#getUrl()
+    const url = `${this.#getBaseUrl()}/emails`
     const envelope = mail.message.getEnvelope()
     const payload = this.#preparePayload(mail)
 

@@ -12,12 +12,14 @@ import type { ConfigProvider } from '@adonisjs/core/types'
 
 import type { SESTransport } from './transports/ses.js'
 import type { SMTPTransport } from './transports/smtp.js'
-import type { MailgunTransport } from './transports/mailgun.js'
+import type { BrevoTransport } from './transports/brevo.js'
 import type { ResendTransport } from './transports/resend.js'
+import type { MailgunTransport } from './transports/mailgun.js'
 import type { SparkPostTransport } from './transports/sparkpost.js'
 import type {
   SESConfig,
   SMTPConfig,
+  BrevoConfig,
   MailerConfig,
   ResendConfig,
   MailgunConfig,
@@ -82,6 +84,7 @@ export const transports: {
   mailgun: (config: MailgunConfig) => ConfigProvider<() => MailgunTransport>
   sparkpost: (config: SparkPostConfig) => ConfigProvider<() => SparkPostTransport>
   resend: (config: ResendConfig) => ConfigProvider<() => ResendTransport>
+  brevo: (config: BrevoConfig) => ConfigProvider<() => BrevoTransport>
 } = {
   smtp(config) {
     return configProvider.create(async () => {
@@ -111,6 +114,12 @@ export const transports: {
     return configProvider.create(async () => {
       const { ResendTransport } = await import('./transports/resend.js')
       return () => new ResendTransport(config)
+    })
+  },
+  brevo(config) {
+    return configProvider.create(async () => {
+      const { BrevoTransport } = await import('./transports/brevo.js')
+      return () => new BrevoTransport(config)
     })
   },
 }

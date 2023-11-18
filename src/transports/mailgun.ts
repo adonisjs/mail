@@ -70,8 +70,8 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
    */
   #getBaseUrl(): string {
     return this.#config.domain
-      ? `${this.#config.baseUrl}/${this.#config.domain}`
-      : this.#config.baseUrl
+      ? `${this.#config.baseUrl.replace(/\/$/, '')}/${this.#config.domain}`
+      : this.#config.baseUrl.replace(/\/$/, '')
   }
 
   /**

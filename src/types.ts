@@ -446,6 +446,33 @@ export type ResendSentMessageInfo = {
 
 /*
 |--------------------------------------------------------------------------
+| Brevo transport types
+|--------------------------------------------------------------------------
+*/
+
+export type BrevoRuntimeConfig = {
+  scheduledAt?: Date
+  tags?: string[]
+}
+
+/**
+ * Brevo transport config
+ */
+export type BrevoConfig = BrevoRuntimeConfig & {
+  key: string
+  baseUrl: string
+}
+
+/**
+ * Response returned by the Brevo API
+ */
+export type BrevoSentMessageInfo = {
+  messageId: string
+  envelope: ResponseEnvelope
+}
+
+/*
+|--------------------------------------------------------------------------
 | Mailer service types
 |--------------------------------------------------------------------------
 */

@@ -19,6 +19,7 @@ export async function configure(command: Configure) {
     mailgun: ['MAILGUN_API_KEY', 'MAILGUN_DOMAIN'],
     sparkpost: ['SPARKPOST_API_KEY'],
     resend: ['RESEND_API_KEY'],
+    brevo: ['BREVO_API_KEY'],
   }
 
   const transports = await command.prompt.multiple('Select the mail services you want to use', [
@@ -27,6 +28,7 @@ export async function configure(command: Configure) {
     'resend',
     'mailgun',
     'sparkpost',
+    'brevo',
   ])
 
   /**

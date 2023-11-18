@@ -41,7 +41,7 @@ class NodeMailerTransport implements Transport {
    * Returns base url for sending emails
    */
   #getBaseUrl(): string {
-    return this.#config.baseUrl
+    return this.#config.baseUrl.replace(/\/$/, '')
   }
 
   /**
