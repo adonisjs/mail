@@ -277,6 +277,7 @@ export type MailgunRuntimeConfig = {
   oTrackingClick?: boolean
   oTrackingOpens?: boolean
   headers?: { [key: string]: string }
+  variables?: { [key: string]: string }
 }
 
 /**

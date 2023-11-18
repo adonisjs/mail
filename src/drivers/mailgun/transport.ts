@@ -72,7 +72,22 @@ export class MailgunTransport implements Transport<MailgunSentMessageInfo> {
    * Returns an object of custom headers
    */
   #getHeaders(config: MailgunConfig) {
-    return config.headers || {}
+    const headers = config.headers || {}
+    return Object.keys(headers).reduce<Record<string, string>>((result, key) => {
+      result[`h:${key}`] = headers[key]
+      return result
+    }, {})
+  }
+
+  /**
+   * Returns an object of custom variables
+   */
+  #getVariables(config: MailgunConfig) {
+    const variables = config.variables || {}
+    return Object.keys(variables).reduce<Record<string, string>>((result, key) => {
+      result[`v:${key}`] = variables[key]
+      return result
+    }, {})
   }
 
   /**
@@ -135,6 +150,7 @@ export class MailgunTransport implements Transport<MailgunSentMessageInfo> {
   async #createFormData(mail: MailMessage) {
     const tags = this.#getOTags(this.#config)
     const headers = this.#getHeaders(this.#config)
+    const variables = this.#getVariables(this.#config)
     const recipients = this.#getRecipients(mail)
     const mimeMessage = await streamToBlob(mail.message.createReadStream(), 'message/rfc822')
     const mime = new File([mimeMessage], 'messages.mime')
@@ -142,6 +158,7 @@ export class MailgunTransport implements Transport<MailgunSentMessageInfo> {
     debug('mailgun mail mime %O', mimeMessage)
     debug('mailgun mail tags %O', tags)
     debug('mailgun mail headers %O', headers)
+    debug('mailgun mail variables %O', variables)
     debug('mailgun mail recipients %O', recipients)
 
     const form = new FormData()
@@ -149,6 +166,7 @@ export class MailgunTransport implements Transport<MailgunSentMessageInfo> {
     form.append('message', mime, 'message.mime')
     Object.keys(tags).forEach((key) => this.#appendValue(form, key, tags[key]))
     Object.keys(headers).forEach((key) => this.#appendValue(form, key, headers[key]))
+    Object.keys(variables).forEach((key) => this.#appendValue(form, key, variables[key]))
     Object.keys(recipients).forEach((key) => this.#appendValue(form, 'to', recipients[key]))
 
     return form
