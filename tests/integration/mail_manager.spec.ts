@@ -84,7 +84,7 @@ test.group('Mail manager', () => {
     })
 
     const response = await mail.send((message) => {
-      message.from(process.env.MAILTRAP_EMAIL!)
+      message.from(process.env.MAILTRAP_FROM_EMAIL!)
       message.to(process.env.TEST_EMAILS_RECIPIENT!)
       message.cc(process.env.TEST_EMAILS_CC!)
       message.subject('Adonisv5')
@@ -93,7 +93,7 @@ test.group('Mail manager', () => {
 
     assert.exists(response.original)
     assert.exists(response.messageId)
-    assert.equal(response.envelope!.from, process.env.MAILTRAP_EMAIL!)
+    assert.equal(response.envelope!.from, process.env.MAILTRAP_FROM_EMAIL!)
     assert.deepEqual(response.envelope!.to, [
       process.env.TEST_EMAILS_RECIPIENT!,
       process.env.TEST_EMAILS_CC!,
@@ -130,13 +130,13 @@ test.group('Mail manager', () => {
         async queue({ message }) {
           assert.deepEqual(message.to, [process.env.TEST_EMAILS_RECIPIENT!])
           assert.deepEqual(message.cc, [process.env.TEST_EMAILS_CC!])
-          assert.equal(message.from, process.env.MAILTRAP_EMAIL!)
+          assert.equal(message.from, process.env.MAILTRAP_FROM_EMAIL!)
         },
       }
     })
 
     await mail.sendLater((message) => {
-      message.from(process.env.MAILTRAP_EMAIL!)
+      message.from(process.env.MAILTRAP_FROM_EMAIL!)
       message.to(process.env.TEST_EMAILS_RECIPIENT!)
       message.cc(process.env.TEST_EMAILS_CC!)
       message.subject('Adonisv5')

@@ -25,7 +25,7 @@ test.group('SMTP Transport', () => {
     cleanup(() => smtp.close())
 
     const message = new Message()
-    message.from(process.env.MAILTRAP_EMAIL!)
+    message.from(process.env.MAILTRAP_FROM_EMAIL!)
     message.to(process.env.TEST_EMAILS_RECIPIENT!)
     message.cc(process.env.TEST_EMAILS_CC!)
     message.subject('Adonisv5')
@@ -35,7 +35,7 @@ test.group('SMTP Transport', () => {
 
     assert.exists(response.original.response)
     assert.exists(response.messageId)
-    assert.equal(response.envelope!.from, process.env.MAILTRAP_EMAIL!)
+    assert.equal(response.envelope!.from, process.env.MAILTRAP_FROM_EMAIL!)
     assert.deepEqual(response.envelope!.to, [
       process.env.TEST_EMAILS_RECIPIENT!,
       process.env.TEST_EMAILS_CC!,
