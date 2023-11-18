@@ -26,7 +26,7 @@ jobs:
         run: npm test
         env:
           TEST_EMAILS_RECIPIENT: virk@adonisjs.com
-          TEST_EMAILS_CC: julien+adonismailcc@ripouteau.com
+          TEST_EMAILS_CC: xatefic271@ezeca.com
 
           MAILTRAP_SMTP_HOST: smtp.mailtrap.io
           MAILTRAP_USERNAME: ${{ secrets.MAILTRAP_USERNAME }}
