@@ -15,7 +15,7 @@
 
 <div align="center">
 
-[![gh-workflow-image]][gh-workflow-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]  [![synk-image]][synk-url]
+[![gh-workflow-image]][gh-workflow-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url] 
 
 </div>
 
@@ -39,8 +39,8 @@
   <sub>Built with ❤︎ by <a href="https://twitter.com/AmanVirk1">Harminder Virk</a>
 </div>
 
-[gh-workflow-image]: https://img.shields.io/github/workflow/status/adonisjs/mail/test?style=for-the-badge
-[gh-workflow-url]: https://github.com/adonisjs/mail/actions/workflows/test.yml "Github action"
+[gh-workflow-image]: https://img.shields.io/github/workflow/status/adonisjs/mail/checks?style=for-the-badge
+[gh-workflow-url]: https://github.com/adonisjs/mail/actions/workflows/checks.yml "Github action"
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]:  "typescript"
@@ -50,6 +50,3 @@
 
 [license-image]: https://img.shields.io/npm/l/@adonisjs/mail?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
-
-[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/adonisjs/mail?label=Synk%20Vulnerabilities&style=for-the-badge
-[synk-url]: https://snyk.io/test/github/adonisjs/mail?targetFile=package.json "synk"
