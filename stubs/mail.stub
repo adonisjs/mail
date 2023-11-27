@@ -1,11 +1,11 @@
-{{#var mailerName = generators.mailerName(entity.name)}}
-{{#var mailerFileName = generators.mailerFileName(entity.name)}}
+{{#var mailName = generators.mailName(entity.name, intent)}}
+{{#var mailFileName = generators.mailFileName(entity.name, intent)}}
 {{{
-  exports({ to: app.mailersPath(entity.path, mailerFileName) })
+  exports({ to: app.mailsPath(entity.path, mailFileName) })
 }}}
 import { BaseMail } from '@adonisjs/mail'
 
-export default class {{mailerName}} extends BaseMail {
+export default class {{mailName}} extends BaseMail {
   from = ''
   subject = ''
 

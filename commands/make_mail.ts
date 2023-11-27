@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { BaseCommand, args } from '@adonisjs/core/ace'
+import { BaseCommand, args, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
 import { stubsRoot } from '../stubs/main.js'
@@ -26,12 +26,19 @@ export default class MakeMail extends BaseCommand {
   declare name: string
 
   /**
+   * Define the intent suffix for the mail
+   */
+  @flags.string({ description: 'The intent suffix for the mail' })
+  declare intent?: string
+
+  /**
    * Execute command
    */
   async run(): Promise<void> {
     const codemods = await this.createCodemods()
     await codemods.makeUsingStub(stubsRoot, 'mail.stub', {
       flags: this.parsed.flags,
+      intent: this.intent || 'notification',
       entity: this.app.generators.createEntity(this.name),
     })
   }

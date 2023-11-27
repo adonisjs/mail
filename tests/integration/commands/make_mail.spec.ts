@@ -20,15 +20,33 @@ test.group('MakeMail', () => {
     const command = await ace.create(MakeMail, ['email_verification'])
     await command.exec()
 
-    // command.assertLog('green(DONE:)    create app/mails/email_verification_provision.ts')
-    command.assertLog('green(DONE:)    create app/mailers/email_verification_notification.ts')
+    command.assertLog('green(DONE:)    create app/mails/email_verification_notification.ts')
     await assert.fileContains(
-      'app/mailers/email_verification_notification.ts',
+      'app/mails/email_verification_notification.ts',
       `import { BaseMail } from '@adonisjs/mail'`
     )
     await assert.fileContains(
-      'app/mailers/email_verification_notification.ts',
+      'app/mails/email_verification_notification.ts',
       `export default class EmailVerificationNotification extends BaseMail {`
+    )
+  })
+
+  test('make mail class with custom intent', async ({ assert, fs }) => {
+    const ace = await new AceFactory().make(fs.baseUrl, { importer: () => {} })
+    await ace.app.init()
+    ace.ui.switchMode('raw')
+
+    const command = await ace.create(MakeMail, ['shipment', '--intent=confirmation'])
+    await command.exec()
+
+    command.assertLog('green(DONE:)    create app/mails/shipment_confirmation.ts')
+    await assert.fileContains(
+      'app/mails/shipment_confirmation.ts',
+      `import { BaseMail } from '@adonisjs/mail'`
+    )
+    await assert.fileContains(
+      'app/mails/shipment_confirmation.ts',
+      `export default class ShipmentConfirmation extends BaseMail {`
     )
   })
 })
