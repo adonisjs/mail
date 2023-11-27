@@ -8,10 +8,11 @@
  */
 
 import { configProvider } from '@adonisjs/core'
+import { RuntimeException } from '@poppinss/utils'
 import type { Emitter } from '@adonisjs/core/events'
 import type { ApplicationService } from '@adonisjs/core/types'
 
-import { MailManager, Mailer } from '../index.js'
+import { MailManager, Mailer, Message } from '../index.js'
 import type { MailEvents, MailService } from '../src/types.js'
 
 /**
@@ -31,6 +32,17 @@ export default class MailProvider {
   constructor(protected app: ApplicationService) {}
 
   /**
+   * Defines the template engine on the message class to
+   * render templates
+   */
+  protected async defineTemplateEngine() {
+    if (this.app.usingEdgeJS) {
+      const edge = await import('edge.js')
+      Message.templateEngine = edge.default
+    }
+  }
+
+  /**
    * Registering bindings to container
    */
   register() {
@@ -38,6 +50,13 @@ export default class MailProvider {
       const emitter = await resolver.make('emitter')
       const mailConfigProvider = await this.app.config.get('mail')
       const config = await configProvider.resolve<any>(this.app, mailConfigProvider)
+
+      if (!config) {
+        throw new RuntimeException(
+          'Invalid "config/mail.ts" file. Make sure you are using the "defineConfig" method'
+        )
+      }
+
       return new MailManager(emitter as unknown as Emitter<MailEvents>, config)
     })
 
@@ -45,6 +64,13 @@ export default class MailProvider {
       const mailManager = await resolver.make('mail.manager')
       return mailManager.use()
     })
+  }
+
+  /**
+   * Invoked automatically when the app is booting
+   */
+  async boot() {
+    await this.defineTemplateEngine()
   }
 
   /**
