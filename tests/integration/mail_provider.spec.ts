@@ -108,4 +108,41 @@ test.group('Mail Provider', () => {
 
     assert.strictEqual(Message.templateEngine, edge)
   })
+
+  test('correctly share helpers and view data with edge', async ({ assert }) => {
+    const ignitor = new IgnitorFactory()
+      .merge({
+        rcFileContents: {
+          providers: [
+            () => import('@adonisjs/core/providers/edge_provider'),
+            () => import('../../providers/mail_provider.js'),
+          ],
+        },
+      })
+      .withCoreConfig()
+      .withCoreProviders()
+      .merge({
+        config: {
+          mail: {},
+        },
+      })
+      .create(BASE_URL, {
+        importer: IMPORTER,
+      })
+
+    const app = ignitor.createApp('web')
+    await app.init()
+    await app.boot()
+
+    const message = new Message()
+    edge.registerTemplate('foo/bar', {
+      template: `Hello {{ username }} <img src="{{ embedImage('./foo.jpg') }}" />`,
+    })
+
+    message.htmlView('foo/bar', { username: 'jul' })
+    await message.computeContents()
+
+    assert.isDefined(message.nodeMailerMessage.attachments![0])
+    assert.include(message.nodeMailerMessage.html, 'Hello jul')
+  })
 })

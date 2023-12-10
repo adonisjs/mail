@@ -38,7 +38,11 @@ export default class MailProvider {
   protected async defineTemplateEngine() {
     if (this.app.usingEdgeJS) {
       const edge = await import('edge.js')
-      Message.templateEngine = edge.default
+      Message.templateEngine = {
+        render(templatePath, helpers, data) {
+          return edge.default.share(helpers).render(templatePath, data)
+        },
+      }
     }
   }
 
