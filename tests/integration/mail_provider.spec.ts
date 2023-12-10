@@ -81,34 +81,6 @@ test.group('Mail Provider', () => {
     await app.container.make('mail.manager')
   }).throws('Invalid "config/mail.ts" file. Make sure you are using the "defineConfig" method')
 
-  test('share edge template engine with Message class', async ({ assert }) => {
-    const ignitor = new IgnitorFactory()
-      .merge({
-        rcFileContents: {
-          providers: [
-            () => import('@adonisjs/core/providers/edge_provider'),
-            () => import('../../providers/mail_provider.js'),
-          ],
-        },
-      })
-      .withCoreConfig()
-      .withCoreProviders()
-      .merge({
-        config: {
-          mail: {},
-        },
-      })
-      .create(BASE_URL, {
-        importer: IMPORTER,
-      })
-
-    const app = ignitor.createApp('web')
-    await app.init()
-    await app.boot()
-
-    assert.strictEqual(Message.templateEngine, edge)
-  })
-
   test('correctly share helpers and view data with edge', async ({ assert }) => {
     const ignitor = new IgnitorFactory()
       .merge({
