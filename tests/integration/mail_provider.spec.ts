@@ -81,7 +81,7 @@ test.group('Mail Provider', () => {
     await app.container.make('mail.manager')
   }).throws('Invalid "config/mail.ts" file. Make sure you are using the "defineConfig" method')
 
-  test('share edge template engine with Message class', async ({ assert }) => {
+  test('correctly share helpers and view data with edge', async ({ assert }) => {
     const ignitor = new IgnitorFactory()
       .merge({
         rcFileContents: {
@@ -106,6 +106,15 @@ test.group('Mail Provider', () => {
     await app.init()
     await app.boot()
 
-    assert.strictEqual(Message.templateEngine, edge)
+    const message = new Message()
+    edge.registerTemplate('foo/bar', {
+      template: `Hello {{ username }} <img src="{{ embedImage('./foo.jpg') }}" />`,
+    })
+
+    message.htmlView('foo/bar', { username: 'jul' })
+    await message.computeContents()
+
+    assert.isDefined(message.nodeMailerMessage.attachments![0])
+    assert.include(message.nodeMailerMessage.html, 'Hello jul')
   })
 })
