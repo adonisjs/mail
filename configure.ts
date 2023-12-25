@@ -7,7 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import string from '@poppinss/utils/string'
 import type Configure from '@adonisjs/core/commands/configure'
+
 import { stubsRoot } from './stubs/main.js'
 
 /**
@@ -62,8 +64,8 @@ export async function configure(command: Configure) {
   if (unknownTransport) {
     command.exitCode = 1
     command.logger.logError(
-      `Invalid transport "${unknownTransport}". Supported transports are: ${KNOWN_TRANSPORTS.join(
-        ','
+      `Invalid transport "${unknownTransport}". Supported transports are: ${string.sentence(
+        KNOWN_TRANSPORTS
       )}`
     )
     return
