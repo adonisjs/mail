@@ -36,7 +36,7 @@ export default class MakeMail extends BaseCommand {
    */
   async run(): Promise<void> {
     const codemods = await this.createCodemods()
-    await codemods.makeUsingStub(stubsRoot, 'mail.stub', {
+    await codemods.makeUsingStub(stubsRoot, 'make/mail/main.stub', {
       flags: this.parsed.flags,
       intent: this.intent || 'notification',
       entity: this.app.generators.createEntity(this.name),
