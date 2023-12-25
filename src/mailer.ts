@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { Emitter } from '@adonisjs/core/events'
+import type { EmitterLike } from '@adonisjs/core/types/events'
 
 import debug from './debug.js'
 import { Message } from './message.js'
@@ -32,7 +32,7 @@ export class Mailer<Transport extends MailTransportContract> implements MailerCo
   /**
    * Reference to AdonisJS application emitter
    */
-  #emitter: Emitter<MailEvents>
+  #emitter: EmitterLike<MailEvents>
 
   /**
    * Messenger to use for queuing emails
@@ -42,8 +42,8 @@ export class Mailer<Transport extends MailTransportContract> implements MailerCo
   constructor(
     public name: string,
     public transport: Transport,
-    emitter: Emitter<MailEvents>,
-    public config: MailerConfig
+    emitter: EmitterLike<MailEvents>,
+    public config: MailerConfig = {}
   ) {
     this.#emitter = emitter
     this.#messenger = new MemoryQueueMessenger(this, this.#emitter)

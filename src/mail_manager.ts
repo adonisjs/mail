@@ -8,7 +8,7 @@
  */
 
 import { RuntimeException } from '@poppinss/utils'
-import type { Emitter } from '@adonisjs/core/events'
+import type { EmitterLike } from '@adonisjs/core/types/events'
 
 import debug from './debug.js'
 import { Mailer } from './mailer.js'
@@ -28,7 +28,7 @@ import type {
  * their lifecycle and switch between them.
  */
 export class MailManager<KnownMailers extends Record<string, MailManagerTransportFactory>> {
-  #emitter: Emitter<MailEvents>
+  #emitter: EmitterLike<MailEvents>
 
   /**
    * Messenger to use on all mailers created
@@ -47,7 +47,7 @@ export class MailManager<KnownMailers extends Record<string, MailManagerTranspor
   #mailersCache: Partial<Record<keyof KnownMailers, Mailer<MailTransportContract>>> = {}
 
   constructor(
-    emitter: Emitter<MailEvents>,
+    emitter: EmitterLike<MailEvents>,
     public config: MailerConfig & {
       default?: keyof KnownMailers
       mailers: KnownMailers

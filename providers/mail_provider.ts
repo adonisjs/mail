@@ -9,7 +9,6 @@
 
 import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils'
-import type { Emitter } from '@adonisjs/core/events'
 import type { ApplicationService } from '@adonisjs/core/types'
 
 import { MailManager, Mailer, Message } from '../index.js'
@@ -61,7 +60,7 @@ export default class MailProvider {
         )
       }
 
-      return new MailManager(emitter as unknown as Emitter<MailEvents>, config)
+      return new MailManager(emitter, config)
     })
 
     this.app.container.bind(Mailer, async (resolver) => {

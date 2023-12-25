@@ -8,7 +8,7 @@
  */
 
 import fastq, { type done } from 'fastq'
-import type { Emitter } from '@adonisjs/core/events'
+import type { EmitterLike } from '@adonisjs/core/types/events'
 
 import debug from '../debug.js'
 import type { MailResponse } from '../mail_response.js'
@@ -43,7 +43,7 @@ function sendEmail(
  * emails within memory and send them in the chunks of 10
  */
 export class MemoryQueueMessenger implements MailerMessenger {
-  #emitter: Emitter<MailEvents>
+  #emitter: EmitterLike<MailEvents>
   #queue = fastq(this, sendEmail, 10)
   #jobCompletedCallback?: (error: Error | null, result: MailResponse<unknown>) => void = (
     error
@@ -58,7 +58,7 @@ export class MemoryQueueMessenger implements MailerMessenger {
 
   constructor(
     public mailer: MailerContract<MailTransportContract>,
-    emitter: Emitter<MailEvents>
+    emitter: EmitterLike<MailEvents>
   ) {
     this.#emitter = emitter
   }

@@ -8,15 +8,15 @@
  */
 
 import type { TlsOptions } from 'node:tls'
-import { SendMailOptions } from 'nodemailer'
+import type { SendMailOptions } from 'nodemailer'
 import type { SESClientConfig } from '@aws-sdk/client-ses'
 import type { ConfigProvider } from '@adonisjs/core/types'
 import type MimeNode from 'nodemailer/lib/mime-node/index.js'
 
-import { BaseMail } from './base_mail.js'
 import type { Message } from './message.js'
-import { MailManager } from './mail_manager.js'
-import { MailResponse } from './mail_response.js'
+import type { BaseMail } from './base_mail.js'
+import type { MailManager } from './mail_manager.js'
+import type { MailResponse } from './mail_response.js'
 
 /**
  * Shape of the envelope node after the email has been

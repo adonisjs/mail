@@ -9,7 +9,7 @@
 
 import string from '@poppinss/utils/string'
 import { AssertionError } from 'node:assert'
-import type { Emitter } from '@adonisjs/core/events'
+import type { EmitterLike } from '@adonisjs/core/types/events'
 import type { SentMessageInfo } from 'nodemailer/lib/json-transport/index.js'
 
 import { Mailer } from './mailer.js'
@@ -511,7 +511,7 @@ export class FakeMailer extends Mailer<JSONTransport> implements MailerContract<
   mails = new MailsCollection()
   messages = new MessagesCollection()
 
-  constructor(name: string, emitter: Emitter<MailEvents>, config: MailerConfig) {
+  constructor(name: string, emitter: EmitterLike<MailEvents>, config: MailerConfig) {
     super(name, new JSONTransport(), emitter, config)
     super.setMessenger({
       queue: async (mail, sendConfig) => {
