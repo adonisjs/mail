@@ -1,0 +1,19 @@
+{{#var mailName = generators.mailName(entity.name, intent)}}
+{{#var mailFileName = generators.mailFileName(entity.name, intent)}}
+{{{
+  exports({ to: app.mailsPath(entity.path, mailFileName) })
+}}}
+import { BaseMail } from '@adonisjs/mail'
+
+export default class {{mailName}} extends BaseMail {
+  from = ''
+  subject = ''
+
+  /**
+   * The "prepare" method is called automatically when
+   * the email is sent or queued.
+   */
+  prepare() {
+    this.message.to('user@example.com')
+  }
+}

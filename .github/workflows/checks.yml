@@ -1,0 +1,63 @@
+name: test
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.10.0, 21.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+        env:
+          TEST_EMAILS_RECIPIENT: virk@adonisjs.com
+          TEST_EMAILS_CC: xatefic271@ezeca.com
+
+          MAILTRAP_SMTP_HOST: smtp.mailtrap.io
+          MAILTRAP_USERNAME: ${{ secrets.MAILTRAP_USERNAME }}
+          MAILTRAP_PASSWORD: ${{ secrets.MAILTRAP_PASSWORD }}
+          MAILTRAP_FROM_EMAIL: 7dd3bbdc5b-735f34@inbox.mailtrap.io
+
+          AWS_FROM_EMAIL: virk@adonisjs.com
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+
+          SPARKPOST_FROM_EMAIL: virk@adonisjs.com
+          SPARKPOST_API_KEY: ${{ secrets.SPARKPOST_API_KEY }}
+          SPARKPOST_BASE_URL: 'https://api.sparkpost.com/api/v1'
+
+          MAILGUN_FROM_EMAIL: virk@adonisjs.com
+          MAILGUN_ACCESS_KEY: ${{ secrets.MAILGUN_ACCESS_KEY }}
+          MAILGUN_DOMAIN: sandbox6167116c50b242f7b3fd5fffbaef38f1.mailgun.org
+          MAILGUN_BASE_URL: 'https://api.mailgun.net/v3'
+
+          RESEND_TO_EMAIL: virk.officials@gmail.com
+          RESEND_FROM_EMAIL: onboarding@resend.dev
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_BASE_URL: 'https://api.resend.com'
+
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_FROM_EMAIL: virk.officials@gmail.com
+          BREVO_BASE_URL: 'https://api.brevo.com/v3'
+
+  lint:
+    uses: adonisjs/.github/.github/workflows/lint.yml@main
+
+  typecheck:
+    uses: adonisjs/.github/.github/workflows/typecheck.yml@main
