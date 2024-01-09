@@ -150,6 +150,7 @@
   "tsup": {
     "entry": [
       "index.ts",
+      "src/types.ts",
       "services/main.ts",
       "commands/make_mail.ts",
       "providers/mail_provider.ts",
