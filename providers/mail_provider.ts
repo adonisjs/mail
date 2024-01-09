@@ -42,6 +42,8 @@ export default class MailProvider {
           return edge.default.share(helpers).render(templatePath, data)
         },
       }
+      const { mailPluginEdge } = await import('../src/plugins/edge.js')
+      edge.default.use(mailPluginEdge)
     }
   }
 
