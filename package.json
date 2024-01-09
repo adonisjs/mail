@@ -1,7 +1,7 @@
 {
   "name": "@adonisjs/mail",
   "description": "Mail provider for adonis framework and has support for all common mailing services to send emails",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "engines": {
     "node": ">=18.16.0"
   },
