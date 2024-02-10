@@ -123,6 +123,22 @@ test.group('Message', () => {
     assert.deepEqual(message.toJSON().message, { cc: [{ address: 'foo@bar.com', name: 'Foo' }] })
   })
 
+  test('add multiple cc addresses', ({ assert }) => {
+    const message = new Message()
+    message.cc([
+      { address: 'foo@bar.com', name: 'Foo' },
+      { address: 'bar@bar.com', name: 'Bar' },
+    ])
+    message.cc(['baz@bar.com'])
+    assert.deepEqual(message.toJSON().message, {
+      cc: [
+        { address: 'foo@bar.com', name: 'Foo' },
+        { address: 'bar@bar.com', name: 'Bar' },
+        'baz@bar.com',
+      ],
+    })
+  })
+
   test('assert cc address', ({ assert }) => {
     const message = new Message()
     message.cc('foo@bar.com')
@@ -149,6 +165,22 @@ test.group('Message', () => {
     const message = new Message()
     message.bcc('foo@bar.com', 'Foo')
     assert.deepEqual(message.toJSON().message, { bcc: [{ address: 'foo@bar.com', name: 'Foo' }] })
+  })
+
+  test('add multiple bcc addresses', ({ assert }) => {
+    const message = new Message()
+    message.bcc([
+      { address: 'foo@bar.com', name: 'Foo' },
+      { address: 'bar@bar.com', name: 'Bar' },
+    ])
+    message.bcc(['baz@bar.com'])
+    assert.deepEqual(message.toJSON().message, {
+      bcc: [
+        { address: 'foo@bar.com', name: 'Foo' },
+        { address: 'bar@bar.com', name: 'Bar' },
+        'baz@bar.com',
+      ],
+    })
   })
 
   test('assert bcc address', ({ assert }) => {

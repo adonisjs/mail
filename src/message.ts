@@ -133,13 +133,6 @@ export class Message extends Macroable {
   nodeMailerMessage: NodeMailerMessage = {}
 
   /**
-   * Returns formatted address
-   */
-  #getAddress(address: string, name?: string): Recipient {
-    return name ? { address, name } : address
-  }
-
-  /**
    * Converts a recipient email and name to formatted
    * string
    */
@@ -217,7 +210,7 @@ export class Message extends Macroable {
    */
   to(address: string, name?: string): this {
     this.nodeMailerMessage.to = this.nodeMailerMessage.to || []
-    this.nodeMailerMessage.to.push(this.#getAddress(address, name))
+    this.nodeMailerMessage.to.push(name ? { address, name } : address)
     return this
   }
 
@@ -239,7 +232,7 @@ export class Message extends Macroable {
    * Add `from` name and email
    */
   from(address: string, name?: string): this {
-    this.nodeMailerMessage.from = this.#getAddress(address, name)
+    this.nodeMailerMessage.from = name ? { address, name } : address
     return this
   }
 
@@ -290,9 +283,18 @@ export class Message extends Macroable {
   /**
    * Add recipient as `cc`
    */
-  cc(address: string, name?: string): this {
+  cc(addresses: string[]): this
+  cc(addresses: { address: string; name: string }[]): this
+  cc(address: string, name?: string): this
+  cc(addresses: string | string[] | { address: string; name: string }[], name?: string): this {
     this.nodeMailerMessage.cc = this.nodeMailerMessage.cc || []
-    this.nodeMailerMessage.cc.push(this.#getAddress(address, name))
+    if (typeof addresses === 'string') {
+      this.nodeMailerMessage.cc.push(name ? { address: addresses, name } : addresses)
+    } else {
+      addresses.forEach((address) => {
+        this.nodeMailerMessage.cc!.push(address)
+      })
+    }
     return this
   }
 
@@ -313,9 +315,18 @@ export class Message extends Macroable {
   /**
    * Add recipient as `bcc`
    */
-  bcc(address: string, name?: string): this {
+  bcc(addresses: string[]): this
+  bcc(addresses: { address: string; name: string }[]): this
+  bcc(address: string, name?: string): this
+  bcc(addresses: string | string[] | { address: string; name: string }[], name?: string): this {
     this.nodeMailerMessage.bcc = this.nodeMailerMessage.bcc || []
-    this.nodeMailerMessage.bcc.push(this.#getAddress(address, name))
+    if (typeof addresses === 'string') {
+      this.nodeMailerMessage.bcc.push(name ? { address: addresses, name } : addresses)
+    } else {
+      addresses.forEach((address) => {
+        this.nodeMailerMessage.bcc!.push(address)
+      })
+    }
     return this
   }
 
@@ -374,7 +385,7 @@ export class Message extends Macroable {
    */
   replyTo(address: string, name?: string): this {
     this.nodeMailerMessage.replyTo = this.nodeMailerMessage.replyTo || []
-    this.nodeMailerMessage.replyTo.push(this.#getAddress(address, name))
+    this.nodeMailerMessage.replyTo.push(name ? { address, name } : address)
     return this
   }
 
