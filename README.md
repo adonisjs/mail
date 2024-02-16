@@ -8,7 +8,7 @@
 The AdonisJS Mail package is built on top of Nodemailer with support for **queueing emails**, **better testing experience using fakes**, and an **extensive suite of officially maintained transports**.
 
 ## Official Documentation
-The documentation is available on the [AdonisJS website](https://docs.adonisjs.com/guides/mail/introduction)
+The documentation is available on the [AdonisJS website](https://docs.adonisjs.com/guides/mail)
 
 ## Contributing
 One of the primary goals of AdonisJS is to have a vibrant community of users and contributors who believes in the principles of the framework.
