@@ -192,7 +192,10 @@ test.group('Fake mailer | mails | send', (group) => {
     })
   })
 
-  test('assert using mail class that accepts constructor arguments', async ({ assert, expectTypeOf }) => {
+  test('assert using mail class that accepts constructor arguments', async ({
+    assert,
+    expectTypeOf,
+  }) => {
     const emitter = new Emitter<MailEvents>(app)
     const mailer = new FakeMailer('mailgun', emitter, {})
     const { mails } = mailer
