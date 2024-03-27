@@ -498,3 +498,8 @@ export interface MailService
   extends MailManager<
     MailersList extends Record<string, MailManagerTransportFactory> ? MailersList : never
   > {}
+
+export type Constructor = abstract new (...args: any[]) => any
+export type NormalizeConstructor<T extends Constructor> = {
+  new (...args: any[]): InstanceType<T>
+} & Omit<T, 'constructor'>

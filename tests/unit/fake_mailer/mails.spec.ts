@@ -191,6 +191,41 @@ test.group('Fake mailer | mails | send', (group) => {
       return true
     })
   })
+
+  test('assert using mail class that accepts constructor arguments', async ({ assert, expectTypeOf }) => {
+    const emitter = new Emitter<MailEvents>(app)
+    const mailer = new FakeMailer('mailgun', emitter, {})
+    const { mails } = mailer
+
+    class VerifyEmail<UserId extends number> extends BaseMail {
+      from: string = 'foo@bar.com'
+      subject: string = 'Verify your email address'
+
+      constructor(public userId: UserId) {
+        super()
+      }
+
+      prepare() {
+        this.message.to('bar@baz.com')
+      }
+    }
+
+    const response = await mailer.send(new VerifyEmail(1))
+    assert.exists(response.messageId)
+    assert.deepEqual(response.envelope, { from: 'foo@bar.com', to: ['bar@baz.com'] })
+
+    mails.assertSent(VerifyEmail)
+    mails.assertSent(VerifyEmail, (mail) => {
+      expectTypeOf(mail).toMatchTypeOf<VerifyEmail<number>>
+      return mail.message.hasTo('bar@baz.com') && mail.message.hasFrom('foo@bar.com')
+    })
+
+    assert.throws(() => {
+      return mails.assertSent(VerifyEmail, (mail) => {
+        return mail.message.hasTo('bar@example.com')
+      })
+    }, 'Expected mail "VerifyEmail" was not sent')
+  })
 })
 
 test.group('Fake mailer | mails | sendLater', (group) => {
