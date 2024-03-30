@@ -17,7 +17,7 @@ import { stubsRoot } from './stubs/main.js'
  */
 const ENV_VARIABLES = {
   smtp: ['SMTP_HOST', 'SMTP_PORT'],
-  ses: ['SES_ACCESS_KEY_ID', 'SES_ACCESS_SECRET', 'SES_REGION'],
+  ses: ['SES_ACCESS_KEY_ID', 'SES_SECRET_ACCESS_KEY', 'SES_REGION'],
   mailgun: ['MAILGUN_API_KEY', 'MAILGUN_DOMAIN'],
   sparkpost: ['SPARKPOST_API_KEY'],
   resend: ['RESEND_API_KEY'],
