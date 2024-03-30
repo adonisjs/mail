@@ -15,16 +15,16 @@ test.group('SES Transport', () => {
   test('send email using the SES transport', async ({ assert, cleanup }) => {
     const ses = new SESTransport({
       apiVersion: '2010-12-01',
-      region: process.env.AWS_REGION!,
+      region: process.env.SES_REGION!,
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        accessKeyId: process.env.SES_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.SES_SECRET_ACCESS_KEY!,
       },
     })
     cleanup(() => ses.close())
 
     const message = new Message()
-    message.from(process.env.AWS_FROM_EMAIL!)
+    message.from(process.env.SES_FROM_EMAIL!)
     message.to(process.env.TEST_EMAILS_RECIPIENT!)
     message.cc(process.env.TEST_EMAILS_CC!)
     message.subject('Adonisv5')
@@ -34,7 +34,7 @@ test.group('SES Transport', () => {
 
     assert.exists(response.original.response)
     assert.exists(response.messageId)
-    assert.equal(response.envelope!.from, process.env.AWS_FROM_EMAIL)
+    assert.equal(response.envelope!.from, process.env.SES_FROM_EMAIL)
     assert.deepEqual(response.envelope!.to, [
       process.env.TEST_EMAILS_RECIPIENT!,
       process.env.TEST_EMAILS_CC!,

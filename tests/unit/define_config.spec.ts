@@ -32,8 +32,8 @@ test.group('Define config', () => {
 
     const sesProvider = transports.ses({
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        accessKeyId: process.env.SES_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.SES_SECRET_ACCESS_KEY!,
       },
     })
     const sesFactory = await sesProvider.resolver(app)
@@ -64,8 +64,8 @@ test.group('Define config', () => {
         smtp: transports.smtp({ host: '' }),
         ses: transports.ses({
           credentials: {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+            accessKeyId: process.env.SES_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.SES_SECRET_ACCESS_KEY!,
           },
         }),
         mailgun: transports.mailgun({ key: '', baseUrl: '', domain: '' }),

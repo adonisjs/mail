@@ -33,10 +33,10 @@ jobs:
           MAILTRAP_PASSWORD: ${{ secrets.MAILTRAP_PASSWORD }}
           MAILTRAP_FROM_EMAIL: 7dd3bbdc5b-735f34@inbox.mailtrap.io
 
-          AWS_FROM_EMAIL: virk@adonisjs.com
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-west-2
+          SES_FROM_EMAIL: virk@adonisjs.com
+          SES_ACCESS_KEY_ID: ${{ secrets.SES_ACCESS_KEY_ID }}
+          SES_SECRET_ACCESS_KEY: ${{ secrets.SES_SECRET_ACCESS_KEY }}
+          SES_REGION: us-west-2
 
           SPARKPOST_FROM_EMAIL: virk@adonisjs.com
           SPARKPOST_API_KEY: ${{ secrets.SPARKPOST_API_KEY }}
