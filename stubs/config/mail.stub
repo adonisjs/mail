@@ -29,7 +29,7 @@ const mailConfig = defineConfig({
 		{{/if}} {{#if transports.includes('ses')}}
     ses: transports.ses({
       apiVersion: '2010-12-01',
-      region: process.env.AWS_REGION!,
+      region: env.get('AWS_REGION'),
       credentials: {
         accessKeyId: env.get('AWS_ACCESS_KEY_ID'),
         secretAccessKey: env.get('AWS_SECRET_ACCESS_KEY'),
