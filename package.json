@@ -38,7 +38,7 @@
     "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
     "postcompile": "npm run copy:templates && npm run index:commands",
     "build": "npm run compile",
-    "release": "np",
+    "release": "npx release-it",
     "version": "npm run build",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
@@ -78,8 +78,8 @@
     "husky": "^9.0.11",
     "luxon": "^3.4.3",
     "mjml": "^4.15.3",
-    "np": "^10.0.2",
     "prettier": "^3.2.5",
+    "release-it": "^17.4.0",
     "sinon": "^17.0.1",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
@@ -134,11 +134,17 @@
     "access": "public",
     "tag": "latest"
   },
-  "np": {
-    "message": "chore(release): %s",
-    "tag": "latest",
-    "branch": "main",
-    "anyBranch": false
+  "release-it": {
+    "git": {
+      "commitMessage": "chore(release): ${version}",
+      "tagAnnotation": "v${version}",
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "releaseName": "v${version}",
+      "web": true
+    }
   },
   "c8": {
     "reporter": [
