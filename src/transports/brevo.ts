@@ -81,7 +81,9 @@ class NodeMailerTransport implements Transport {
     }
 
     if (mail.data.replyTo) {
-      payload.replyTo = this.#formatAddresses(mail.data.replyTo)
+      payload.replyTo = this.#formatAddress(
+        Array.isArray(mail.data.replyTo) ? mail.data.replyTo[0] : mail.data.replyTo
+      )
     }
 
     if (mail.data.cc) {
