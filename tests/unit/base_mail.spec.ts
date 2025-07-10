@@ -12,7 +12,7 @@ import { test } from '@japa/runner'
 import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
 
-import { MailEvents, Recipient } from '../../src/types.js'
+import { type MailEvents, type Recipient } from '../../src/types.js'
 import { BaseMail, Mailer, Message } from '../../index.js'
 import { JSONTransport } from '../../src/transports/json.js'
 

@@ -13,7 +13,7 @@ import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
 
 import { Message } from '../../../src/message.js'
-import { MailEvents } from '../../../src/types.js'
+import { type MailEvents } from '../../../src/types.js'
 import { BaseMail } from '../../../src/base_mail.js'
 import { FakeMailer } from '../../../src/fake_mailer.js'
 

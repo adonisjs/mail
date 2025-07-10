@@ -12,7 +12,7 @@ import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
 
 import { Mailer } from '../../src/mailer.js'
-import { MailEvents } from '../../src/types.js'
+import { type MailEvents } from '../../src/types.js'
 import { MailResponse } from '../../src/mail_response.js'
 import { JSONTransport } from '../../src/transports/json.js'
 import { MemoryQueueMessenger } from '../../src/messengers/memory_queue.js'

@@ -9,8 +9,8 @@
 
 import type { TlsOptions } from 'node:tls'
 import type { SendMailOptions } from 'nodemailer'
-import type { SESClientConfig } from '@aws-sdk/client-ses'
 import type { ConfigProvider } from '@adonisjs/core/types'
+import type { SESv2ClientConfig } from '@aws-sdk/client-sesv2'
 import type MimeNode from 'nodemailer/lib/mime-node/index.js'
 
 import type { Message } from './message.js'
@@ -370,7 +370,7 @@ export type SMTPConfig = {
 /**
  * SES transport config
  */
-export type SESConfig = SESClientConfig & {
+export type SESConfig = SESv2ClientConfig & {
   sendingRate?: number
   maxConnections?: number
 }

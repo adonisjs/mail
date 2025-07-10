@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { ResponseEnvelope } from './types.js'
+import { type ResponseEnvelope } from './types.js'
 
 /**
  * MailResponse represents a consistent response object returned

@@ -8,15 +8,15 @@
  */
 
 import { basename } from 'node:path'
-import { Readable } from 'node:stream'
+import { type Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
 import Macroable from '@poppinss/macroable'
 import { AssertionError } from 'node:assert'
 import { cuid } from '@adonisjs/core/helpers'
 import type { SendMailOptions } from 'nodemailer'
-import { RuntimeException } from '@poppinss/utils'
 import ical, { type ICalCalendar } from 'ical-generator'
-import { Attachment, ListHeader } from 'nodemailer/lib/mailer/index.js'
+import { RuntimeException } from '@poppinss/utils/exception'
+import { type Attachment, type ListHeader } from 'nodemailer/lib/mailer/index.js'
 
 import debug from './debug.js'
 import type {

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { RuntimeException } from '@poppinss/utils'
+import { RuntimeException } from '@poppinss/utils/exception'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 
 import debug from './debug.js'

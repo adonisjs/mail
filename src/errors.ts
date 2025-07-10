@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Exception } from '@poppinss/utils'
+import { Exception } from '@poppinss/utils/exception'
 
 /**
  * The error is raised when the transport is unable to

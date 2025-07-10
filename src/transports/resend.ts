@@ -9,7 +9,7 @@
 
 import got from 'got'
 import { createTransport, type Transport } from 'nodemailer'
-import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
+import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
@@ -191,13 +191,13 @@ export class ResendTransport implements MailTransportContract {
     config?: ResendRuntimeConfig
   ): Promise<MailResponse<ResendSentMessageInfo>> {
     const sparkpostTransport = new NodeMailerTransport({ ...this.#config, ...config })
-    const transporter = createTransport<ResendSentMessageInfo>(sparkpostTransport)
+    const transporter = createTransport(sparkpostTransport)
 
-    const sparkPostResponse = await transporter.sendMail(message)
+    const resendResponse = await transporter.sendMail(message)
     return new MailResponse(
-      sparkPostResponse.messageId,
-      sparkPostResponse.envelope,
-      sparkPostResponse
+      resendResponse.messageId,
+      resendResponse.envelope,
+      resendResponse as unknown as ResendSentMessageInfo
     )
   }
 }

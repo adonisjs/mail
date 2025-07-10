@@ -9,9 +9,9 @@
 
 import got from 'got'
 import { FormData, File } from 'formdata-node'
-import { ObjectBuilder } from '@poppinss/utils'
+import { ObjectBuilder } from '@poppinss/object-builder'
 import { type Transport, createTransport } from 'nodemailer'
-import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
+import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { streamToBlob } from '../utils.js'
@@ -236,9 +236,13 @@ export class MailgunTransport implements MailTransportContract {
     config?: MailgunRuntimeConfig
   ): Promise<MailResponse<MailgunSentMessageInfo>> {
     const mailgunTransport = new NodeMailerTransport({ ...this.#config, ...config })
-    const transporter = createTransport<MailgunSentMessageInfo>(mailgunTransport)
+    const transporter = createTransport(mailgunTransport)
 
     const mailgunResponse = await transporter.sendMail(message)
-    return new MailResponse(mailgunResponse.messageId, mailgunResponse.envelope, mailgunResponse)
+    return new MailResponse(
+      mailgunResponse.messageId,
+      mailgunResponse.envelope,
+      mailgunResponse as unknown as MailgunSentMessageInfo
+    )
   }
 }

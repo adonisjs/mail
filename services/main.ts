@@ -8,7 +8,7 @@
  */
 
 import app from '@adonisjs/core/services/app'
-import { MailService } from '../src/types.js'
+import { type MailService } from '../src/types.js'
 
 let mail: MailService
 

@@ -1,25 +1,27 @@
-name: test
+name: checks
 
 on:
   - push
   - pull_request
+  - workflow_call
 
 jobs:
   linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.10.0, 21.x]
+        node-version: [24.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install
+      - name: Install dependencies
         run: npm install
 
       - name: Run tests
@@ -57,7 +59,7 @@ jobs:
           BREVO_BASE_URL: 'https://api.brevo.com/v3'
 
   lint:
-    uses: adonisjs/.github/.github/workflows/lint.yml@main
+    uses: adonisjs/.github/.github/workflows/lint.yml@next
 
   typecheck:
-    uses: adonisjs/.github/.github/workflows/typecheck.yml@main
+    uses: adonisjs/.github/.github/workflows/typecheck.yml@next

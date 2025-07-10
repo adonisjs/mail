@@ -9,9 +9,9 @@
 
 import got from 'got'
 import { text } from 'node:stream/consumers'
-import { ObjectBuilder } from '@poppinss/utils'
+import { ObjectBuilder } from '@poppinss/object-builder'
 import { type Transport, createTransport } from 'nodemailer'
-import MailMessage from 'nodemailer/lib/mailer/mail-message.js'
+import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
@@ -196,13 +196,14 @@ export class SparkPostTransport implements MailTransportContract {
     config?: SparkPostRuntimeConfig
   ): Promise<MailResponse<SparkPostSentMessageInfo>> {
     const nodemailerTransport = new NodeMailerTransport({ ...this.#config, ...config })
-    const transporter = createTransport<SparkPostSentMessageInfo>(nodemailerTransport)
+    const transporter = createTransport(nodemailerTransport)
 
     const sparkPostResponse = await transporter.sendMail(message)
+
     return new MailResponse(
       sparkPostResponse.messageId,
       sparkPostResponse.envelope,
-      sparkPostResponse
+      sparkPostResponse as unknown as SparkPostSentMessageInfo
     )
   }
 }

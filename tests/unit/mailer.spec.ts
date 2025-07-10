@@ -15,7 +15,7 @@ import { AppFactory } from '@adonisjs/core/factories/app'
 
 import { Mailer } from '../../src/mailer.js'
 import { Message } from '../../src/message.js'
-import { MailEvents } from '../../src/types.js'
+import { type MailEvents } from '../../src/types.js'
 import { BaseMail } from '../../src/base_mail.js'
 import { JSONTransport } from '../../src/transports/json.js'
 import { SMTPTransport } from '../../src/transports/smtp.js'

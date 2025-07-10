@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Mailer } from './mailer.js'
+import { type Mailer } from './mailer.js'
 import { Message } from './message.js'
-import { MailTransportContract, Recipient } from './types.js'
+import { type MailTransportContract, type Recipient } from './types.js'
 
 /**
  * Class based emails are self contained dispatchable

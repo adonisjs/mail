@@ -30,6 +30,7 @@ dotenv.config({ path: new URL('../.env', import.meta.url) })
 | Please consult japa.dev/runner-config for the config docs.
 */
 processCLIArgs(process.argv.slice(2))
+
 configure({
   plugins: [assert(), fileSystem(), expectTypeOf(), snapshot()],
   suites: [

@@ -8,8 +8,8 @@
  */
 
 import nodemailer from 'nodemailer'
-import SES from '@aws-sdk/client-ses'
-import NodeMailerTransport from 'nodemailer/lib/ses-transport/index.js'
+import type NodeMailerTransport from 'nodemailer/lib/ses-transport/index.js'
+import { SESv2Client, SendEmailCommand, type SendEmailCommandInput } from '@aws-sdk/client-sesv2'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
@@ -42,10 +42,10 @@ export class SESTransport implements MailTransportContract {
       return this.#transporter
     }
 
-    const SESClient = new SES.SES(this.#config)
+    const sesClient = new SESv2Client(this.#config)
 
     this.#transporter = nodemailer.createTransport({
-      SES: { aws: SES, ses: SESClient },
+      SES: { SendEmailCommand, sesClient },
       sendingRate: this.#config.sendingRate,
       maxConnections: this.#config.maxConnections,
     })
@@ -58,7 +58,7 @@ export class SESTransport implements MailTransportContract {
    */
   async send(
     message: NodeMailerMessage,
-    options?: Omit<SES.SendRawEmailRequest, 'RawMessage' | 'Source' | 'Destinations'>
+    options?: SendEmailCommandInput
   ): Promise<MailResponse<NodeMailerTransport.SentMessageInfo>> {
     const transporter = this.#createTransporter()
     const mailOptions = Object.assign({}, message, { ses: options })

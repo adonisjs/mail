@@ -8,7 +8,7 @@
  */
 
 import { configProvider } from '@adonisjs/core'
-import { RuntimeException } from '@poppinss/utils'
+import { RuntimeException } from '@poppinss/utils/exception'
 import type { ApplicationService } from '@adonisjs/core/types'
 
 import { MailManager, Mailer, Message } from '../index.js'

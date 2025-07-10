@@ -11,14 +11,14 @@ import sinon from 'sinon'
 import { test } from '@japa/runner'
 import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
-import NodeMailerTransport from 'nodemailer/lib/smtp-transport/index.js'
+import type NodeMailerTransport from 'nodemailer/lib/smtp-transport/index.js'
 
 import { MailManager } from '../../src/mail_manager.js'
-import { MailResponse } from '../../src/mail_response.js'
+import { type MailResponse } from '../../src/mail_response.js'
 import { SMTPTransport } from '../../src/transports/smtp.js'
 import { JSONTransport } from '../../src/transports/json.js'
 import { MailgunTransport } from '../../src/transports/mailgun.js'
-import { MailEvents, MailgunSentMessageInfo } from '../../src/types.js'
+import { type MailEvents, type MailgunSentMessageInfo } from '../../src/types.js'
 import { MemoryQueueMessenger } from '../../src/messengers/memory_queue.js'
 
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {})
