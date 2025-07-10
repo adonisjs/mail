@@ -34,7 +34,7 @@ export class SMTPTransport implements MailTransportContract {
       return this.#transporter
     }
 
-    this.#transporter = nodemailer.createTransport(this.#config as NodemailerTransport.Options)
+    this.#transporter = nodemailer.createTransport(this.#config)
     return this.#transporter
   }
 

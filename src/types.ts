@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import type { TlsOptions } from 'node:tls'
 import type { SendMailOptions } from 'nodemailer'
 import type { ConfigProvider } from '@adonisjs/core/types'
 import type { SESv2ClientConfig } from '@aws-sdk/client-sesv2'
 import type MimeNode from 'nodemailer/lib/mime-node/index.js'
+import type { Options as SMTPConnectionOptions } from 'nodemailer/lib/smtp-connection/index.js'
 
 import type { Message } from './message.js'
 import type { BaseMail } from './base_mail.js'
@@ -331,35 +331,25 @@ export type SMTPSimpleAuth = {
 /**
  * SMTP transport config
  */
-export type SMTPConfig = {
-  host: string
-  port?: number | string
-  secure?: boolean
-
+export type SMTPConfig = (
+  | {
+      host: string
+      port?: number | string
+      secure?: boolean
+    }
+  | {
+      /**
+       * Specify the name of a well known service. Overrides the
+       * host, port, and secure options
+       */
+      service?: string
+    }
+) & {
   /**
    * Authentication
    */
   auth?: SMTPSimpleAuth | SMTPOauth2
-
-  /**
-   * TLS options
-   */
-  tls?: TlsOptions
-  ignoreTLS?: boolean
-  requireTLS?: boolean
-
-  /**
-   * Pool options
-   */
-  pool?: boolean
-  maxConnections?: number
-  maxMessages?: number
-
-  /**
-   * Proxy
-   */
-  proxy?: string
-}
+} & SMTPConnectionOptions
 
 /*
 |--------------------------------------------------------------------------
