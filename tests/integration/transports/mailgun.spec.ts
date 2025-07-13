@@ -158,7 +158,7 @@ test.group('Mailgun Transport', () => {
     } catch (error) {
       assert.equal(error.message, 'Unable to send email using the mailgun transport')
       assert.exists(error.cause)
-      assert.equal(error.cause.response.statusCode, 401)
+      assert.equal(error.cause.response.status, 401)
     }
   })
 
@@ -181,7 +181,7 @@ test.group('Mailgun Transport', () => {
     } catch (error) {
       assert.equal(error.message, 'Unable to send email using the mailgun transport')
       assert.exists(error.cause)
-      assert.equal(error.cause.response.statusCode, 400)
+      assert.equal(error.cause.response.status, 400)
     }
   })
 })

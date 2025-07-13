@@ -200,7 +200,7 @@ test.group('Mail manager', () => {
 
     assert.throws(
       () => mail.use('foo' as any),
-      'Unknow mailer "foo". Make sure it is configured inside the config file'
+      'Unknown mailer "foo". Make sure it is configured inside the config file'
     )
   })
 
