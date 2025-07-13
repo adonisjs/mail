@@ -140,4 +140,65 @@ test.group('Fake mailer', () => {
     assert.instanceOf(mailer.messages.sent()[0], Message)
     assert.instanceOf(mailer.messages.queued()[0], Message)
   })
+
+  test('build message body for a mail', async ({ cleanup }) => {
+    const emitter = new Emitter<MailEvents>(app)
+    const mailer = new FakeMailer('mailgun', emitter, {})
+
+    Message.templateEngine = {
+      async render() {
+        return 'This is fake contents'
+      },
+    }
+    cleanup(() => (Message.templateEngine = undefined))
+
+    class VerifyEmail extends BaseMail {
+      from: string = 'foo@bar.com'
+      subject: string = 'Verify your email address'
+
+      prepare() {
+        this.message.to('bar@baz.com').htmlView('verify-email')
+      }
+    }
+
+    await mailer.send(new VerifyEmail())
+    await mailer.sendLater(new VerifyEmail())
+
+    mailer.mails.assertSent(VerifyEmail, (mail) => {
+      mail.message.assertHtmlIncludes('fake contents')
+      return true
+    })
+    mailer.mails.assertQueued(VerifyEmail, (mail) => {
+      mail.message.assertHtmlIncludes('fake contents')
+      return true
+    })
+  })
+
+  test('build message body for a message', async ({ cleanup }) => {
+    const emitter = new Emitter<MailEvents>(app)
+    const mailer = new FakeMailer('mailgun', emitter, {})
+
+    Message.templateEngine = {
+      async render() {
+        return 'This is fake contents'
+      },
+    }
+    cleanup(() => (Message.templateEngine = undefined))
+
+    await mailer.send((message) => {
+      message.htmlView('verify-email')
+    })
+    await mailer.sendLater((message) => {
+      message.htmlView('verify-email')
+    })
+
+    mailer.messages.assertSent((message) => {
+      message.assertHtmlIncludes('fake contents')
+      return true
+    })
+    mailer.messages.assertQueued((message) => {
+      message.assertHtmlIncludes('fake contents')
+      return true
+    })
+  })
 })
