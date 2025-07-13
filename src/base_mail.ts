@@ -8,7 +8,7 @@
  */
 
 import { Message } from './message.js'
-import { type MailTransportContract, type Recipient, type MailerContract } from './types.js'
+import { type Recipient, type MailerContract } from './types.js'
 
 /**
  * Class based emails are self contained dispatchable
@@ -110,10 +110,10 @@ export abstract class BaseMail {
   /**
    * Sends the mail
    */
-  async send<T extends MailTransportContract>(
-    mailer: MailerContract<T>,
+  async send<T extends MailerContract<any>>(
+    mailer: T,
     config?: Parameters<T['send']>[1]
-  ): Promise<Awaited<ReturnType<T['send']>>> {
+  ): Promise<Awaited<ReturnType<T['transport']['send']>>> {
     await this.build()
     return mailer.sendCompiled(this.message.toObject(), config)
   }
@@ -122,10 +122,10 @@ export abstract class BaseMail {
    * Sends the mail by using the background
    * messenger
    */
-  async sendLater<T extends MailTransportContract>(
-    mailer: MailerContract<T>,
+  async sendLater<T extends MailerContract<any>>(
+    mailer: T,
     config?: Parameters<T['send']>[1]
-  ) {
+  ): Promise<void> {
     await this.build()
     return mailer.sendLaterCompiled(this.message.toObject(), config)
   }

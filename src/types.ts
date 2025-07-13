@@ -7,7 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import { type Readable } from 'node:stream'
 import type { SendMailOptions } from 'nodemailer'
+import { type AsyncOrSync } from '@poppinss/types'
 import type { ConfigProvider } from '@adonisjs/core/types'
 import type { SESv2ClientConfig } from '@aws-sdk/client-sesv2'
 import type MimeNode from 'nodemailer/lib/mime-node/index.js'
@@ -17,7 +19,6 @@ import type { Message } from './message.js'
 import type { BaseMail } from './base_mail.js'
 import type { MailManager } from './mail_manager.js'
 import type { MailResponse } from './mail_response.js'
-import { type Readable } from 'node:stream'
 
 /**
  * Shape of the envelope node after the email has been
@@ -190,6 +191,11 @@ export interface MailerContract<Transport extends MailTransportContract> {
   name: string
 
   /**
+   * Reference to the underlying transport
+   */
+  transport: Transport
+
+  /**
    * Configure the messenger to use for sending email asynchronously
    */
   setMessenger(messenger: MailerMessenger): this
@@ -262,7 +268,7 @@ export interface MailerTemplateEngine {
   /**
    * Render a template to contents
    */
-  render(templatePath: string, sharedState?: any, data?: any): Promise<string> | string
+  render(templatePath: string, sharedState?: any, data?: any): AsyncOrSync<string>
 }
 
 /**
@@ -517,8 +523,3 @@ export interface MailService
   extends MailManager<
     MailersList extends Record<string, MailManagerTransportFactory> ? MailersList : never
   > {}
-
-export type Constructor = abstract new (...args: any[]) => any
-export type NormalizeConstructor<T extends Constructor> = {
-  new (...args: any[]): InstanceType<T>
-} & Omit<T, 'constructor'>

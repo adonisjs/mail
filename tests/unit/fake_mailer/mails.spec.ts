@@ -46,7 +46,7 @@ test.group('Fake mailer | mails | send', (group) => {
 
     mails.assertSent(VerifyEmail)
     mails.assertSent(VerifyEmail, (mail) => {
-      expectTypeOf(mail).toMatchTypeOf<VerifyEmail>
+      expectTypeOf(mail).toEqualTypeOf<VerifyEmail>
       return mail.message.hasTo('bar@baz.com') && mail.message.hasFrom('foo@bar.com')
     })
 

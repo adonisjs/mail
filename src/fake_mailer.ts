@@ -9,6 +9,7 @@
 
 import string from '@poppinss/utils/string'
 import { AssertionError } from 'node:assert'
+import { type Constructor } from '@poppinss/types'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 import type { SentMessageInfo } from 'nodemailer/lib/json-transport/index.js'
 
@@ -23,7 +24,6 @@ import type {
   MailerContract,
   MailerMessenger,
   MessageSearchOptions,
-  NormalizeConstructor,
   MessageComposeCallback,
 } from './types.js'
 
@@ -64,7 +64,7 @@ class MailsCollection {
    * Assert the mentioned mail was sent during the fake
    * mode
    */
-  assertSent<T extends NormalizeConstructor<typeof BaseMail>>(
+  assertSent<T extends Constructor<unknown>>(
     mailConstructor: T,
     findFn?: (mail: InstanceType<T>) => boolean
   ) {
@@ -86,7 +86,7 @@ class MailsCollection {
    * Assert the mentioned mail was NOT sent during the fake
    * mode
    */
-  assertNotSent<T extends NormalizeConstructor<typeof BaseMail>>(
+  assertNotSent<T extends Constructor<unknown>>(
     mailConstructor: T,
     findFn?: (mail: InstanceType<T>) => boolean
   ) {
@@ -113,11 +113,8 @@ class MailsCollection {
    * Assert the mentioned mail was sent for expected number
    * of times
    */
-  assertSentCount(mailConstructor: NormalizeConstructor<typeof BaseMail>, count: number): void
-  assertSentCount(
-    mailConstructor: NormalizeConstructor<typeof BaseMail> | number,
-    count?: number
-  ): void {
+  assertSentCount(mailConstructor: Constructor<unknown>, count: number): void
+  assertSentCount(mailConstructor: Constructor<unknown> | number, count?: number): void {
     if (typeof mailConstructor === 'number') {
       const actual = this.#sent.length
       const expected = mailConstructor
@@ -165,7 +162,7 @@ class MailsCollection {
    * Assert the mentioned mail was queued during the fake
    * mode
    */
-  assertQueued<T extends NormalizeConstructor<typeof BaseMail>>(
+  assertQueued<T extends Constructor<unknown>>(
     mailConstructor: T,
     findFn?: (mail: InstanceType<T>) => boolean
   ) {
@@ -187,7 +184,7 @@ class MailsCollection {
    * Assert the mentioned mail was NOT queued during the fake
    * mode
    */
-  assertNotQueued<T extends NormalizeConstructor<typeof BaseMail>>(
+  assertNotQueued<T extends Constructor<unknown>>(
     mailConstructor: T,
     findFn?: (mail: InstanceType<T>) => boolean
   ) {
@@ -214,11 +211,8 @@ class MailsCollection {
    * Assert the mentioned mail was sequeuednt for expected number
    * of times
    */
-  assertQueuedCount(mailConstructor: NormalizeConstructor<typeof BaseMail>, count: number): void
-  assertQueuedCount(
-    mailConstructor: NormalizeConstructor<typeof BaseMail> | number,
-    count?: number
-  ): void {
+  assertQueuedCount(mailConstructor: Constructor<unknown>, count: number): void
+  assertQueuedCount(mailConstructor: Constructor<unknown> | number, count?: number): void {
     if (typeof mailConstructor === 'number') {
       const actual = this.#queued.length
       const expected = mailConstructor

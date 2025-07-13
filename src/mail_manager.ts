@@ -98,7 +98,7 @@ export class MailManager<KnownMailers extends Record<string, MailManagerTranspor
     }
     if (!this.config.mailers[mailerToUse]) {
       throw new RuntimeException(
-        `Unknow mailer "${String(mailerToUse)}". Make sure it is configured inside the config file`
+        `Unknown mailer "${String(mailerToUse)}". Make sure it is configured inside the config file`
       )
     }
 
