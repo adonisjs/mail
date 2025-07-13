@@ -17,6 +17,7 @@ import type { Message } from './message.js'
 import type { BaseMail } from './base_mail.js'
 import type { MailManager } from './mail_manager.js'
 import type { MailResponse } from './mail_response.js'
+import { type Readable } from 'node:stream'
 
 /**
  * Shape of the envelope node after the email has been
@@ -58,6 +59,21 @@ export type MessageBodyTemplates = {
   html?: { template: string; data?: any }
   text?: { template: string; data?: any }
   watch?: { template: string; data?: any }
+}
+
+/**
+ * Data shared with the template engine rendering templates
+ * to compute email contents.
+ */
+export type MessageViewHelpers = {
+  embedImage: (
+    filePath: string,
+    options?: Omit<AttachmentOptions, 'filename' | 'cid' | 'raw' | 'content'>
+  ) => string
+  embedImageData: (
+    data: Buffer | Readable,
+    options?: Omit<AttachmentOptions, 'filename' | 'cid' | 'raw' | 'content'>
+  ) => string
 }
 
 /**
@@ -168,8 +184,7 @@ export type MailEvents = {
 }
 
 /**
- * Mailer contract represents a mailer that can be
- * used to send emails
+ * Mailer contract represents a mailer that can be used to send emails
  */
 export interface MailerContract<Transport extends MailTransportContract> {
   name: string
@@ -186,6 +201,14 @@ export interface MailerContract<Transport extends MailTransportContract> {
     mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
     sendConfig?: unknown
   ): Promise<Awaited<ReturnType<Transport['send']>>>
+
+  /**
+   * Queues a compliled email using the messenger
+   */
+  sendLaterCompiled(
+    mail: { message: NodeMailerMessage; views: MessageBodyTemplates },
+    sendConfig?: unknown
+  ): Promise<void>
 
   /**
    * Sends email
@@ -223,6 +246,12 @@ export type MailerConfig = {
    * when sending emails
    */
   replyTo?: Recipient
+
+  /**
+   * Global data to share with email templates when rendering
+   * them using the template engine.
+   */
+  globals?: Record<string, any>
 }
 
 /**
@@ -233,7 +262,7 @@ export interface MailerTemplateEngine {
   /**
    * Render a template to contents
    */
-  render(templatePath: string, helpers?: any, data?: any): Promise<string> | string
+  render(templatePath: string, sharedState?: any, data?: any): Promise<string> | string
 }
 
 /**

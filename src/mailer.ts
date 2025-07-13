@@ -92,7 +92,7 @@ export class Mailer<Transport extends MailTransportContract> implements MailerCo
      * Mutates the "compiledMessage.message" object based upon
      * the configured templates
      */
-    await Message.computeContentsFor(mail)
+    await Message.computeContentsFor({ ...mail, sharedState: this.config.globals ?? {} })
 
     /**
      * Send the message using the transport

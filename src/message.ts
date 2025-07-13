@@ -8,8 +8,8 @@
  */
 
 import { basename } from 'node:path'
-import { type Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
+import { type Readable } from 'node:stream'
 import Macroable from '@poppinss/macroable'
 import { AssertionError } from 'node:assert'
 import { cuid } from '@adonisjs/core/helpers'
@@ -26,12 +26,17 @@ import type {
   CalendarEventOptions,
   MessageBodyTemplates,
   MailerTemplateEngine,
+  MessageViewHelpers,
 } from './types.js'
 
 /**
  * Fluent API to construct node mailer message object
  */
 export class Message extends Macroable {
+  /**
+   * The template engine for rendering templates to compute
+   * the message contents
+   */
   static templateEngine?: MailerTemplateEngine
 
   /**
@@ -41,9 +46,11 @@ export class Message extends Macroable {
   static async computeContentsFor({
     message,
     views,
+    sharedState,
   }: {
     message: NodeMailerMessage
     views: MessageBodyTemplates
+    sharedState: Record<string, any>
   }) {
     const getTemplateEngine = () => {
       if (!this.templateEngine) {
@@ -55,10 +62,10 @@ export class Message extends Macroable {
     /**
      * Helpers to be shared with templates
      */
-    const viewHelpers = {
-      embedImage: (filePath: string, options?: any) => {
+    const viewHelpers: MessageViewHelpers = {
+      embedImage: (filePath, options) => {
         const cid = cuid()
-        message.attachments = message.attachments || []
+        message.attachments = message.attachments ?? []
 
         message.attachments.push({
           path: filePath,
@@ -69,7 +76,7 @@ export class Message extends Macroable {
 
         return `cid:${cid}`
       },
-      embedImageData: (data: Buffer | Readable, options?: any) => {
+      embedImageData: (data, options) => {
         const cid = cuid()
         message.attachments = message.attachments || []
 
@@ -87,7 +94,7 @@ export class Message extends Macroable {
       debug('computing mail html contents %O', views.html)
       message.html = await getTemplateEngine().render(
         views.html.template,
-        viewHelpers,
+        { ...sharedState, ...viewHelpers },
         views.html.data
       )
     }
@@ -98,14 +105,18 @@ export class Message extends Macroable {
      */
     if (!message.text && views.text) {
       debug('computing mail text contents %O', views.text)
-      message.text = await getTemplateEngine().render(views.text.template, {}, views.text.data)
+      message.text = await getTemplateEngine().render(
+        views.text.template,
+        { ...sharedState },
+        views.text.data
+      )
     }
 
     if (!message.watch && views.watch) {
       debug('computing mail watch contents %O', views.watch)
       message.watch = await getTemplateEngine().render(
         views.watch.template,
-        viewHelpers,
+        { ...sharedState, ...viewHelpers },
         views.watch.data
       )
     }
@@ -873,10 +884,11 @@ export class Message extends Macroable {
    * Computes email contents by rendering the configured
    * templates
    */
-  async computeContents() {
+  async computeContents(sharedState?: Record<string, any>) {
     await Message.computeContentsFor({
       message: this.nodeMailerMessage,
       views: this.contentViews,
+      sharedState: sharedState ?? {},
     })
   }
 
