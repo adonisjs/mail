@@ -7,9 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import got from 'got'
+import ky from 'ky'
 import retry from 'async-retry'
 import { test } from '@japa/runner'
+import base64 from '@poppinss/utils/base64'
 
 import { Message } from '../../../src/message.js'
 import { MailgunTransport } from '../../../src/transports/mailgun.js'
@@ -20,20 +21,22 @@ import { MailgunTransport } from '../../../src/transports/mailgun.js'
 function getMailgunMessage(messageId: string) {
   return retry(
     async () => {
-      const response = await got.get<{ items: any }>(
+      const response = await ky.get<{ items: any }>(
         `${process.env.MAILGUN_BASE_URL}/${process.env.MAILGUN_DOMAIN}/events?message-id=${messageId}`,
         {
-          responseType: 'json',
-          username: 'api',
-          password: process.env.MAILGUN_ACCESS_KEY,
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Basic ${base64.encode(`api:${process.env.MAILGUN_ACCESS_KEY}`)}`,
+          },
         }
       )
 
-      if (!response.body.items.length) {
+      const body = await response.json()
+      if (!body.items.length) {
         throw new Error('Empty events list')
       }
 
-      return response
+      return { body }
     },
     { retries: 3, minTimeout: 2000 }
   )

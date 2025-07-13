@@ -87,8 +87,8 @@
     "@types/nodemailer": "^6.4.17",
     "fastq": "^1.19.1",
     "formdata-node": "^6.0.3",
-    "got": "^14.4.7",
     "ical-generator": "^9.0.0",
+    "ky": "^1.8.1",
     "nodemailer": "^7.0.5"
   },
   "peerDependencies": {

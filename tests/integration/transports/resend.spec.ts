@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import got from 'got'
+import ky from 'ky'
 import retry from 'async-retry'
 import { test } from '@japa/runner'
 
@@ -17,14 +17,16 @@ import { ResendTransport } from '../../../src/transports/resend.js'
 function getEmailById(id: string) {
   return retry(
     async () => {
-      const response = await got.get<any>(`https://api.resend.com/emails/${id}`, {
+      const response = await ky.get<any>(`https://api.resend.com/emails/${id}`, {
         headers: {
           'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        responseType: 'json',
       })
-      return response
+
+      const body = await response.json()
+      return { body }
     },
     { retries: 2, minTimeout: 2000 }
   )

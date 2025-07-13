@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import got from 'got'
+import ky from 'ky'
 import { createTransport, type Transport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
@@ -147,21 +147,22 @@ class NodeMailerTransport implements Transport {
     debug('resend mail payload %O', payload)
 
     try {
-      const response = await got.post<{ id: string }>(url, {
-        responseType: 'json',
+      const response = await ky.post<{ id: string }>(url, {
         json: payload,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': `Bearer ${this.#config.key}`,
         },
       })
 
-      const resendMessageId = response.body.id
+      const body = await response.json()
+      const resendMessageId = body.id
       const messageId = resendMessageId
         ? resendMessageId.replace(/^<|>$/g, '')
         : mail.message.messageId()
 
-      callback(null, { messageId, envelope, ...response.body })
+      callback(null, { messageId, envelope, ...body })
     } catch (error) {
       callback(
         new E_MAIL_TRANSPORT_ERROR('Unable to send email using the resend transport', {

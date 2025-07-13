@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import got from 'got'
-import type { Address } from 'nodemailer/lib/mailer/index.js'
+import ky from 'ky'
 import { type Transport, createTransport } from 'nodemailer'
+import type { Address } from 'nodemailer/lib/mailer/index.js'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
@@ -131,16 +131,17 @@ class NodeMailerTransport implements Transport {
     debug('brevo email payload %O', payload)
 
     try {
-      const response = await got.post<{ messageId: string }>(url, {
+      const response = await ky.post<{ messageId: string }>(url, {
         headers: {
-          'accept': 'application/json',
-          'api-key': this.#config.key,
-          'content-type': 'application/json',
+          'Accept': 'application/json',
+          'Api-Key': this.#config.key,
+          'Content-type': 'application/json',
         },
         json: payload,
       })
 
-      const brevoMessageId = response.body.messageId
+      const body = await response.json()
+      const brevoMessageId = body.messageId
       const messageId = brevoMessageId
         ? brevoMessageId.replace(/^<|>$/g, '')
         : mail.message.messageId()

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import got from 'got'
+import ky from 'ky'
 import { text } from 'node:stream/consumers'
 import { ObjectBuilder } from '@poppinss/object-builder'
 import { type Transport, createTransport } from 'nodemailer'
@@ -148,7 +148,7 @@ class NodeMailerTransport implements Transport {
        * need to convert the stream to a string
        */
       const mimeMessage = await text(mail.message.createReadStream())
-      const response = await got.post<{
+      const response = await ky.post<{
         results: Omit<SparkPostSentMessageInfo, 'messageId' | 'envelope'>
       }>(url, {
         json: {
@@ -156,16 +156,16 @@ class NodeMailerTransport implements Transport {
           recipients,
           content: { email_rfc822: mimeMessage },
         },
-        responseType: 'json',
-        headers: { Authorization: this.#config.key },
+        headers: { Authorization: this.#config.key, Accept: 'application/json' },
       })
 
-      const sparkPostMessageId = response.body.results.id
+      const body = await response.json()
+      const sparkPostMessageId = body.results.id
       const messageId = sparkPostMessageId
         ? sparkPostMessageId.replace(/^<|>$/g, '')
         : mail.message.messageId()
 
-      callback(null, { messageId, envelope, ...response.body.results })
+      callback(null, { messageId, envelope, ...body.results })
     } catch (error) {
       callback(
         new E_MAIL_TRANSPORT_ERROR('Unable to send email using the sparkpost transport', {

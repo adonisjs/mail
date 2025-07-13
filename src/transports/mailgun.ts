@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import got from 'got'
-import { FormData, File } from 'formdata-node'
+import ky from 'ky'
+import base64 from '@poppinss/utils/base64'
 import { ObjectBuilder } from '@poppinss/object-builder'
 import { type Transport, createTransport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
@@ -20,8 +20,8 @@ import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import type {
   MailgunConfig,
   NodeMailerMessage,
-  MailTransportContract,
   MailgunRuntimeConfig,
+  MailTransportContract,
   MailgunSentMessageInfo,
 } from '../types.js'
 
@@ -193,14 +193,16 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
     debug('mailgun mail envelope %s', envelope)
 
     try {
-      const response = await got.post<{ id: string }>(url, {
-        body: form as any,
-        username: 'api',
-        password: this.#config.key,
-        responseType: 'json',
+      const response = await ky.post<{ id: string }>(url, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Basic ${base64.encode(`api:${this.#config.key}`)}`,
+        },
+        body: form,
       })
 
-      const mailgunMessageId = response.body.id
+      const body = await response.json()
+      const mailgunMessageId = body.id
       const messageId = mailgunMessageId
         ? mailgunMessageId.replace(/^<|>$/g, '')
         : mail.message.messageId()
