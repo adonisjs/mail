@@ -13,10 +13,10 @@ import type { EmitterLike } from '@adonisjs/core/types/events'
 import type { SentMessageInfo } from 'nodemailer/lib/json-transport/index.js'
 
 import { Mailer } from './mailer.js'
-import type { Message } from './message.js'
 import { BaseMail } from './base_mail.js'
-import type { MailResponse } from './mail_response.js'
+import type { Message } from './message.js'
 import { JSONTransport } from './transports/json.js'
+import type { MailResponse } from './mail_response.js'
 import type {
   MailEvents,
   MailerConfig,

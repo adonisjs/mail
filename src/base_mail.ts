@@ -7,9 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { type Mailer } from './mailer.js'
 import { Message } from './message.js'
-import { type MailTransportContract, type Recipient } from './types.js'
+import { type MailTransportContract, type Recipient, type MailerContract } from './types.js'
 
 /**
  * Class based emails are self contained dispatchable
@@ -17,10 +16,14 @@ import { type MailTransportContract, type Recipient } from './types.js'
  */
 export abstract class BaseMail {
   /**
-   * A flag to avoid build email message for
-   * multiple times
+   * A flag to track if the message has been built
    */
   protected built: boolean = false
+
+  /**
+   * A flag to track if the mail templates have been rendered
+   */
+  protected renderedTemplates: boolean = false
 
   /**
    * Reference to the mail message object
@@ -95,11 +98,12 @@ export abstract class BaseMail {
    * time
    */
   async buildWithContents(): Promise<void> {
-    if (this.built) {
+    await this.build()
+
+    if (this.renderedTemplates) {
       return
     }
 
-    await this.build()
     await this.message.computeContents()
   }
 
@@ -107,7 +111,7 @@ export abstract class BaseMail {
    * Sends the mail
    */
   async send<T extends MailTransportContract>(
-    mailer: Mailer<T>,
+    mailer: MailerContract<T>,
     config?: Parameters<T['send']>[1]
   ): Promise<Awaited<ReturnType<T['send']>>> {
     await this.build()
@@ -119,7 +123,7 @@ export abstract class BaseMail {
    * messenger
    */
   async sendLater<T extends MailTransportContract>(
-    mailer: Mailer<T>,
+    mailer: MailerContract<T>,
     config?: Parameters<T['send']>[1]
   ) {
     await this.build()
