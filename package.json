@@ -58,6 +58,7 @@
     "@japa/runner": "^4.2.0",
     "@japa/snapshot": "^2.0.8",
     "@poppinss/ts-exec": "^1.4.0",
+    "@release-it/conventional-changelog": "^10.0.1",
     "@types/async-retry": "^1.4.9",
     "@types/luxon": "^3.6.2",
     "@types/mjml": "^4.7.4",
