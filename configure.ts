@@ -92,12 +92,19 @@ export async function configure(command: Configure) {
    * Define env variables for the selected transports
    */
   await codemods.defineEnvVariables(
-    transports.reduce<Record<string, string>>((result, transport) => {
-      ENV_VARIABLES[transport as keyof typeof ENV_VARIABLES].forEach((envVariable) => {
-        result[envVariable] = ''
-      })
-      return result
-    }, {})
+    transports.reduce<Record<string, string>>(
+      (result, transport) => {
+        ENV_VARIABLES[transport as keyof typeof ENV_VARIABLES].forEach((envVariable) => {
+          result[envVariable] = ''
+        })
+        return result
+      },
+      {
+        MAIL_MAILER: transports[0],
+        MAIL_FROM_NAME: 'app@yourdomain.com',
+        MAIL_FROM_ADDRESS: 'Your name',
+      }
+    )
   )
 
   /**
@@ -105,11 +112,18 @@ export async function configure(command: Configure) {
    */
   await codemods.defineEnvValidations({
     leadingComment: 'Variables for configuring the mail package',
-    variables: transports.reduce<Record<string, string>>((result, transport) => {
-      ENV_VARIABLES[transport as keyof typeof ENV_VARIABLES].forEach((envVariable) => {
-        result[envVariable] = 'Env.schema.string()'
-      })
-      return result
-    }, {}),
+    variables: transports.reduce<Record<string, string>>(
+      (result, transport) => {
+        ENV_VARIABLES[transport as keyof typeof ENV_VARIABLES].forEach((envVariable) => {
+          result[envVariable] = 'Env.schema.string()'
+        })
+        return result
+      },
+      {
+        MAIL_MAILER: `Env.schema.enum(['${transports.join("','")}'] as const)`,
+        MAIL_FROM_NAME: 'Env.schema.string()',
+        MAIL_FROM_ADDRESS: 'Env.schema.string()',
+      }
+    ),
   })
 }

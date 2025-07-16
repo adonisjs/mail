@@ -6,7 +6,6 @@
 import { BaseMail } from '@adonisjs/mail'
 
 export default class {{mailName}} extends BaseMail {
-  from = ''
   subject = ''
 
   /**

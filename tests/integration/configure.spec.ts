@@ -78,9 +78,18 @@ test.group('Configure', (group) => {
     )
     await assert.fileContains('.env', 'SPARKPOST_API_KEY')
     await assert.fileContains('.env', 'RESEND_API_KEY')
+    await assert.fileContains('.env', 'MAIL_MAILER')
+    await assert.fileContains('.env', 'MAIL_FROM_NAME')
+    await assert.fileContains('.env', 'MAIL_FROM_ADDRESS')
 
     await assert.fileContains('start/env.ts', 'SPARKPOST_API_KEY: Env.schema.string()')
     await assert.fileContains('start/env.ts', 'RESEND_API_KEY: Env.schema.string()')
+    await assert.fileContains(
+      'start/env.ts',
+      `MAIL_MAILER: Env.schema.enum(['sparkpost', 'resend'] as const)`
+    )
+    await assert.fileContains('start/env.ts', 'MAIL_FROM_NAME: Env.schema.string()')
+    await assert.fileContains('start/env.ts', 'MAIL_FROM_ADDRESS: Env.schema.string()')
   })
 
   test('report error when unknown transports are mentioned', async ({ fs, assert }) => {
