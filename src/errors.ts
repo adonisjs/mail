@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Exception } from '@poppinss/utils/exception'
+import { Exception } from '@adonisjs/core/exceptions'
 
 /**
  * The error is raised when the transport is unable to

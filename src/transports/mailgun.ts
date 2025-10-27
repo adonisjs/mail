@@ -8,7 +8,7 @@
  */
 
 import ky from 'ky'
-import base64 from '@poppinss/utils/base64'
+import { base64 } from '@adonisjs/core/helpers'
 import { ObjectBuilder } from '@poppinss/object-builder'
 import { type Transport, createTransport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'

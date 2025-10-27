@@ -10,7 +10,7 @@
 import ky from 'ky'
 import retry from 'async-retry'
 import { test } from '@japa/runner'
-import base64 from '@poppinss/utils/base64'
+import { base64 } from '@adonisjs/core/helpers'
 
 import { Message } from '../../../src/message.js'
 import { MailgunTransport } from '../../../src/transports/mailgun.js'

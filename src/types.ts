@@ -9,8 +9,8 @@
 
 import { type Readable } from 'node:stream'
 import type { SendMailOptions } from 'nodemailer'
-import { type AsyncOrSync } from '@poppinss/types'
 import type { ConfigProvider } from '@adonisjs/core/types'
+import { type AsyncOrSync } from '@adonisjs/core/types/common'
 import type { SESv2ClientConfig } from '@aws-sdk/client-sesv2'
 import type MimeNode from 'nodemailer/lib/mime-node/index.js'
 import type { Options as SMTPConnectionOptions } from 'nodemailer/lib/smtp-connection/index.js'

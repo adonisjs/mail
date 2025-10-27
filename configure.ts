@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import string from '@poppinss/utils/string'
+import string from '@adonisjs/core/helpers/string'
 import type Configure from '@adonisjs/core/commands/configure'
 
 import { stubsRoot } from './stubs/main.js'

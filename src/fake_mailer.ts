@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import string from '@poppinss/utils/string'
 import { AssertionError } from 'node:assert'
-import { type Constructor } from '@poppinss/types'
+import string from '@adonisjs/core/helpers/string'
+import { type Constructor } from '@adonisjs/core/types/common'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 import type { SentMessageInfo } from 'nodemailer/lib/json-transport/index.js'
 

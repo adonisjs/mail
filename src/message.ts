@@ -12,10 +12,10 @@ import { fileURLToPath } from 'node:url'
 import { type Readable } from 'node:stream'
 import Macroable from '@poppinss/macroable'
 import { AssertionError } from 'node:assert'
-import { cuid } from '@adonisjs/core/helpers'
 import type { SendMailOptions } from 'nodemailer'
+import string from '@adonisjs/core/helpers/string'
 import ical, { type ICalCalendar } from 'ical-generator'
-import { RuntimeException } from '@poppinss/utils/exception'
+import { RuntimeException } from '@adonisjs/core/exceptions'
 import { type Attachment, type ListHeader } from 'nodemailer/lib/mailer/index.js'
 
 import debug from './debug.js'
@@ -64,7 +64,7 @@ export class Message extends Macroable {
      */
     const viewHelpers: MessageViewHelpers = {
       embedImage: (filePath, options) => {
-        const cid = cuid()
+        const cid = string.uuid()
         message.attachments = message.attachments ?? []
 
         message.attachments.push({
@@ -77,7 +77,7 @@ export class Message extends Macroable {
         return `cid:${cid}`
       },
       embedImageData: (data, options) => {
-        const cid = cuid()
+        const cid = string.uuid()
         message.attachments = message.attachments || []
 
         message.attachments.push({
