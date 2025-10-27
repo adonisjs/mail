@@ -395,10 +395,7 @@ export type SMTPConfig = (
 /**
  * SES transport config
  */
-export type SESConfig = SESv2ClientConfig & {
-  sendingRate?: number
-  maxConnections?: number
-}
+export type SESConfig = SESv2ClientConfig
 
 /*
 |--------------------------------------------------------------------------

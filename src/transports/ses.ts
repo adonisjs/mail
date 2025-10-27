@@ -46,8 +46,6 @@ export class SESTransport implements MailTransportContract {
 
     this.#transporter = nodemailer.createTransport({
       SES: { SendEmailCommand, sesClient },
-      sendingRate: this.#config.sendingRate,
-      maxConnections: this.#config.maxConnections,
     })
 
     return this.#transporter
