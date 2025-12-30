@@ -101,8 +101,8 @@ export async function configure(command: Configure) {
       },
       {
         MAIL_MAILER: transports[0],
-        MAIL_FROM_NAME: 'app@yourdomain.com',
-        MAIL_FROM_ADDRESS: 'Your name',
+        MAIL_FROM_NAME: 'Your name',
+        MAIL_FROM_ADDRESS: 'app@yourdomain.com',
       }
     )
   )
