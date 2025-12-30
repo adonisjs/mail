@@ -208,7 +208,7 @@ class MailsCollection {
   assertQueuedCount(count: number): void
 
   /**
-   * Assert the mentioned mail was sequeuednt for expected number
+   * Assert the mentioned mail was queued for expected number
    * of times
    */
   assertQueuedCount(mailConstructor: Constructor<unknown>, count: number): void

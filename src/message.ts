@@ -444,7 +444,7 @@ export class Message extends Macroable {
   }
 
   /**
-   * Optionally define email envolpe
+   * Optionally define email envelope
    */
   envelope(envelope: SendMailOptions['envelope']): this {
     this.nodeMailerMessage.envelope = envelope
@@ -460,7 +460,7 @@ export class Message extends Macroable {
   }
 
   /**
-   * Define email prority
+   * Define email priority
    */
   priority(priority: 'low' | 'normal' | 'high'): this {
     this.nodeMailerMessage.priority = priority
