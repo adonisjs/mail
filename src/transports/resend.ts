@@ -191,8 +191,8 @@ export class ResendTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: ResendRuntimeConfig
   ): Promise<MailResponse<ResendSentMessageInfo>> {
-    const sparkpostTransport = new NodeMailerTransport({ ...this.#config, ...config })
-    const transporter = createTransport(sparkpostTransport)
+    const resendTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const transporter = createTransport(resendTransport)
 
     const resendResponse = await transporter.sendMail(message)
     return new MailResponse(

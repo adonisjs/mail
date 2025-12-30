@@ -175,8 +175,8 @@ export class BrevoTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: BrevoRuntimeConfig
   ): Promise<MailResponse<BrevoSentMessageInfo>> {
-    const sparkpostTransport = new NodeMailerTransport({ ...this.#config, ...config })
-    const transporter = createTransport(sparkpostTransport)
+    const brevoTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const transporter = createTransport(brevoTransport)
 
     const brevoResponse = await transporter.sendMail(message)
     return new MailResponse(brevoResponse.messageId, brevoResponse.envelope, brevoResponse)
