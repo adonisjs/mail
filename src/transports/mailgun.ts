@@ -17,6 +17,7 @@ import debug from '../debug.js'
 import { streamToBlob } from '../utils.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+import { validateConfig, normalizeBaseUrl } from '../utils.js'
 import type {
   MailgunConfig,
   NodeMailerMessage,
@@ -69,9 +70,9 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
    * Returns base url for sending emails
    */
   #getBaseUrl(): string {
-    return this.#config.domain
-      ? `${this.#config.baseUrl.replace(/\/$/, '')}/${this.#config.domain}`
-      : this.#config.baseUrl.replace(/\/$/, '')
+    const baseUrl = normalizeBaseUrl(this.#config.baseUrl)
+
+    return this.#config.domain ? `${baseUrl}/${this.#config.domain}` : baseUrl
   }
 
   /**
@@ -185,14 +186,15 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
     mail: MailMessage,
     callback: (err: Error | null, info: MailgunSentMessageInfo) => void
   ) {
-    const envelope = mail.message.getEnvelope()
-    const url = `${this.#getBaseUrl()}/messages.mime`
-    const form = await this.#createFormData(mail)
-
-    debug('mailgun mail url %s', url)
-    debug('mailgun mail envelope %s', envelope)
-
     try {
+      validateConfig('Mailgun', this.#config)
+      const envelope = mail.message.getEnvelope()
+      const url = `${this.#getBaseUrl()}/messages.mime`
+      const form = await this.#createFormData(mail)
+
+      debug('mailgun mail url %s', url)
+      debug('mailgun mail envelope %s', envelope)
+
       const response = await ky.post<{ id: string }>(url, {
         headers: {
           Accept: 'application/json',

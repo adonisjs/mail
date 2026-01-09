@@ -16,6 +16,7 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+import { validateConfig, normalizeBaseUrl } from '../utils.js'
 import type {
   SparkPostConfig,
   NodeMailerMessage,
@@ -41,7 +42,7 @@ class NodeMailerTransport implements Transport {
    * Returns base url for sending emails
    */
   #getBaseUrl(): string {
-    return this.#config.baseUrl.replace(/\/$/, '')
+    return normalizeBaseUrl(this.#config.baseUrl)
   }
 
   /**
@@ -132,17 +133,18 @@ class NodeMailerTransport implements Transport {
     mail: MailMessage,
     callback: (err: Error | null, info: SparkPostSentMessageInfo) => void
   ) {
-    const url = `${this.#getBaseUrl()}/transmissions`
-    const options = this.#getOptions(this.#config)
-    const envelope = mail.message.getEnvelope()
-    const recipients = this.#getRecipients(mail)
-
-    debug('sparkpost mail url "%s"', url)
-    debug('sparkpost mail options %O', options)
-    debug('sparkpost mail envelope %O', envelope)
-    debug('sparkpost mail recipients %O', recipients)
-
     try {
+      validateConfig('SparkPost', this.#config)
+      const url = `${this.#getBaseUrl()}/transmissions`
+      const options = this.#getOptions(this.#config)
+      const envelope = mail.message.getEnvelope()
+      const recipients = this.#getRecipients(mail)
+
+      debug('sparkpost mail url "%s"', url)
+      debug('sparkpost mail options %O', options)
+      debug('sparkpost mail envelope %O', envelope)
+      debug('sparkpost mail recipients %O', recipients)
+
       /**
        * The sparkpost API doesn't accept the multipart stream and hence we
        * need to convert the stream to a string

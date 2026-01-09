@@ -14,6 +14,7 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+import { validateConfig, normalizeBaseUrl } from '../utils.js'
 import type {
   ResendConfig,
   NodeMailerMessage,
@@ -129,7 +130,7 @@ class NodeMailerTransport implements Transport {
    * Returns the normalized base URL for the API
    */
   #getBaseUrl() {
-    return this.#config.baseUrl.replace(/\/$/, '')
+    return normalizeBaseUrl(this.#config.baseUrl)
   }
 
   /**
@@ -139,14 +140,15 @@ class NodeMailerTransport implements Transport {
     mail: MailMessage,
     callback: (err: Error | null, info: ResendSentMessageInfo) => void
   ) {
-    const url = `${this.#getBaseUrl()}/emails`
-    const envelope = mail.message.getEnvelope()
-    const payload = this.#preparePayload(mail)
-
-    debug('resend mail url "%s"', url)
-    debug('resend mail payload %O', payload)
-
     try {
+      validateConfig('Resend', this.#config)
+      const url = `${this.#getBaseUrl()}/emails`
+      const envelope = mail.message.getEnvelope()
+      const payload = this.#preparePayload(mail)
+
+      debug('resend mail url "%s"', url)
+      debug('resend mail payload %O', payload)
+
       const response = await ky.post<{ id: string }>(url, {
         json: payload,
         headers: {

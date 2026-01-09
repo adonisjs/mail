@@ -8,13 +8,14 @@
  */
 
 import ky from 'ky'
-import { type Transport, createTransport } from 'nodemailer'
+import { createTransport, type Transport } from 'nodemailer'
 import type { Address } from 'nodemailer/lib/mailer/index.js'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+import { validateConfig, normalizeBaseUrl } from '../utils.js'
 import type {
   BrevoConfig,
   NodeMailerMessage,
@@ -116,21 +117,22 @@ class NodeMailerTransport implements Transport {
    * Returns base url for sending emails
    */
   #getBaseUrl(): string {
-    return this.#config.baseUrl.replace(/\/$/, '')
+    return normalizeBaseUrl(this.#config.baseUrl)
   }
 
   /**
    * Send mail
    */
   async send(mail: MailMessage, callback: (err: Error | null, info: BrevoSentMessageInfo) => void) {
-    const url = `${this.#getBaseUrl()}/smtp/email`
-    const envelope = mail.message.getEnvelope()
-    const payload = this.#preparePayload(mail)
-
-    debug('brevo email url %s', url)
-    debug('brevo email payload %O', payload)
-
     try {
+      validateConfig('Brevo', this.#config)
+      const url = `${this.#getBaseUrl()}/smtp/email`
+      const envelope = mail.message.getEnvelope()
+      const payload = this.#preparePayload(mail)
+
+      debug('brevo email url %s', url)
+      debug('brevo email payload %O', payload)
+
       const response = await ky.post<{ messageId: string }>(url, {
         headers: {
           'Accept': 'application/json',

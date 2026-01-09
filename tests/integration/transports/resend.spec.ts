@@ -63,4 +63,34 @@ test.group('Resend Transport', () => {
     assert.deepEqual(email.body.from, process.env.RESEND_FROM_EMAIL)
     assert.deepEqual(email.body.subject, 'Adonisv6')
   })
+
+  test('throw error when key is missing', async ({ assert }) => {
+    const resend = new ResendTransport({
+      baseUrl: process.env.RESEND_BASE_URL!,
+    } as any)
+
+    const message = new Message()
+    message.from(process.env.RESEND_FROM_EMAIL!)
+    message.to(process.env.RESEND_TO_EMAIL!)
+
+    await assert.rejects(
+      () => resend.send(message.toJSON().message),
+      'Unable to send email using the resend transport'
+    )
+  })
+
+  test('throw error when baseUrl is missing', async ({ assert }) => {
+    const resend = new ResendTransport({
+      key: '123',
+    } as any)
+
+    const message = new Message()
+    message.from(process.env.RESEND_FROM_EMAIL!)
+    message.to(process.env.RESEND_TO_EMAIL!)
+
+    await assert.rejects(
+      () => resend.send(message.toJSON().message),
+      'Unable to send email using the resend transport'
+    )
+  })
 })
