@@ -75,13 +75,13 @@ test.group('Resend Transport', () => {
 
     await assert.rejects(
       () => resend.send(message.toJSON().message),
-      'Unable to send email using the resend transport'
+      'Resend transport: "key" is not defined'
     )
   })
 
   test('throw error when baseUrl is missing', async ({ assert }) => {
     const resend = new ResendTransport({
-      key: '123',
+      key: process.env.RESEND_API_KEY!,
     } as any)
 
     const message = new Message()
@@ -90,7 +90,7 @@ test.group('Resend Transport', () => {
 
     await assert.rejects(
       () => resend.send(message.toJSON().message),
-      'Unable to send email using the resend transport'
+      'Resend transport: "baseUrl" is not defined'
     )
   })
 })
