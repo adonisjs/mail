@@ -14,15 +14,15 @@ import { type Transport, createTransport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
-import { streamToBlob, validateConfig, normalizeBaseUrl } from '../utils.js'
+import { streamToBlob, normalizeBaseUrl } from '../utils.js'
 import { MailResponse } from '../mail_response.js'
+import { BaseApiTransport } from './base_api_transport.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 
 import type {
   MailgunConfig,
   NodeMailerMessage,
   MailgunRuntimeConfig,
-  MailTransportContract,
   MailgunSentMessageInfo,
 } from '../types.js'
 
@@ -224,12 +224,9 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
  * AdonisJS Mail transport for sending emails using the
  * Mailgun's `/messages.mime` API endpoint.
  */
-export class MailgunTransport implements MailTransportContract {
-  #config: MailgunConfig
-
+export class MailgunTransport extends BaseApiTransport<MailgunConfig> {
   constructor(config: MailgunConfig) {
-    validateConfig('mailgun', config)
-    this.#config = config
+    super('mailgun', config)
   }
 
   /**
@@ -239,7 +236,7 @@ export class MailgunTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: MailgunRuntimeConfig
   ): Promise<MailResponse<MailgunSentMessageInfo>> {
-    const mailgunTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const mailgunTransport = new NodeMailerTransport({ ...this.config, ...config })
     const transporter = createTransport(mailgunTransport)
 
     const mailgunResponse = await transporter.sendMail(message)

@@ -14,7 +14,8 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
-import { validateConfig, normalizeBaseUrl } from '../utils.js'
+import { BaseApiTransport } from './base_api_transport.js'
+import { normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 
 import type {
@@ -22,7 +23,6 @@ import type {
   NodeMailerMessage,
   BrevoRuntimeConfig,
   BrevoSentMessageInfo,
-  MailTransportContract,
 } from '../types.js'
 
 /**
@@ -163,12 +163,9 @@ class NodeMailerTransport implements Transport {
 /**
  * Transport for sending emails using the Brevo `/emails/send` API.
  */
-export class BrevoTransport implements MailTransportContract {
-  #config: BrevoConfig
-
+export class BrevoTransport extends BaseApiTransport<BrevoConfig> {
   constructor(config: BrevoConfig) {
-    validateConfig('brevo', config)
-    this.#config = config
+    super('brevo', config)
   }
 
   /**
@@ -178,7 +175,7 @@ export class BrevoTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: BrevoRuntimeConfig
   ): Promise<MailResponse<BrevoSentMessageInfo>> {
-    const brevoTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const brevoTransport = new NodeMailerTransport({ ...this.config, ...config })
     const transporter = createTransport(brevoTransport)
 
     const brevoResponse = await transporter.sendMail(message)

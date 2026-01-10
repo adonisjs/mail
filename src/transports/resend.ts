@@ -13,13 +13,13 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
-import { validateConfig, normalizeBaseUrl } from '../utils.js'
+import { BaseApiTransport } from './base_api_transport.js'
+import { normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 
 import type {
   ResendConfig,
   NodeMailerMessage,
-  MailTransportContract,
   ResendRuntimeConfig,
   ResendSentMessageInfo,
 } from '../types.js'
@@ -179,12 +179,9 @@ class NodeMailerTransport implements Transport {
 /**
  * Transport for sending using the Resend `/emails` API.
  */
-export class ResendTransport implements MailTransportContract {
-  #config: ResendConfig
-
+export class ResendTransport extends BaseApiTransport<ResendConfig> {
   constructor(config: ResendConfig) {
-    validateConfig('resend', config)
-    this.#config = config
+    super('resend', config)
   }
 
   /**
@@ -194,7 +191,7 @@ export class ResendTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: ResendRuntimeConfig
   ): Promise<MailResponse<ResendSentMessageInfo>> {
-    const resendTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const resendTransport = new NodeMailerTransport({ ...this.config, ...config })
     const transporter = createTransport(resendTransport)
 
     const resendResponse = await transporter.sendMail(message)

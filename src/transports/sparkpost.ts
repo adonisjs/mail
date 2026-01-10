@@ -15,13 +15,13 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
-import { validateConfig, normalizeBaseUrl } from '../utils.js'
+import { BaseApiTransport } from './base_api_transport.js'
+import { normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 
 import type {
   SparkPostConfig,
   NodeMailerMessage,
-  MailTransportContract,
   SparkPostRuntimeConfig,
   SparkPostSentMessageInfo,
 } from '../types.js'
@@ -183,12 +183,9 @@ class NodeMailerTransport implements Transport {
  * AdonisJS mail transport implementation to send emails
  * using Sparkpost's `/message.mime` API endpoint.
  */
-export class SparkPostTransport implements MailTransportContract {
-  #config: SparkPostConfig
-
+export class SparkPostTransport extends BaseApiTransport<SparkPostConfig> {
   constructor(config: SparkPostConfig) {
-    validateConfig('sparkpost', config)
-    this.#config = config
+    super('sparkpost', config)
   }
 
   /**
@@ -198,7 +195,7 @@ export class SparkPostTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: SparkPostRuntimeConfig
   ): Promise<MailResponse<SparkPostSentMessageInfo>> {
-    const nodemailerTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const nodemailerTransport = new NodeMailerTransport({ ...this.config, ...config })
     const transporter = createTransport(nodemailerTransport)
 
     const sparkPostResponse = await transporter.sendMail(message)
