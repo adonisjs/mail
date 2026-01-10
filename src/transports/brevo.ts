@@ -16,6 +16,7 @@ import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
 import { validateConfig, normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+
 import type {
   BrevoConfig,
   NodeMailerMessage,
@@ -125,7 +126,6 @@ class NodeMailerTransport implements Transport {
    */
   async send(mail: MailMessage, callback: (err: Error | null, info: BrevoSentMessageInfo) => void) {
     try {
-      validateConfig('Brevo', this.#config)
       const url = `${this.#getBaseUrl()}/smtp/email`
       const envelope = mail.message.getEnvelope()
       const payload = this.#preparePayload(mail)

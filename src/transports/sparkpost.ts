@@ -17,6 +17,7 @@ import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
 import { validateConfig, normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+
 import type {
   SparkPostConfig,
   NodeMailerMessage,
@@ -134,7 +135,6 @@ class NodeMailerTransport implements Transport {
     callback: (err: Error | null, info: SparkPostSentMessageInfo) => void
   ) {
     try {
-      validateConfig('SparkPost', this.#config)
       const url = `${this.#getBaseUrl()}/transmissions`
       const options = this.#getOptions(this.#config)
       const envelope = mail.message.getEnvelope()

@@ -187,7 +187,6 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
     callback: (err: Error | null, info: MailgunSentMessageInfo) => void
   ) {
     try {
-      validateConfig('Mailgun', this.#config)
       const envelope = mail.message.getEnvelope()
       const url = `${this.#getBaseUrl()}/messages.mime`
       const form = await this.#createFormData(mail)

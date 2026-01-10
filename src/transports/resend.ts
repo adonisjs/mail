@@ -15,6 +15,7 @@ import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
 import { validateConfig, normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+
 import type {
   ResendConfig,
   NodeMailerMessage,
@@ -141,7 +142,6 @@ class NodeMailerTransport implements Transport {
     callback: (err: Error | null, info: ResendSentMessageInfo) => void
   ) {
     try {
-      validateConfig('Resend', this.#config)
       const url = `${this.#getBaseUrl()}/emails`
       const envelope = mail.message.getEnvelope()
       const payload = this.#preparePayload(mail)
