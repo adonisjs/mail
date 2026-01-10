@@ -14,8 +14,8 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
-import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import { validateConfig, normalizeBaseUrl } from '../utils.js'
+import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import type {
   BrevoConfig,
   NodeMailerMessage,
@@ -167,6 +167,7 @@ export class BrevoTransport implements MailTransportContract {
   #config: BrevoConfig
 
   constructor(config: BrevoConfig) {
+    validateConfig('brevo', config)
     this.#config = config
   }
 

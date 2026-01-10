@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { RuntimeException } from '@adonisjs/core/exceptions'
+import { E_INVALID_CONFIG } from './errors.js'
 
 /**
  * Convert a stream to a blob
@@ -24,21 +24,29 @@ export function streamToBlob(stream: NodeJS.ReadableStream, mimeType: string) {
 }
 
 /**
- * Validates the transport configuration
- */
-export function validateConfig(transportName: string, config: { key: string; baseUrl: string }) {
-  if (!config.key) {
-    throw new RuntimeException(`${transportName} transport: "key" is not defined`)
-  }
-
-  if (!config.baseUrl) {
-    throw new RuntimeException(`${transportName} transport: "baseUrl" is not defined`)
-  }
-}
-
-/**
- * Returns the normalized base URL for the API
+ * Normalize the base URL by removing the trailing slash
  */
 export function normalizeBaseUrl(baseUrl: string) {
   return baseUrl.replace(/\/$/, '')
+}
+
+/**
+ * Validate transport config to ensure the "key" and
+ * "baseUrl" are present.
+ */
+export function validateConfig(
+  transportName: string,
+  config: { key: string; baseUrl: string | undefined }
+) {
+  if (!config.key) {
+    throw new E_INVALID_CONFIG(
+      `Invalid config for "${transportName}" transport. The "key" property is missing`
+    )
+  }
+
+  if (!config.baseUrl) {
+    throw new E_INVALID_CONFIG(
+      `Invalid config for "${transportName}" transport. The "baseUrl" property is missing`
+    )
+  }
 }

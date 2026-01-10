@@ -13,8 +13,8 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
-import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import { validateConfig, normalizeBaseUrl } from '../utils.js'
+import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import type {
   ResendConfig,
   NodeMailerMessage,
@@ -183,6 +183,7 @@ export class ResendTransport implements MailTransportContract {
   #config: ResendConfig
 
   constructor(config: ResendConfig) {
+    validateConfig('resend', config)
     this.#config = config
   }
 

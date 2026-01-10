@@ -14,10 +14,10 @@ import { type Transport, createTransport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
-import { streamToBlob } from '../utils.js'
+import { streamToBlob, validateConfig, normalizeBaseUrl } from '../utils.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
-import { validateConfig, normalizeBaseUrl } from '../utils.js'
+
 import type {
   MailgunConfig,
   NodeMailerMessage,
@@ -70,9 +70,9 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
    * Returns base url for sending emails
    */
   #getBaseUrl(): string {
-    const baseUrl = normalizeBaseUrl(this.#config.baseUrl)
-
-    return this.#config.domain ? `${baseUrl}/${this.#config.domain}` : baseUrl
+    return this.#config.domain
+      ? `${normalizeBaseUrl(this.#config.baseUrl)}/${this.#config.domain}`
+      : normalizeBaseUrl(this.#config.baseUrl)
   }
 
   /**
@@ -229,6 +229,7 @@ export class MailgunTransport implements MailTransportContract {
   #config: MailgunConfig
 
   constructor(config: MailgunConfig) {
+    validateConfig('mailgun', config)
     this.#config = config
   }
 

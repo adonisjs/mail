@@ -15,8 +15,8 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
-import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import { validateConfig, normalizeBaseUrl } from '../utils.js'
+import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import type {
   SparkPostConfig,
   NodeMailerMessage,
@@ -187,6 +187,7 @@ export class SparkPostTransport implements MailTransportContract {
   #config: SparkPostConfig
 
   constructor(config: SparkPostConfig) {
+    validateConfig('sparkpost', config)
     this.#config = config
   }
 
