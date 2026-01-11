@@ -38,7 +38,7 @@ export default class MakeMail extends BaseCommand {
     const codemods = await this.createCodemods()
     await codemods.makeUsingStub(stubsRoot, 'make/mail/main.stub', {
       flags: this.parsed.flags,
-      intent: this.intent || 'notification',
+      intent: this.intent || 'mail',
       entity: this.app.generators.createEntity(this.name),
     })
   }

@@ -100,7 +100,7 @@ test.group('Fake mailer | mails | send', (group) => {
         this.message.to('bar@baz.com')
       }
     }
-    class PaymentDueNotification extends BaseMail {
+    class PaymentDueMail extends BaseMail {
       from: string = 'foo@bar.com'
       subject: string = 'Clear your dues'
 
@@ -111,10 +111,10 @@ test.group('Fake mailer | mails | send', (group) => {
 
     await mailer.send(new VerifyEmail())
     await mailer.send(new VerifyEmail())
-    await mailer.send(new PaymentDueNotification())
+    await mailer.send(new PaymentDueMail())
 
     mails.assertSentCount(VerifyEmail, 2)
-    mails.assertSentCount(PaymentDueNotification, 1)
+    mails.assertSentCount(PaymentDueMail, 1)
     mails.assertSentCount(3)
 
     assert.throws(() => {
@@ -138,7 +138,7 @@ test.group('Fake mailer | mails | send', (group) => {
         this.message.to('bar@baz.com')
       }
     }
-    class PaymentDueNotification extends BaseMail {
+    class PaymentDueMail extends BaseMail {
       from: string = 'foo@bar.com'
       subject: string = 'Clear your dues'
 
@@ -151,7 +151,7 @@ test.group('Fake mailer | mails | send', (group) => {
 
     await mailer.send(new VerifyEmail())
     await mailer.send(new VerifyEmail())
-    await mailer.send(new PaymentDueNotification())
+    await mailer.send(new PaymentDueMail())
 
     assert.throws(() => {
       return mails.assertNoneSent()
@@ -310,7 +310,7 @@ test.group('Fake mailer | mails | sendLater', (group) => {
         this.message.to('bar@baz.com')
       }
     }
-    class PaymentDueNotification extends BaseMail {
+    class PaymentDueMail extends BaseMail {
       from: string = 'foo@bar.com'
       subject: string = 'Clear your dues'
 
@@ -321,10 +321,10 @@ test.group('Fake mailer | mails | sendLater', (group) => {
 
     await mailer.sendLater(new VerifyEmail())
     await mailer.sendLater(new VerifyEmail())
-    await mailer.sendLater(new PaymentDueNotification())
+    await mailer.sendLater(new PaymentDueMail())
 
     mails.assertQueuedCount(VerifyEmail, 2)
-    mails.assertQueuedCount(PaymentDueNotification, 1)
+    mails.assertQueuedCount(PaymentDueMail, 1)
     mails.assertQueuedCount(3)
 
     assert.throws(() => {
@@ -348,7 +348,7 @@ test.group('Fake mailer | mails | sendLater', (group) => {
         this.message.to('bar@baz.com')
       }
     }
-    class PaymentDueNotification extends BaseMail {
+    class PaymentDueMail extends BaseMail {
       from: string = 'foo@bar.com'
       subject: string = 'Clear your dues'
 
@@ -361,7 +361,7 @@ test.group('Fake mailer | mails | sendLater', (group) => {
 
     await mailer.sendLater(new VerifyEmail())
     await mailer.sendLater(new VerifyEmail())
-    await mailer.sendLater(new PaymentDueNotification())
+    await mailer.sendLater(new PaymentDueMail())
 
     assert.throws(() => {
       return mails.assertNoneQueued()

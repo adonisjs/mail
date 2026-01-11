@@ -20,14 +20,14 @@ test.group('MakeMail', () => {
     const command = await ace.create(MakeMail, ['email_verification'])
     await command.exec()
 
-    command.assertLog('green(DONE:)    create app/mails/email_verification_notification.ts')
+    command.assertLog('green(DONE:)    create app/mails/email_verification_mail.ts')
     await assert.fileContains(
-      'app/mails/email_verification_notification.ts',
+      'app/mails/email_verification_mail.ts',
       `import { BaseMail } from '@adonisjs/mail'`
     )
     await assert.fileContains(
-      'app/mails/email_verification_notification.ts',
-      `export default class EmailVerificationNotification extends BaseMail {`
+      'app/mails/email_verification_mail.ts',
+      `export default class EmailVerificationMail extends BaseMail {`
     )
   })
 
