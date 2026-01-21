@@ -80,6 +80,8 @@ class MailsCollection {
         message: `Expected mail "${mailConstructor.name}" was not sent`,
       })
     }
+
+    return this
   }
 
   /**
@@ -102,22 +104,24 @@ class MailsCollection {
         message: `Unexpected mail "${mailConstructor.name}" was sent`,
       })
     }
+
+    return this
   }
 
   /**
    * Assert a total of expected number of mails were sent
    */
-  assertSentCount(count: number): void
+  assertSentCount(count: number): this
 
   /**
    * Assert the mentioned mail was sent for expected number
    * of times
    */
-  assertSentCount(mailConstructor: NormalizeConstructor<typeof BaseMail>, count: number): void
+  assertSentCount(mailConstructor: NormalizeConstructor<typeof BaseMail>, count: number): this
   assertSentCount(
     mailConstructor: NormalizeConstructor<typeof BaseMail> | number,
     count?: number
-  ): void {
+  ): this {
     if (typeof mailConstructor === 'number') {
       const actual = this.#sent.length
       const expected = mailConstructor
@@ -131,7 +135,7 @@ class MailsCollection {
           expected,
         })
       }
-      return
+      return this
     }
 
     const actual = this.sent((mail) => mail instanceof mailConstructor).length
@@ -146,6 +150,8 @@ class MailsCollection {
         expected,
       })
     }
+
+    return this
   }
 
   /**
@@ -159,6 +165,8 @@ class MailsCollection {
         actual: [this.#sent.map((mail) => mail.constructor.name)],
       })
     }
+
+    return this
   }
 
   /**
@@ -181,6 +189,8 @@ class MailsCollection {
         message: `Expected mail "${mailConstructor.name}" was not queued`,
       })
     }
+
+    return this
   }
 
   /**
@@ -203,22 +213,24 @@ class MailsCollection {
         message: `Unexpected mail "${mailConstructor.name}" was queued`,
       })
     }
+
+    return this
   }
 
   /**
    * Assert a total of expected number of mails were queued
    */
-  assertQueuedCount(count: number): void
+  assertQueuedCount(count: number): this
 
   /**
    * Assert the mentioned mail was sequeuednt for expected number
    * of times
    */
-  assertQueuedCount(mailConstructor: NormalizeConstructor<typeof BaseMail>, count: number): void
+  assertQueuedCount(mailConstructor: NormalizeConstructor<typeof BaseMail>, count: number): this
   assertQueuedCount(
     mailConstructor: NormalizeConstructor<typeof BaseMail> | number,
     count?: number
-  ): void {
+  ): this {
     if (typeof mailConstructor === 'number') {
       const actual = this.#queued.length
       const expected = mailConstructor
@@ -232,7 +244,7 @@ class MailsCollection {
           expected,
         })
       }
-      return
+      return this
     }
 
     const actual = this.queued((mail) => mail instanceof mailConstructor).length
@@ -247,6 +259,8 @@ class MailsCollection {
         expected,
       })
     }
+
+    return this
   }
 
   /**
@@ -260,6 +274,8 @@ class MailsCollection {
         actual: [this.#queued.map((mail) => mail.constructor.name)],
       })
     }
+
+    return this
   }
 }
 
