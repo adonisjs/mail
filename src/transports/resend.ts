@@ -13,11 +13,13 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
+import { BaseApiTransport } from './base_api_transport.js'
+import { normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+
 import type {
   ResendConfig,
   NodeMailerMessage,
-  MailTransportContract,
   ResendRuntimeConfig,
   ResendSentMessageInfo,
 } from '../types.js'
@@ -129,7 +131,7 @@ class NodeMailerTransport implements Transport {
    * Returns the normalized base URL for the API
    */
   #getBaseUrl() {
-    return this.#config.baseUrl.replace(/\/$/, '')
+    return normalizeBaseUrl(this.#config.baseUrl)
   }
 
   /**
@@ -139,14 +141,14 @@ class NodeMailerTransport implements Transport {
     mail: MailMessage,
     callback: (err: Error | null, info: ResendSentMessageInfo) => void
   ) {
-    const url = `${this.#getBaseUrl()}/emails`
-    const envelope = mail.message.getEnvelope()
-    const payload = this.#preparePayload(mail)
-
-    debug('resend mail url "%s"', url)
-    debug('resend mail payload %O', payload)
-
     try {
+      const url = `${this.#getBaseUrl()}/emails`
+      const envelope = mail.message.getEnvelope()
+      const payload = this.#preparePayload(mail)
+
+      debug('resend mail url "%s"', url)
+      debug('resend mail payload %O', payload)
+
       const response = await ky.post<{ id: string }>(url, {
         json: payload,
         headers: {
@@ -177,11 +179,9 @@ class NodeMailerTransport implements Transport {
 /**
  * Transport for sending using the Resend `/emails` API.
  */
-export class ResendTransport implements MailTransportContract {
-  #config: ResendConfig
-
+export class ResendTransport extends BaseApiTransport<ResendConfig> {
   constructor(config: ResendConfig) {
-    this.#config = config
+    super('resend', config)
   }
 
   /**
@@ -191,7 +191,7 @@ export class ResendTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: ResendRuntimeConfig
   ): Promise<MailResponse<ResendSentMessageInfo>> {
-    const resendTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const resendTransport = new NodeMailerTransport({ ...this.config, ...config })
     const transporter = createTransport(resendTransport)
 
     const resendResponse = await transporter.sendMail(message)

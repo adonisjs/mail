@@ -14,14 +14,15 @@ import { type Transport, createTransport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
-import { streamToBlob } from '../utils.js'
+import { streamToBlob, normalizeBaseUrl } from '../utils.js'
 import { MailResponse } from '../mail_response.js'
+import { BaseApiTransport } from './base_api_transport.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+
 import type {
   MailgunConfig,
   NodeMailerMessage,
   MailgunRuntimeConfig,
-  MailTransportContract,
   MailgunSentMessageInfo,
 } from '../types.js'
 
@@ -70,8 +71,8 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
    */
   #getBaseUrl(): string {
     return this.#config.domain
-      ? `${this.#config.baseUrl.replace(/\/$/, '')}/${this.#config.domain}`
-      : this.#config.baseUrl.replace(/\/$/, '')
+      ? `${normalizeBaseUrl(this.#config.baseUrl)}/${this.#config.domain}`
+      : normalizeBaseUrl(this.#config.baseUrl)
   }
 
   /**
@@ -185,14 +186,14 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
     mail: MailMessage,
     callback: (err: Error | null, info: MailgunSentMessageInfo) => void
   ) {
-    const envelope = mail.message.getEnvelope()
-    const url = `${this.#getBaseUrl()}/messages.mime`
-    const form = await this.#createFormData(mail)
-
-    debug('mailgun mail url %s', url)
-    debug('mailgun mail envelope %s', envelope)
-
     try {
+      const envelope = mail.message.getEnvelope()
+      const url = `${this.#getBaseUrl()}/messages.mime`
+      const form = await this.#createFormData(mail)
+
+      debug('mailgun mail url %s', url)
+      debug('mailgun mail envelope %s', envelope)
+
       const response = await ky.post<{ id: string }>(url, {
         headers: {
           Accept: 'application/json',
@@ -223,11 +224,9 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
  * AdonisJS Mail transport for sending emails using the
  * Mailgun's `/messages.mime` API endpoint.
  */
-export class MailgunTransport implements MailTransportContract {
-  #config: MailgunConfig
-
+export class MailgunTransport extends BaseApiTransport<MailgunConfig> {
   constructor(config: MailgunConfig) {
-    this.#config = config
+    super('mailgun', config)
   }
 
   /**
@@ -237,7 +236,7 @@ export class MailgunTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: MailgunRuntimeConfig
   ): Promise<MailResponse<MailgunSentMessageInfo>> {
-    const mailgunTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const mailgunTransport = new NodeMailerTransport({ ...this.config, ...config })
     const transporter = createTransport(mailgunTransport)
 
     const mailgunResponse = await transporter.sendMail(message)

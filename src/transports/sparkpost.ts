@@ -15,11 +15,13 @@ import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
+import { BaseApiTransport } from './base_api_transport.js'
+import { normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+
 import type {
   SparkPostConfig,
   NodeMailerMessage,
-  MailTransportContract,
   SparkPostRuntimeConfig,
   SparkPostSentMessageInfo,
 } from '../types.js'
@@ -41,7 +43,7 @@ class NodeMailerTransport implements Transport {
    * Returns base url for sending emails
    */
   #getBaseUrl(): string {
-    return this.#config.baseUrl.replace(/\/$/, '')
+    return normalizeBaseUrl(this.#config.baseUrl)
   }
 
   /**
@@ -132,17 +134,17 @@ class NodeMailerTransport implements Transport {
     mail: MailMessage,
     callback: (err: Error | null, info: SparkPostSentMessageInfo) => void
   ) {
-    const url = `${this.#getBaseUrl()}/transmissions`
-    const options = this.#getOptions(this.#config)
-    const envelope = mail.message.getEnvelope()
-    const recipients = this.#getRecipients(mail)
-
-    debug('sparkpost mail url "%s"', url)
-    debug('sparkpost mail options %O', options)
-    debug('sparkpost mail envelope %O', envelope)
-    debug('sparkpost mail recipients %O', recipients)
-
     try {
+      const url = `${this.#getBaseUrl()}/transmissions`
+      const options = this.#getOptions(this.#config)
+      const envelope = mail.message.getEnvelope()
+      const recipients = this.#getRecipients(mail)
+
+      debug('sparkpost mail url "%s"', url)
+      debug('sparkpost mail options %O', options)
+      debug('sparkpost mail envelope %O', envelope)
+      debug('sparkpost mail recipients %O', recipients)
+
       /**
        * The sparkpost API doesn't accept the multipart stream and hence we
        * need to convert the stream to a string
@@ -181,11 +183,9 @@ class NodeMailerTransport implements Transport {
  * AdonisJS mail transport implementation to send emails
  * using Sparkpost's `/message.mime` API endpoint.
  */
-export class SparkPostTransport implements MailTransportContract {
-  #config: SparkPostConfig
-
+export class SparkPostTransport extends BaseApiTransport<SparkPostConfig> {
   constructor(config: SparkPostConfig) {
-    this.#config = config
+    super('sparkpost', config)
   }
 
   /**
@@ -195,7 +195,7 @@ export class SparkPostTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: SparkPostRuntimeConfig
   ): Promise<MailResponse<SparkPostSentMessageInfo>> {
-    const nodemailerTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const nodemailerTransport = new NodeMailerTransport({ ...this.config, ...config })
     const transporter = createTransport(nodemailerTransport)
 
     const sparkPostResponse = await transporter.sendMail(message)

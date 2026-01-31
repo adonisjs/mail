@@ -8,19 +8,21 @@
  */
 
 import ky from 'ky'
-import { type Transport, createTransport } from 'nodemailer'
+import { createTransport, type Transport } from 'nodemailer'
 import type { Address } from 'nodemailer/lib/mailer/index.js'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
 import { MailResponse } from '../mail_response.js'
+import { BaseApiTransport } from './base_api_transport.js'
+import { normalizeBaseUrl } from '../utils.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+
 import type {
   BrevoConfig,
   NodeMailerMessage,
   BrevoRuntimeConfig,
   BrevoSentMessageInfo,
-  MailTransportContract,
 } from '../types.js'
 
 /**
@@ -116,21 +118,21 @@ class NodeMailerTransport implements Transport {
    * Returns base url for sending emails
    */
   #getBaseUrl(): string {
-    return this.#config.baseUrl.replace(/\/$/, '')
+    return normalizeBaseUrl(this.#config.baseUrl)
   }
 
   /**
    * Send mail
    */
   async send(mail: MailMessage, callback: (err: Error | null, info: BrevoSentMessageInfo) => void) {
-    const url = `${this.#getBaseUrl()}/smtp/email`
-    const envelope = mail.message.getEnvelope()
-    const payload = this.#preparePayload(mail)
-
-    debug('brevo email url %s', url)
-    debug('brevo email payload %O', payload)
-
     try {
+      const url = `${this.#getBaseUrl()}/smtp/email`
+      const envelope = mail.message.getEnvelope()
+      const payload = this.#preparePayload(mail)
+
+      debug('brevo email url %s', url)
+      debug('brevo email payload %O', payload)
+
       const response = await ky.post<{ messageId: string }>(url, {
         headers: {
           'Accept': 'application/json',
@@ -161,11 +163,9 @@ class NodeMailerTransport implements Transport {
 /**
  * Transport for sending emails using the Brevo `/emails/send` API.
  */
-export class BrevoTransport implements MailTransportContract {
-  #config: BrevoConfig
-
+export class BrevoTransport extends BaseApiTransport<BrevoConfig> {
   constructor(config: BrevoConfig) {
-    this.#config = config
+    super('brevo', config)
   }
 
   /**
@@ -175,7 +175,7 @@ export class BrevoTransport implements MailTransportContract {
     message: NodeMailerMessage,
     config?: BrevoRuntimeConfig
   ): Promise<MailResponse<BrevoSentMessageInfo>> {
-    const brevoTransport = new NodeMailerTransport({ ...this.#config, ...config })
+    const brevoTransport = new NodeMailerTransport({ ...this.config, ...config })
     const transporter = createTransport(brevoTransport)
 
     const brevoResponse = await transporter.sendMail(message)

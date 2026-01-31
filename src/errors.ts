@@ -10,6 +10,15 @@
 import { Exception } from '@adonisjs/core/exceptions'
 
 /**
+ * The error is raised when one or more configuration
+ * properties are missing or invalid
+ */
+export const E_INVALID_CONFIG = class InvalidConfigException extends Exception {
+  static status = 500
+  static code = 'E_INVALID_CONFIG'
+}
+
+/**
  * The error is raised when the transport is unable to
  * send the email
  */

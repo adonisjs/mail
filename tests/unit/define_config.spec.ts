@@ -40,17 +40,17 @@ test.group('Define config', () => {
     assert.instanceOf(sesFactory(), SESTransport)
     expectTypeOf(sesFactory()).toMatchTypeOf<SESTransport>()
 
-    const mailgunProvider = transports.mailgun({ key: '', baseUrl: '', domain: '' })
+    const mailgunProvider = transports.mailgun({ key: 'dummy', baseUrl: 'dummy', domain: 'dummy' })
     const mailgunFactory = await mailgunProvider.resolver(app)
     assert.instanceOf(mailgunFactory(), MailgunTransport)
     expectTypeOf(mailgunFactory()).toMatchTypeOf<MailgunTransport>()
 
-    const sparkpostProvider = transports.sparkpost({ key: '', baseUrl: '' })
+    const sparkpostProvider = transports.sparkpost({ key: 'dummy', baseUrl: 'dummy' })
     const sparkpostFactory = await sparkpostProvider.resolver(app)
     assert.instanceOf(sparkpostFactory(), SparkPostTransport)
     expectTypeOf(sparkpostFactory()).toMatchTypeOf<SparkPostTransport>()
 
-    const resendProvider = transports.resend({ key: '', baseUrl: '' })
+    const resendProvider = transports.resend({ key: 'dummy', baseUrl: 'dummy' })
     const resendFactory = await resendProvider.resolver(app)
     assert.instanceOf(resendFactory(), ResendTransport)
     expectTypeOf(resendFactory()).toMatchTypeOf<ResendTransport>()
@@ -68,9 +68,9 @@ test.group('Define config', () => {
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
           },
         }),
-        mailgun: transports.mailgun({ key: '', baseUrl: '', domain: '' }),
-        sparkpost: transports.sparkpost({ key: '', baseUrl: '' }),
-        resend: transports.resend({ key: '', baseUrl: '' }),
+        mailgun: transports.mailgun({ key: 'dummy', baseUrl: 'dummy', domain: 'dummy' }),
+        sparkpost: transports.sparkpost({ key: 'dummy', baseUrl: 'dummy' }),
+        resend: transports.resend({ key: 'dummy', baseUrl: 'dummy' }),
       },
     })
 
@@ -89,5 +89,21 @@ test.group('Define config', () => {
     assert.instanceOf(mail.use('mailgun').transport, MailgunTransport)
     assert.instanceOf(mail.use('sparkpost').transport, SparkPostTransport)
     assert.instanceOf(mail.use('resend').transport, ResendTransport)
+  })
+
+  test('throw error when key is missing', async ({ assert }) => {
+    assert.throws(
+      // @ts-expect-error
+      () => new ResendTransport({ baseUrl: 'dummy' }),
+      'Invalid config for "resend" transport. The "key" property is missing'
+    )
+  })
+
+  test('throw error when baseUrl is missing', async ({ assert }) => {
+    assert.throws(
+      // @ts-expect-error
+      () => new ResendTransport({ key: 'dummy' }),
+      'Invalid config for "resend" transport. The "baseUrl" property is missing'
+    )
   })
 })
