@@ -51,8 +51,13 @@ class NodeMailerTransport implements Transport {
     }
 
     const address: Record<string, string> = {}
-    if (rawAddress.name) address.name = rawAddress.name
-    if (rawAddress.address) address.email = rawAddress.address
+    if (rawAddress.name) {
+      address.name = rawAddress.name
+    }
+    if (rawAddress.address) {
+      address.email = rawAddress.address
+    }
+
     return address
   }
 
@@ -69,7 +74,7 @@ class NodeMailerTransport implements Transport {
    */
   #preparePayload(mail: MailMessage) {
     let payload: Record<string, any> = {
-      sender: this.#formatAddress(mail.data.from),
+      sender: this.#formatAddresses(mail.data.from)[0],
       to: this.#formatAddresses(mail.data.to),
       subject: mail.data.subject,
     }

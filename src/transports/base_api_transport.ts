@@ -15,9 +15,9 @@ import type { NodeMailerMessage, MailTransportContract } from '../types.js'
  * Base class for HTTP based transports to validate the config
  * and normalize the base URL
  */
-export abstract class BaseApiTransport<Config extends { key: string; baseUrl: string }>
-  implements MailTransportContract
-{
+export abstract class BaseApiTransport<
+  Config extends { key: string; baseUrl: string },
+> implements MailTransportContract {
   constructor(
     protected name: string,
     protected config: Config
