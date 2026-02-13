@@ -8,7 +8,6 @@
  */
 
 import { test } from '@japa/runner'
-
 import { Message } from '../../../src/message.js'
 import { BrevoTransport } from '../../../src/transports/brevo.js'
 
@@ -33,5 +32,24 @@ test.group('Brevo Transport', () => {
       process.env.TEST_EMAILS_RECIPIENT!,
       process.env.TEST_EMAILS_CC!,
     ])
+  })
+
+  test('send email with replyTo using brevo transport', async ({ assert }) => {
+    const brevo = new BrevoTransport({
+      key: process.env.BREVO_API_KEY!,
+      baseUrl: process.env.BREVO_BASE_URL!,
+    })
+
+    const message = new Message()
+    message.from(process.env.BREVO_FROM_EMAIL!)
+    message.to(process.env.TEST_EMAILS_RECIPIENT!)
+    message.replyTo('reply@example.com', 'Reply Name')
+    message.subject('Test email with replyTo')
+    message.html('<p> Hello with replyTo </p>')
+
+    const response = await brevo.send(message.toJSON().message)
+
+    assert.equal(response.envelope!.from, process.env.BREVO_FROM_EMAIL)
+    assert.deepEqual(response.envelope!.to, [process.env.TEST_EMAILS_RECIPIENT!])
   })
 })
