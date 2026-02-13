@@ -92,10 +92,14 @@
     "@adonisjs/assembler": "^8.0.0-next.14",
     "@adonisjs/core": "^7.0.0-next.8",
     "@aws-sdk/client-sesv2": "^3.844.0",
-    "edge.js": "^6.0.1"
+    "edge.js": "^6.0.1",
+    "mjml": "^4.18.0"
   },
   "peerDependenciesMeta": {
     "edge.js": {
+      "optional": true
+    },
+    "mjml": {
       "optional": true
     },
     "@adonisjs/assembler": {
