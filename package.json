@@ -37,7 +37,7 @@
     "clean": "del-cli build",
     "precompile": "npm run lint && npm run clean",
     "copy:templates": "copyfiles --up=1 \"stubs/**/**/*.stub\" build",
-    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
+    "compile": "tsdown && tsc --emitDeclarationOnly --declaration",
     "postcompile": "npm run copy:templates && npm run index:commands",
     "build": "npm run compile",
     "release": "npx release-it",
@@ -76,7 +76,7 @@
     "prettier": "^3.8.1",
     "release-it": "^19.2.4",
     "sinon": "^21.0.1",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.20.3",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -125,7 +125,7 @@
     "access": "public",
     "provenance": true
   },
-  "tsup": {
+  "tsdown": {
     "entry": [
       "index.ts",
       "src/types.ts",
@@ -145,8 +145,11 @@
     "outDir": "./build",
     "clean": true,
     "format": "esm",
+    "minify": "dce-only",
+    "fixedExtension": false,
     "dts": false,
-    "sourcemap": false,
+    "treeshake": false,
+    "sourcemaps": false,
     "target": "esnext"
   },
   "release-it": {
