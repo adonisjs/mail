@@ -64,33 +64,15 @@ test.group('Resend Transport', () => {
     assert.deepEqual(email.body.subject, 'Adonisv6')
   })
 
-  test('throw error when key is missing', async ({ assert }) => {
-    const resend = new ResendTransport({
+  test('throw error when key is missing', async () => {
+    new ResendTransport({
       baseUrl: process.env.RESEND_BASE_URL!,
     } as any)
+  }).throws('Invalid config for "resend" transport. The "key" property is missing')
 
-    const message = new Message()
-    message.from(process.env.RESEND_FROM_EMAIL!)
-    message.to(process.env.RESEND_TO_EMAIL!)
-
-    await assert.rejects(
-      () => resend.send(message.toJSON().message),
-      'Resend transport: "key" is not defined'
-    )
-  })
-
-  test('throw error when baseUrl is missing', async ({ assert }) => {
-    const resend = new ResendTransport({
+  test('throw error when baseUrl is missing', async () => {
+    new ResendTransport({
       key: process.env.RESEND_API_KEY!,
     } as any)
-
-    const message = new Message()
-    message.from(process.env.RESEND_FROM_EMAIL!)
-    message.to(process.env.RESEND_TO_EMAIL!)
-
-    await assert.rejects(
-      () => resend.send(message.toJSON().message),
-      'Resend transport: "baseUrl" is not defined'
-    )
-  })
+  }).throws('Invalid config for "resend" transport. The "baseUrl" property is missing')
 })

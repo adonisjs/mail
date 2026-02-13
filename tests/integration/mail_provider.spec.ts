@@ -36,8 +36,8 @@ test.group('Mail Provider', () => {
             default: 'mailgun',
             mailers: {
               mailgun: transports.mailgun({
-                key: '',
-                baseUrl: '',
+                key: 'api_key',
+                baseUrl: 'https://mailgun.com',
                 domain: '',
               }),
             },
