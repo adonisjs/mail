@@ -23,6 +23,6 @@ export const E_INVALID_CONFIG = class InvalidConfigException extends Exception {
  * send the email
  */
 export const E_MAIL_TRANSPORT_ERROR = class EmailTransportException extends Exception {
-  static status = 400
+  static status = 500
   static code = 'E_MAIL_TRANSPORT_ERROR'
 }
