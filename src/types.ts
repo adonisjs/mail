@@ -516,6 +516,7 @@ export type InferMailers<
  * Mailer service is a singleton instance of mail
  * manager configured using user app's config
  */
-export interface MailService extends MailManager<
-  MailersList extends Record<string, MailManagerTransportFactory> ? MailersList : never
-> {}
+export interface MailService
+  extends MailManager<
+    MailersList extends Record<string, MailManagerTransportFactory> ? MailersList : never
+  > {}

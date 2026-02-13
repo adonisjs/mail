@@ -14,10 +14,10 @@ import { type Transport, createTransport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
-import { MailResponse } from '../mail_response.js'
-import { BaseApiTransport } from './base_api_transport.js'
 import { normalizeBaseUrl } from '../utils.js'
+import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
+import { BaseApiTransport } from './base_api_transport.js'
 
 import type {
   SparkPostConfig,
