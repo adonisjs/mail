@@ -51,6 +51,7 @@ test.group('Configure', (group) => {
       '../../index.js',
       '--transports=sparkpost',
       '--transports=resend',
+      '--transports=smtp',
     ])
     await command.exec()
 
@@ -76,17 +77,40 @@ test.group('Configure', (group) => {
       baseUrl: 'https://api.resend.com',
     }),`
     )
+    await assert.fileContains(
+      'config/mail.ts',
+      `
+    smtp: transports.smtp({
+      host: env.get('SMTP_HOST'),
+      port: env.get('SMTP_PORT'),
+			/**
+       * Uncomment the auth block if your SMTP
+       * server needs authentication
+       */
+      /* auth: {
+        type: 'login',
+        user: env.get('SMTP_USERNAME'),
+        pass: env.get('SMTP_PASSWORD'),
+      }, */
+    }),`
+    )
+
     await assert.fileContains('.env', 'SPARKPOST_API_KEY')
     await assert.fileContains('.env', 'RESEND_API_KEY')
+    await assert.fileContains('.env', 'SMTP_HOST')
+    await assert.fileContains('.env', 'SMTP_PORT')
     await assert.fileContains('.env', 'MAIL_MAILER')
     await assert.fileContains('.env', 'MAIL_FROM_NAME')
     await assert.fileContains('.env', 'MAIL_FROM_ADDRESS')
 
     await assert.fileContains('start/env.ts', 'SPARKPOST_API_KEY: Env.schema.string()')
     await assert.fileContains('start/env.ts', 'RESEND_API_KEY: Env.schema.string()')
+    await assert.fileContains('start/env.ts', 'SMTP_HOST: Env.schema.string()')
+    await assert.fileContains('start/env.ts', 'SMTP_PORT: Env.schema.number()')
+
     await assert.fileContains(
       'start/env.ts',
-      `MAIL_MAILER: Env.schema.enum(['sparkpost', 'resend'] as const)`
+      `MAIL_MAILER: Env.schema.enum(['sparkpost', 'resend', 'smtp'] as const)`
     )
     await assert.fileContains('start/env.ts', 'MAIL_FROM_NAME: Env.schema.string()')
     await assert.fileContains('start/env.ts', 'MAIL_FROM_ADDRESS: Env.schema.string()')
