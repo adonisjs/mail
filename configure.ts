@@ -115,7 +115,8 @@ export async function configure(command: Configure) {
     variables: transports.reduce<Record<string, string>>(
       (result, transport) => {
         ENV_VARIABLES[transport as keyof typeof ENV_VARIABLES].forEach((envVariable) => {
-          result[envVariable] = 'Env.schema.string()'
+          result[envVariable] =
+            `Env.schema.${envVariable === 'SMTP_PORT' ? 'number()' : 'string()'}`
         })
         return result
       },
