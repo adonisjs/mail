@@ -527,9 +527,16 @@ class MessagesCollection {
 export class FakeMailer extends Mailer<JSONTransport> implements MailerContract<JSONTransport> {
   mails = new MailsCollection()
   messages = new MessagesCollection()
+  #onDispose?: () => void
 
-  constructor(name: string, emitter: EmitterLike<MailEvents>, config: MailerConfig) {
+  constructor(
+    name: string,
+    emitter: EmitterLike<MailEvents>,
+    config: MailerConfig,
+    onDispose?: () => void
+  ) {
     super(name, new JSONTransport(), emitter, config)
+    this.#onDispose = onDispose
     super.setMessenger({
       queue: async (mail, sendConfig) => {
         return this.sendCompiled(mail, sendConfig)
@@ -583,6 +590,10 @@ export class FakeMailer extends Mailer<JSONTransport> implements MailerContract<
       callbackOrMail(message)
       this.messages.trackQueued(message)
     }, config)
+  }
+
+  [Symbol.dispose]() {
+    this.#onDispose?.()
   }
 
   async close() {
