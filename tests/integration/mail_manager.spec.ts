@@ -296,6 +296,36 @@ test.group('Mail manager', () => {
     assert.lengthOf(messages.sent(), 0)
   })
 
+  test('restore fake mailer using Symbol.dispose', async ({ assert }) => {
+    const emitter = new Emitter<MailEvents>(app)
+
+    const mail = new MailManager(emitter, {
+      mailers: {
+        mailer1: () => new JSONTransport(),
+      },
+    })
+
+    let messages: ReturnType<typeof mail.fake>['messages']
+
+    {
+      using fake = mail.fake()
+      await mail.use('mailer1').send((message) => {
+        message.to('foo@bar.com')
+        message.subject('Verify email address')
+      })
+
+      fake.messages.assertSent({ subject: 'Verify email address' })
+      assert.lengthOf(fake.messages.sent(), 1)
+      messages = fake.messages
+    }
+
+    /**
+     * After the block, the fake mailer should be disposed
+     * and messages should be cleared
+     */
+    assert.lengthOf(messages!.sent(), 0)
+  })
+
   test('close all mailers and remove from cache', async ({ assert }) => {
     const emitter = new Emitter<MailEvents>(app)
     const smtpTransport = new SMTPTransport({

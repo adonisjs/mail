@@ -148,7 +148,7 @@ export class MailManager<KnownMailers extends Record<string, MailManagerTranspor
     this.restore()
 
     debug('creating fake mailer')
-    this.#fakeMailer = new FakeMailer('fake', this.#emitter, this.config)
+    this.#fakeMailer = new FakeMailer('fake', this.#emitter, this.config, () => this.restore())
     return this.#fakeMailer
   }
 
