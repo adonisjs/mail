@@ -15,13 +15,17 @@ import { stubsRoot } from './stubs/main.js'
 /**
  * List of env variables used by different transports
  */
-const ENV_VARIABLES = {
-  smtp: ['SMTP_HOST', 'SMTP_PORT'],
-  ses: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_REGION'],
-  mailgun: ['MAILGUN_API_KEY', 'MAILGUN_DOMAIN'],
-  sparkpost: ['SPARKPOST_API_KEY'],
-  resend: ['RESEND_API_KEY'],
-  brevo: ['BREVO_API_KEY'],
+const ENV_VARIABLES: Record<string, Record<string, string | number>> = {
+  smtp: { SMTP_HOST: 'localhost', SMTP_PORT: 1025 },
+  ses: {
+    AWS_ACCESS_KEY_ID: 'your-access-key-id',
+    AWS_SECRET_ACCESS_KEY: 'your-secret-key',
+    AWS_REGION: 'us-east-1',
+  },
+  mailgun: { MAILGUN_API_KEY: 'your-mailgun-api-key', MAILGUN_DOMAIN: 'mg.example.com' },
+  sparkpost: { SPARKPOST_API_KEY: 'your-sparkpost-api-key' },
+  resend: { RESEND_API_KEY: 'your-resend-api-key' },
+  brevo: { BREVO_API_KEY: 'your-brevo-api-key' },
 }
 
 /**
@@ -94,9 +98,7 @@ export async function configure(command: Configure) {
   await codemods.defineEnvVariables(
     transports.reduce<Record<string, string>>(
       (result, transport) => {
-        ENV_VARIABLES[transport as keyof typeof ENV_VARIABLES].forEach((envVariable) => {
-          result[envVariable] = ''
-        })
+        Object.assign(result, ENV_VARIABLES[transport])
         return result
       },
       {
@@ -114,10 +116,10 @@ export async function configure(command: Configure) {
     leadingComment: 'Variables for configuring the mail package',
     variables: transports.reduce<Record<string, string>>(
       (result, transport) => {
-        ENV_VARIABLES[transport as keyof typeof ENV_VARIABLES].forEach((envVariable) => {
+        for (const envVariable of Object.keys(ENV_VARIABLES[transport])) {
           result[envVariable] =
             `Env.schema.${envVariable === 'SMTP_PORT' ? 'number()' : 'string()'}`
-        })
+        }
         return result
       },
       {
