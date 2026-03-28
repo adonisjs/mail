@@ -32,14 +32,35 @@ export default class MakeMail extends BaseCommand {
   declare intent?: string
 
   /**
+   * Read the contents from this file (if the flag exists) and use
+   * it as the raw contents
+   */
+  @flags.string({ description: 'Use the contents of the given file as the generated output' })
+  declare contentsFrom: string
+
+  /**
+   * Forcefully overwrite existing files
+   */
+  @flags.boolean({ description: 'Forcefully overwrite existing files', alias: 'f' })
+  declare force: boolean
+
+  /**
    * Execute command
    */
   async run(): Promise<void> {
     const codemods = await this.createCodemods()
-    await codemods.makeUsingStub(stubsRoot, 'make/mail/main.stub', {
-      flags: this.parsed.flags,
-      intent: this.intent || 'notification',
-      entity: this.app.generators.createEntity(this.name),
-    })
+    codemods.overwriteExisting = this.force === true
+    await codemods.makeUsingStub(
+      stubsRoot,
+      'make/mail/main.stub',
+      {
+        flags: this.parsed.flags,
+        intent: this.intent || 'notification',
+        entity: this.app.generators.createEntity(this.name),
+      },
+      {
+        contentsFromFile: this.contentsFrom,
+      }
+    )
   }
 }
