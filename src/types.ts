@@ -14,6 +14,7 @@ import { type AsyncOrSync } from '@adonisjs/core/types/common'
 import type { SESv2ClientConfig } from '@aws-sdk/client-sesv2'
 import type MimeNode from 'nodemailer/lib/mime-node/index.js'
 import type { Options as SMTPConnectionOptions } from 'nodemailer/lib/smtp-connection/index.js'
+import type { Options as SMTPPoolOptions } from 'nodemailer/lib/smtp-pool/index.js'
 
 import type { Message } from './message.js'
 import type { BaseMail } from './base_mail.js'
@@ -384,7 +385,10 @@ export type SMTPConfig = (
    * Authentication
    */
   auth?: SMTPSimpleAuth | SMTPOauth2
-} & SMTPConnectionOptions
+} & SMTPConnectionOptions &
+  Partial<
+    Pick<SMTPPoolOptions, 'pool' | 'maxConnections' | 'maxMessages' | 'rateDelta' | 'rateLimit'>
+  >
 
 /*
 |--------------------------------------------------------------------------
