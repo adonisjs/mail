@@ -30,6 +30,18 @@ test.group('Define config', () => {
     assert.instanceOf(smtpFactory(), SMTPTransport)
     expectTypeOf(smtpFactory()).toMatchTypeOf<SMTPTransport>()
 
+    const smtpPoolProvider = transports.smtp({
+      host: '',
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+      rateDelta: 1000,
+      rateLimit: 10,
+    })
+    const smtpPoolFactory = await smtpPoolProvider.resolver(app)
+    assert.instanceOf(smtpPoolFactory(), SMTPTransport)
+    expectTypeOf(smtpPoolFactory()).toMatchTypeOf<SMTPTransport>()
+
     const sesProvider = transports.ses({
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
