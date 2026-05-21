@@ -155,7 +155,7 @@ test.group('Mailgun Transport', () => {
 
     try {
       await mailgun.send(message.toJSON().message)
-    } catch (error) {
+    } catch (error: any) {
       assert.equal(error.message, 'Unable to send email using the mailgun transport')
       assert.exists(error.cause)
       assert.equal(error.cause.response.status, 401)
@@ -178,7 +178,7 @@ test.group('Mailgun Transport', () => {
 
     try {
       await mailgun.send(message.toJSON().message)
-    } catch (error) {
+    } catch (error: any) {
       assert.equal(error.message, 'Unable to send email using the mailgun transport')
       assert.exists(error.cause)
       assert.equal(error.cause.response.status, 400)
