@@ -31,6 +31,7 @@ test.group('Edge plugin', () => {
 </mjml>`
 
     const html = await edge.renderRaw(`@mjml() \n ${markup} \n @end`)
-    assert.equal(html, mjml2html(markup).html)
+    const output = await mjml2html(markup)
+    assert.equal(html, output.html)
   })
 })

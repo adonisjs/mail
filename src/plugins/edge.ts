@@ -20,7 +20,8 @@ export const mailPluginEdge: PluginFn<undefined> = (edge) => {
   edge.global('mail', {
     async processMjml(markup: string, options: any) {
       const mjml = await import('mjml')
-      return mjml.default(markup, options).html
+      const output = await mjml.default(markup, options)
+      return output.html
     },
   })
 
