@@ -8,6 +8,7 @@
  */
 
 import ky from 'ky'
+import { join } from 'node:path'
 import retry from 'async-retry'
 import { test } from '@japa/runner'
 
@@ -62,6 +63,61 @@ test.group('Resend Transport', () => {
     assert.deepEqual(email.body.html, '<p> Hello Adonis </p>')
     assert.deepEqual(email.body.from, process.env.RESEND_FROM_EMAIL)
     assert.deepEqual(email.body.subject, 'Adonisv6')
+  })
+
+  test('send email with custom and list headers', async ({ assert }) => {
+    const resend = new ResendTransport({
+      key: process.env.RESEND_API_KEY!,
+      baseUrl: process.env.RESEND_BASE_URL!,
+    })
+
+    const message = new Message()
+    message.from(process.env.RESEND_FROM_EMAIL!)
+    message.to(process.env.RESEND_TO_EMAIL!)
+    message.subject('Adonis headers')
+    message.html('<p> Hello Adonis </p>')
+    message.header('X-Custom-Header', 'custom-value')
+    message.listUnsubscribe('https://adonisjs.com/unsubscribe')
+    message.addListHeader('unsubscribe-post', 'List-Unsubscribe=One-Click')
+
+    /**
+     * The Resend API rejects the payload (and "send" throws) when the
+     * headers are malformed, so a resolved messageId means the custom
+     * and list headers were accepted.
+     */
+    const response = await resend.send(message.toJSON().message)
+    assert.isDefined(response.messageId)
+
+    const email = await getEmailById(response.messageId)
+    assert.equal(email.body.object, 'email')
+  })
+
+  test('send email with a file attachment and inline embed', async ({ assert, fs }) => {
+    await fs.create('adonis.txt', 'Hello from AdonisJS')
+
+    const resend = new ResendTransport({
+      key: process.env.RESEND_API_KEY!,
+      baseUrl: process.env.RESEND_BASE_URL!,
+    })
+
+    const message = new Message()
+    message.from(process.env.RESEND_FROM_EMAIL!)
+    message.to(process.env.RESEND_TO_EMAIL!)
+    message.subject('Adonis attachments')
+    message.html('<p> Hello Adonis </p> <img src="cid:logo" />')
+    message.attach(join(fs.basePath, 'adonis.txt'))
+    message.embed(join(fs.basePath, 'adonis.txt'), 'logo')
+
+    /**
+     * Before resolving the content to base64, the local file path was
+     * forwarded as a hosted URL and rejected by the API. A resolved
+     * messageId means the attachment content was accepted.
+     */
+    const response = await resend.send(message.toJSON().message)
+    assert.isDefined(response.messageId)
+
+    const email = await getEmailById(response.messageId)
+    assert.equal(email.body.object, 'email')
   })
 
   test('throw error when key is missing', async () => {
