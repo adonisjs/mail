@@ -17,7 +17,6 @@ import type { ResendTransport } from './transports/resend.js'
 import type { MailgunTransport } from './transports/mailgun.js'
 import type { PostmarkTransport } from './transports/postmark.js'
 import type { SparkPostTransport } from './transports/sparkpost.js'
-import type { CloudflareTransport } from './transports/cloudflare.js'
 import type {
   SESConfig,
   SMTPConfig,
@@ -27,7 +26,6 @@ import type {
   MailgunConfig,
   PostmarkConfig,
   SparkPostConfig,
-  CloudflareConfig,
   MailManagerTransportFactory,
 } from './types.js'
 
@@ -89,8 +87,11 @@ export const transports: {
   sparkpost: (config: SparkPostConfig) => ConfigProvider<() => SparkPostTransport>
   resend: (config: ResendConfig) => ConfigProvider<() => ResendTransport>
   brevo: (config: BrevoConfig) => ConfigProvider<() => BrevoTransport>
-  cloudflare: (config: CloudflareConfig) => ConfigProvider<() => CloudflareTransport>
   postmark: (config: PostmarkConfig) => ConfigProvider<() => PostmarkTransport>
+  /**
+   * NOTE: The Cloudflare Email Service is still in beta, so its transport is
+   * intentionally not exposed here yet. Re-add it once the service reaches GA.
+   */
 } = {
   smtp(config) {
     return configProvider.create(async () => {
@@ -126,12 +127,6 @@ export const transports: {
     return configProvider.create(async () => {
       const { BrevoTransport } = await import('./transports/brevo.js')
       return () => new BrevoTransport(config)
-    })
-  },
-  cloudflare(config) {
-    return configProvider.create(async () => {
-      const { CloudflareTransport } = await import('./transports/cloudflare.js')
-      return () => new CloudflareTransport(config)
     })
   },
   postmark(config) {
