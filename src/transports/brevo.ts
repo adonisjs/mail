@@ -13,7 +13,7 @@ import type { Address } from 'nodemailer/lib/mailer/index.js'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
-import { normalizeBaseUrl } from '../utils.js'
+import { normalizeBaseUrl, extractMessageHeaders } from '../utils.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import { BaseApiTransport } from './base_api_transport.js'
@@ -114,6 +114,11 @@ class NodeMailerTransport implements Transport {
         name: attachment.filename,
         content: attachment.content!.toString('base64'),
       }))
+    }
+
+    const headers = extractMessageHeaders(mail)
+    if (headers) {
+      payload.headers = headers
     }
 
     return payload

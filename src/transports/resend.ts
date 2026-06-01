@@ -12,7 +12,7 @@ import { createTransport, type Transport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
-import { normalizeBaseUrl } from '../utils.js'
+import { normalizeBaseUrl, extractMessageHeaders } from '../utils.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import { BaseApiTransport } from './base_api_transport.js'
@@ -122,6 +122,11 @@ class NodeMailerTransport implements Transport {
 
     if (this.#config.tags) {
       payload.tags = this.#config.tags
+    }
+
+    const headers = extractMessageHeaders(mail)
+    if (headers) {
+      payload.headers = headers
     }
 
     return payload
