@@ -23,6 +23,7 @@
     "./transports/resend": "./build/src/transports/resend.js",
     "./transports/mailgun": "./build/src/transports/mailgun.js",
     "./transports/sparkpost": "./build/src/transports/sparkpost.js",
+    "./transports/cloudflare": "./build/src/transports/cloudflare.js",
     "./messengers/memory": "./build/src/messengers/memory_queue.js"
   },
   "engines": {
@@ -143,6 +144,7 @@
       "src/transports/smtp.ts",
       "src/transports/mailgun.ts",
       "src/transports/sparkpost.ts",
+      "src/transports/cloudflare.ts",
       "src/messengers/memory_queue.ts"
     ],
     "outDir": "./build",

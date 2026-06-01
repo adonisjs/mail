@@ -499,6 +499,37 @@ export type BrevoSentMessageInfo = {
 
 /*
 |--------------------------------------------------------------------------
+| Cloudflare transport types
+|--------------------------------------------------------------------------
+*/
+
+export type CloudflareRuntimeConfig = {}
+
+/**
+ * Cloudflare transport config
+ */
+export type CloudflareConfig = CloudflareRuntimeConfig & {
+  key: string
+  baseUrl: string
+  accountId: string
+}
+
+/**
+ * Response returned by the Cloudflare Email Service API
+ */
+export type CloudflareSentMessageInfo = {
+  messageId: string
+  envelope: ResponseEnvelope
+  success: boolean
+  result?: {
+    delivered?: string[]
+    permanent_bounces?: string[]
+    queued?: string[]
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Mailer service types
 |--------------------------------------------------------------------------
 */

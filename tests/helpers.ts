@@ -17,12 +17,17 @@ import { type AddressInfo } from 'node:net'
  */
 export function captureServer(responseBody: Record<string, any>) {
   let resolvePayload: (value: any) => void
+  let resolveRequest: (value: { url?: string; headers: Record<string, any> }) => void
   const payload = new Promise<any>((resolve) => (resolvePayload = resolve))
+  const request = new Promise<{ url?: string; headers: Record<string, any> }>(
+    (resolve) => (resolveRequest = resolve)
+  )
 
   const server: Server = createServer((req, res) => {
     let body = ''
     req.on('data', (chunk) => (body += chunk))
     req.on('end', () => {
+      resolveRequest({ url: req.url, headers: req.headers })
       resolvePayload(JSON.parse(body))
       res.writeHead(200, { 'Content-Type': 'application/json' })
       res.end(JSON.stringify(responseBody))
@@ -36,5 +41,5 @@ export function captureServer(responseBody: Record<string, any>) {
     })
   })
 
-  return { server, ready, payload }
+  return { server, ready, payload, request }
 }
