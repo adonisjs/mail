@@ -58,6 +58,10 @@ jobs:
           BREVO_FROM_EMAIL: virk.officials@gmail.com
           BREVO_BASE_URL: 'https://api.brevo.com/v3'
 
+          POSTMARK_FROM_EMAIL: virk@adonisjs.com
+          POSTMARK_TO_EMAIL: virk@adonisjs.com
+          POSTMARK_API_KEY: ${{ secrets.POSTMARK_API_KEY }}
+          POSTMARK_BASE_URL: 'https://api.postmarkapp.com'
   lint:
     uses: adonisjs/.github/.github/workflows/lint.yml@next
 
