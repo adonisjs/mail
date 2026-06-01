@@ -12,7 +12,7 @@ import { createTransport, type Transport } from 'nodemailer'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
-import { normalizeBaseUrl, extractMessageHeaders } from '../utils.js'
+import { normalizeBaseUrl, extractMessageHeaders, resolveAttachmentContent } from '../utils.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import { BaseApiTransport } from './base_api_transport.js'
@@ -85,7 +85,7 @@ class NodeMailerTransport implements Transport {
    * Prepare the payload by converting Mail message to the format
    * accepted by Resend
    */
-  #preparePayload(mail: MailMessage) {
+  async #preparePayload(mail: MailMessage) {
     let payload: Record<string, any> = {
       from: this.#formatRecipients(mail.data.from)[0],
       to: this.#formatRecipients(mail.data.to),
@@ -113,11 +113,29 @@ class NodeMailerTransport implements Transport {
     }
 
     if (mail.data.attachments) {
-      payload.attachments = mail.data.attachments.map((attachment) => ({
-        content: attachment.content,
-        filename: attachment.filename,
-        path: attachment.path,
-      }))
+      payload.attachments = await Promise.all(
+        mail.data.attachments.map(async (attachment, index) => {
+          const content = await resolveAttachmentContent(mail, index)
+          const item: Record<string, any> = {
+            filename: attachment.filename,
+            content: content.toString('base64'),
+          }
+
+          if (attachment.contentType) {
+            item.content_type = attachment.contentType
+          }
+
+          /**
+           * Inline attachments defined via `message.embed()` carry a `cid`
+           * that maps to Resend's `content_id`
+           */
+          if (attachment.cid) {
+            item.content_id = attachment.cid
+          }
+
+          return item
+        })
+      )
     }
 
     if (this.#config.tags) {
@@ -149,7 +167,7 @@ class NodeMailerTransport implements Transport {
     try {
       const url = `${this.#getBaseUrl()}/emails`
       const envelope = mail.message.getEnvelope()
-      const payload = this.#preparePayload(mail)
+      const payload = await this.#preparePayload(mail)
 
       debug('resend mail url "%s"', url)
       debug('resend mail payload %O', payload)

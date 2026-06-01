@@ -13,7 +13,7 @@ import type { Address } from 'nodemailer/lib/mailer/index.js'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'
-import { normalizeBaseUrl, extractMessageHeaders } from '../utils.js'
+import { normalizeBaseUrl, extractMessageHeaders, resolveAttachmentContent } from '../utils.js'
 import { MailResponse } from '../mail_response.js'
 import { E_MAIL_TRANSPORT_ERROR } from '../errors.js'
 import { BaseApiTransport } from './base_api_transport.js'
@@ -72,7 +72,7 @@ class NodeMailerTransport implements Transport {
   /**
    * Convert the Mail message to the format accepted by the Brevo API
    */
-  #preparePayload(mail: MailMessage) {
+  async #preparePayload(mail: MailMessage) {
     let payload: Record<string, any> = {
       sender: this.#formatAddresses(mail.data.from)[0],
       to: this.#formatAddresses(mail.data.to),
@@ -109,11 +109,20 @@ class NodeMailerTransport implements Transport {
       payload.scheduledAt = this.#config.scheduledAt
     }
 
+    /**
+     * Brevo's transactional API has no support for inline (cid) images, so
+     * embedded attachments are sent as regular attachments instead.
+     */
     if (mail.data.attachments) {
-      payload.attachment = mail.data.attachments.map((attachment) => ({
-        name: attachment.filename,
-        content: attachment.content!.toString('base64'),
-      }))
+      payload.attachment = await Promise.all(
+        mail.data.attachments.map(async (attachment, index) => {
+          const content = await resolveAttachmentContent(mail, index)
+          return {
+            name: attachment.filename,
+            content: content.toString('base64'),
+          }
+        })
+      )
     }
 
     const headers = extractMessageHeaders(mail)
@@ -138,7 +147,7 @@ class NodeMailerTransport implements Transport {
     try {
       const url = `${this.#getBaseUrl()}/smtp/email`
       const envelope = mail.message.getEnvelope()
-      const payload = this.#preparePayload(mail)
+      const payload = await this.#preparePayload(mail)
 
       debug('brevo email url %s', url)
       debug('brevo email payload %O', payload)

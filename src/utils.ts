@@ -78,6 +78,27 @@ export function extractMessageHeaders(mail: MailMessage): Record<string, string>
 }
 
 /**
+ * Resolves the content of a message attachment to a Buffer. Nodemailer's
+ * "resolveContent" reads the attachment regardless of how it was defined
+ * (local path, "file://"/"data:"/remote URL, stream or raw buffer), the
+ * same way the MIME based transports resolve attachments. This is needed
+ * by the JSON based transports (Resend, Brevo) that must send the actual
+ * file content as a base64 string instead of forwarding the raw input.
+ */
+export function resolveAttachmentContent(mail: MailMessage, index: number): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    mail.resolveContent(mail.data.attachments!, index, (error, content) => {
+      if (error) {
+        reject(error)
+        return
+      }
+
+      resolve(Buffer.isBuffer(content) ? content : Buffer.from(content))
+    })
+  })
+}
+
+/**
  * Convert a stream to a blob
  */
 export function streamToBlob(stream: NodeJS.ReadableStream, mimeType: string) {
