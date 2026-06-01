@@ -15,6 +15,7 @@ import type { SMTPTransport } from './transports/smtp.js'
 import type { BrevoTransport } from './transports/brevo.js'
 import type { ResendTransport } from './transports/resend.js'
 import type { MailgunTransport } from './transports/mailgun.js'
+import type { PostmarkTransport } from './transports/postmark.js'
 import type { SparkPostTransport } from './transports/sparkpost.js'
 import type { CloudflareTransport } from './transports/cloudflare.js'
 import type {
@@ -24,6 +25,7 @@ import type {
   MailerConfig,
   ResendConfig,
   MailgunConfig,
+  PostmarkConfig,
   SparkPostConfig,
   CloudflareConfig,
   MailManagerTransportFactory,
@@ -88,6 +90,7 @@ export const transports: {
   resend: (config: ResendConfig) => ConfigProvider<() => ResendTransport>
   brevo: (config: BrevoConfig) => ConfigProvider<() => BrevoTransport>
   cloudflare: (config: CloudflareConfig) => ConfigProvider<() => CloudflareTransport>
+  postmark: (config: PostmarkConfig) => ConfigProvider<() => PostmarkTransport>
 } = {
   smtp(config) {
     return configProvider.create(async () => {
@@ -129,6 +132,12 @@ export const transports: {
     return configProvider.create(async () => {
       const { CloudflareTransport } = await import('./transports/cloudflare.js')
       return () => new CloudflareTransport(config)
+    })
+  },
+  postmark(config) {
+    return configProvider.create(async () => {
+      const { PostmarkTransport } = await import('./transports/postmark.js')
+      return () => new PostmarkTransport(config)
     })
   },
 }

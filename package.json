@@ -24,6 +24,7 @@
     "./transports/mailgun": "./build/src/transports/mailgun.js",
     "./transports/sparkpost": "./build/src/transports/sparkpost.js",
     "./transports/cloudflare": "./build/src/transports/cloudflare.js",
+    "./transports/postmark": "./build/src/transports/postmark.js",
     "./messengers/memory": "./build/src/messengers/memory_queue.js"
   },
   "engines": {
@@ -145,6 +146,7 @@
       "src/transports/mailgun.ts",
       "src/transports/sparkpost.ts",
       "src/transports/cloudflare.ts",
+      "src/transports/postmark.ts",
       "src/messengers/memory_queue.ts"
     ],
     "outDir": "./build",

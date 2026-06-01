@@ -530,6 +530,41 @@ export type CloudflareSentMessageInfo = {
 
 /*
 |--------------------------------------------------------------------------
+| Postmark transport types
+|--------------------------------------------------------------------------
+*/
+
+export type PostmarkRuntimeConfig = {
+  messageStream?: string
+  tag?: string
+  trackOpens?: boolean
+  trackLinks?: 'None' | 'HtmlAndText' | 'HtmlOnly' | 'TextOnly'
+  metadata?: Record<string, string>
+}
+
+/**
+ * Postmark transport config
+ */
+export type PostmarkConfig = PostmarkRuntimeConfig & {
+  key: string
+  baseUrl: string
+}
+
+/**
+ * Response returned by the Postmark API
+ */
+export type PostmarkSentMessageInfo = {
+  messageId: string
+  envelope: ResponseEnvelope
+  MessageID?: string
+  SubmittedAt?: string
+  ErrorCode: number
+  Message: string
+  To?: string
+}
+
+/*
+|--------------------------------------------------------------------------
 | Mailer service types
 |--------------------------------------------------------------------------
 */
