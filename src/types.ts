@@ -36,14 +36,7 @@ export type Recipient = { address: string; name: string } | string
  * Available calendar event methods
  */
 export type CalendarEventMethod =
-  | 'PUBLISH'
-  | 'REQUEST'
-  | 'REPLY'
-  | 'ADD'
-  | 'CANCEL'
-  | 'REFRESH'
-  | 'COUNTER'
-  | 'DECLINECOUNTER'
+  'PUBLISH' | 'REQUEST' | 'REPLY' | 'ADD' | 'CANCEL' | 'REFRESH' | 'COUNTER' | 'DECLINECOUNTER'
 
 /**
  * Event options accepted by the icalEvent* methods
