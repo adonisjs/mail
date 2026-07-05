@@ -110,4 +110,44 @@ test.group('Message | headers', () => {
     )
     assert.isTrue(emailText.includes('List-Subscribe: <http://example.com> (Subscribe)'))
   })
+
+  test('enable one-click unsubscribe via listUnsubscribe', async ({ assert }) => {
+    const message = new Message()
+    message.listUnsubscribe('https://example.com/unsub?token=abc', { oneClick: true })
+
+    const transport = nodemailer.createTransport({
+      streamTransport: true,
+      newline: 'unix',
+      buffer: true,
+    })
+
+    const response = await transport.sendMail(message.toObject().message)
+    const emailText = response.message.toString()
+
+    assert.isTrue(emailText.includes('List-Unsubscribe: <https://example.com/unsub?token=abc>'))
+
+    /**
+     * The RFC 8058 token must be emitted verbatim, not URL-encoded into
+     * `<http://List-Unsubscribe=One-Click>`.
+     */
+    assert.isTrue(emailText.includes('List-Unsubscribe-Post: List-Unsubscribe=One-Click'))
+    assert.isFalse(emailText.includes('<http://List-Unsubscribe=One-Click>'))
+  })
+
+  test('do not add List-Unsubscribe-Post unless one-click is enabled', async ({ assert }) => {
+    const message = new Message()
+    message.listUnsubscribe('https://example.com/unsub?token=abc')
+
+    const transport = nodemailer.createTransport({
+      streamTransport: true,
+      newline: 'unix',
+      buffer: true,
+    })
+
+    const response = await transport.sendMail(message.toObject().message)
+    const emailText = response.message.toString()
+
+    assert.isTrue(emailText.includes('List-Unsubscribe: <https://example.com/unsub?token=abc>'))
+    assert.isFalse(emailText.includes('List-Unsubscribe-Post'))
+  })
 })

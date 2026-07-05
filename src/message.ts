@@ -832,10 +832,31 @@ export class Message extends Macroable {
 
   /**
    * Add `List-Unsubscribe` header. Calling this method multiple
-   * times will override the existing value
+   * times will override the existing value.
+   *
+   * Pass `{ oneClick: true }` to also emit the RFC 8058
+   * `List-Unsubscribe-Post: List-Unsubscribe=One-Click` header, which
+   * signals to mailbox providers (Gmail, Yahoo, etc.) that the
+   * unsubscribe URL accepts a one-click HTTP POST. The URL passed as
+   * `value` must be an `https` endpoint that handles the POST.
    */
-  listUnsubscribe(value: ListHeader | ListHeader[] | ListHeader[][]) {
-    return this.addListHeader('unsubscribe', value)
+  listUnsubscribe(
+    value: ListHeader | ListHeader[] | ListHeader[][],
+    options?: { oneClick?: boolean }
+  ) {
+    this.addListHeader('unsubscribe', value)
+
+    /**
+     * `List-Unsubscribe-Post` carries a fixed RFC 8058 token, not a URL.
+     * It must be sent verbatim, so it goes through the prepared header
+     * path instead of `addListHeader`, which would URL-encode the value
+     * into `<http://List-Unsubscribe=One-Click>`.
+     */
+    if (options?.oneClick) {
+      this.preparedHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click')
+    }
+
+    return this
   }
 
   /**

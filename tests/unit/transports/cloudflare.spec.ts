@@ -88,7 +88,7 @@ test.group('Cloudflare transport | payload', () => {
 
     const message = makeMessage()
     message.header('X-Custom-Header', 'custom-value')
-    message.listUnsubscribe('https://example.com/unsubscribe')
+    message.listUnsubscribe('https://example.com/unsubscribe', { oneClick: true })
 
     await new CloudflareTransport({ key: 'token', baseUrl, accountId: 'acc' }).send(
       message.toJSON().message
@@ -98,6 +98,7 @@ test.group('Cloudflare transport | payload', () => {
     const body = await payload
     assert.equal(body.headers['X-Custom-Header'], 'custom-value')
     assert.equal(body.headers['List-Unsubscribe'], '<https://example.com/unsubscribe>')
+    assert.equal(body.headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click')
   })
 
   test('resolve attachments to base64 with disposition', async ({ assert, fs }) => {

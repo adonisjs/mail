@@ -108,7 +108,7 @@ test.group('Postmark transport | payload', () => {
 
     const message = makeMessage()
     message.header('X-Custom-Header', 'custom-value')
-    message.listUnsubscribe('https://example.com/unsubscribe')
+    message.listUnsubscribe('https://example.com/unsubscribe', { oneClick: true })
 
     await new PostmarkTransport({ key: 'token', baseUrl }).send(message.toJSON().message)
     server.close()
@@ -118,6 +118,10 @@ test.group('Postmark transport | payload', () => {
     assert.deepInclude(body.Headers, {
       Name: 'List-Unsubscribe',
       Value: '<https://example.com/unsubscribe>',
+    })
+    assert.deepInclude(body.Headers, {
+      Name: 'List-Unsubscribe-Post',
+      Value: 'List-Unsubscribe=One-Click',
     })
   })
 

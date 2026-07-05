@@ -77,8 +77,7 @@ test.group('Resend Transport', () => {
     message.subject('Adonis headers')
     message.html('<p> Hello Adonis </p>')
     message.header('X-Custom-Header', 'custom-value')
-    message.listUnsubscribe('https://adonisjs.com/unsubscribe')
-    message.addListHeader('unsubscribe-post', 'List-Unsubscribe=One-Click')
+    message.listUnsubscribe('https://adonisjs.com/unsubscribe', { oneClick: true })
 
     /**
      * The Resend API rejects the payload (and "send" throws) when the

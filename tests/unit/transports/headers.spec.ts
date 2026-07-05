@@ -25,8 +25,7 @@ test.group('Resend transport | headers', () => {
     message.subject('Hello')
     message.html('<p>Hello</p>')
     message.header('X-Custom-Header', 'custom-value')
-    message.listUnsubscribe('https://example.com/unsubscribe')
-    message.addListHeader('unsubscribe-post', 'List-Unsubscribe=One-Click')
+    message.listUnsubscribe('https://example.com/unsubscribe', { oneClick: true })
 
     const transport = new ResendTransport({ key: 'test_key', baseUrl })
     await transport.send(message.toJSON().message)
@@ -35,7 +34,7 @@ test.group('Resend transport | headers', () => {
     const body = await payload
     assert.equal(body.headers['X-Custom-Header'], 'custom-value')
     assert.equal(body.headers['List-Unsubscribe'], '<https://example.com/unsubscribe>')
-    assert.property(body.headers, 'List-Unsubscribe-Post')
+    assert.equal(body.headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click')
   })
 
   test('do not set headers object when no custom headers are defined', async ({ assert }) => {
