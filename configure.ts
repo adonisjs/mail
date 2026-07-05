@@ -26,6 +26,7 @@ const ENV_VARIABLES: Record<string, Record<string, string | number>> = {
   sparkpost: { SPARKPOST_API_KEY: 'your-sparkpost-api-key' },
   resend: { RESEND_API_KEY: 'your-resend-api-key' },
   brevo: { BREVO_API_KEY: 'your-brevo-api-key' },
+  postmark: { POSTMARK_API_KEY: 'your-postmark-api-key' },
 }
 
 /**
