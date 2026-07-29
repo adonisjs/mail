@@ -8,9 +8,8 @@ const mailConfig = defineConfig({
   default: env.get('MAIL_MAILER'),
 
   /**
-   * The mailers object can be used to configure multiple mailers
-   * each using a different transport or same transport with different
-   * options.
+   * The default sender's email address and name. It is used when
+   * no sender is explicitly defined for an email.
    */
   from: {
     address: env.get('MAIL_FROM_ADDRESS'),
