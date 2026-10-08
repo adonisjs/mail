@@ -52,14 +52,13 @@ class NodeMailerTransport implements Transport {
   }
 
   /**
-   * Formatting recipients to the "Name <email>" string format. Cloudflare
-   * accepts both plain strings and `{ email, name }` objects, but its docs
-   * are inconsistent on the object key (`email` vs `address`), so we use
-   * the universally accepted string representation.
+   * Formatting recipients for the Cloudflare API. A named recipient is sent
+   * as an `{ address, name }` object, since a plain string must be printable
+   * ASCII and "Name <email>" fails for names like "Équipe RH".
    */
   #formatRecipients(
     recipients?: MailMessage['data']['to'] | MailMessage['data']['cc'] | MailMessage['data']['bcc']
-  ): string[] {
+  ): (string | { address: string; name: string })[] {
     if (!recipients) {
       return []
     }
@@ -74,7 +73,7 @@ class NodeMailerTransport implements Transport {
       }
 
       if (recipient.name) {
-        return `${recipient.name} <${recipient.address}>`
+        return { address: recipient.address, name: recipient.name }
       }
 
       return recipient.address

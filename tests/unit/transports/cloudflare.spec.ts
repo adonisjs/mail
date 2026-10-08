@@ -60,7 +60,7 @@ test.group('Cloudflare transport | payload', () => {
     assert.equal(headers.authorization, 'Bearer token')
   })
 
-  test('format recipients as "Name <email>" strings', async ({ assert }) => {
+  test('format named recipients as address objects', async ({ assert }) => {
     const { server, ready, payload } = captureServer(SUCCESS_RESPONSE)
     const baseUrl = await ready
 
@@ -75,11 +75,31 @@ test.group('Cloudflare transport | payload', () => {
     server.close()
 
     const body = await payload
-    assert.equal(body.from, 'Sender <sender@example.com>')
-    assert.deepEqual(body.to, ['Receiver <receiver@example.com>'])
+    assert.deepEqual(body.from, { address: 'sender@example.com', name: 'Sender' })
+    assert.deepEqual(body.to, [{ address: 'receiver@example.com', name: 'Receiver' }])
     assert.deepEqual(body.cc, ['cc@example.com'])
     assert.deepEqual(body.bcc, ['bcc@example.com'])
-    assert.equal(body.reply_to, 'Reply <reply@example.com>')
+    assert.deepEqual(body.reply_to, { address: 'reply@example.com', name: 'Reply' })
+  })
+
+  test('send names with non-ASCII characters', async ({ assert }) => {
+    const { server, ready, payload } = captureServer(SUCCESS_RESPONSE)
+    const baseUrl = await ready
+
+    const message = new Message()
+    message.from('noreply@example.com', 'Équipe RH')
+    message.to('receiver@example.com')
+    message.subject('Hello')
+    message.html('<p>Hello</p>')
+
+    await new CloudflareTransport({ key: 'token', baseUrl, accountId: 'acc' }).send(
+      message.toJSON().message
+    )
+    server.close()
+
+    const body = await payload
+    assert.deepEqual(body.from, { address: 'noreply@example.com', name: 'Équipe RH' })
+    assert.deepEqual(body.to, ['receiver@example.com'])
   })
 
   test('forward custom and list headers', async ({ assert }) => {
