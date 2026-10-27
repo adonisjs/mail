@@ -51,7 +51,7 @@ class NodeMailerTransport implements Transport {
      * Normalizing an array of recipients
      */
     if (Array.isArray(recipients)) {
-      return recipients.map((recipient) => {
+      return (recipients as any[]).map((recipient) => {
         if (typeof recipient === 'string') {
           return recipient
         }
@@ -78,7 +78,7 @@ class NodeMailerTransport implements Transport {
       return [`${recipients.name} <${recipients.address}>`]
     }
 
-    return [recipients.address]
+    return [recipients.address!]
   }
 
   /**

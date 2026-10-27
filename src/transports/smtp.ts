@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import nodemailer from 'nodemailer'
+import nodemailer, { type Transporter } from 'nodemailer'
 import type NodemailerTransport from 'nodemailer/lib/smtp-transport/index.js'
 
 import debug from '../debug.js'
@@ -20,7 +20,7 @@ import type { SMTPConfig, NodeMailerMessage, MailTransportContract } from '../ty
  */
 export class SMTPTransport implements MailTransportContract {
   #config: SMTPConfig
-  #transporter?: nodemailer.Transporter<NodemailerTransport.SentMessageInfo>
+  #transporter?: Transporter<NodemailerTransport.SentMessageInfo>
 
   constructor(config: SMTPConfig) {
     this.#config = config
