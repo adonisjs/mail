@@ -9,7 +9,7 @@
 
 import ky from 'ky'
 import { createTransport, type Transport } from 'nodemailer'
-import mimeFuncs from 'nodemailer/lib/mime-funcs/index.js'
+import * as mimeFuncs from 'nodemailer/lib/mime-funcs/index.js'
 import type MailMessage from 'nodemailer/lib/mailer/mail-message.js'
 
 import debug from '../debug.js'

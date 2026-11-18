@@ -64,8 +64,10 @@ class NodeMailerTransport implements Transport {
   /**
    * Format a list of addresses
    */
-  #formatAddresses(rawAddresses: string | Address | Array<string | Address> | undefined) {
-    const addresses = Array.isArray(rawAddresses) ? rawAddresses : [rawAddresses]
+  #formatAddresses(rawAddresses: MailMessage['data']['to']) {
+    const addresses = Array.isArray(rawAddresses)
+      ? (rawAddresses as Array<string | Address>)
+      : [rawAddresses]
     return addresses.map((address) => this.#formatAddress(address))
   }
 
@@ -89,7 +91,9 @@ class NodeMailerTransport implements Transport {
 
     if (mail.data.replyTo) {
       payload.replyTo = this.#formatAddress(
-        Array.isArray(mail.data.replyTo) ? mail.data.replyTo[0] : mail.data.replyTo
+        Array.isArray(mail.data.replyTo)
+          ? (mail.data.replyTo[0] as string | Address)
+          : mail.data.replyTo
       )
     }
 

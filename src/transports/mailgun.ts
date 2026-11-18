@@ -112,7 +112,7 @@ class NodeMailerTransport implements Transport<MailgunSentMessageInfo> {
     }
 
     if (Array.isArray(recipients)) {
-      return recipients
+      return (recipients as any[])
         .map((recipient) => {
           if (typeof recipient === 'string') {
             return recipient

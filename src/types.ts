@@ -33,6 +33,13 @@ export type ResponseEnvelope = MimeNode.Envelope
 export type Recipient = { address: string; name: string } | string
 
 /**
+ * Shape of the message headers
+ */
+export type MessageHeaders =
+  | { [key: string]: string | string[] | { prepared: boolean; value: string } }
+  | Array<{ key: string; value: string }>
+
+/**
  * Available calendar event methods
  */
 export type CalendarEventMethod =
@@ -100,7 +107,7 @@ export type NodeMailerMessage = {
     href?: string
   }
   attachments?: SendMailOptions['attachments']
-  headers?: SendMailOptions['headers']
+  headers?: MessageHeaders
   html?: SendMailOptions['html']
   text?: SendMailOptions['text']
   watch?: SendMailOptions['watchHtml']
