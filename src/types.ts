@@ -241,7 +241,11 @@ export interface MailerContract<Transport extends MailTransportContract> {
   close(): Promise<void>
 }
 
-export type MailerConfig = {
+/**
+ * Config shared by the mail manager and its mailers. It is an interface,
+ * so packages can declare the options they read from the mail config.
+ */
+export interface MailerConfig {
   /**
    * Define a global email address to always use when
    * sending emails

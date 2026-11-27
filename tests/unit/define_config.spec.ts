@@ -21,6 +21,12 @@ import { MailgunTransport } from '../../src/transports/mailgun.js'
 import { defineConfig, transports } from '../../src/define_config.js'
 import { SparkPostTransport } from '../../src/transports/sparkpost.js'
 
+declare module '../../src/types.js' {
+  interface MailerConfig {
+    deliveryQueue?: string
+  }
+}
+
 const app = new AppFactory().create(new URL('./', import.meta.url), () => {}) as ApplicationService
 
 test.group('Define config', () => {
@@ -101,6 +107,24 @@ test.group('Define config', () => {
     assert.instanceOf(mail.use('mailgun').transport, MailgunTransport)
     assert.instanceOf(mail.use('sparkpost').transport, SparkPostTransport)
     assert.instanceOf(mail.use('resend').transport, ResendTransport)
+  })
+
+  test('accept options declared on MailerConfig by other packages', async ({
+    assert,
+    expectTypeOf,
+  }) => {
+    const config = await defineConfig({
+      default: 'smtp',
+      deliveryQueue: 'emails',
+      mailers: {
+        smtp: transports.smtp({ host: 'smtp.example.com' }),
+      },
+    }).resolver(app)
+
+    const mail = new MailManager(new Emitter<MailEvents>(app), config)
+
+    expectTypeOf(mail.config.deliveryQueue).toEqualTypeOf<string | undefined>()
+    assert.equal(mail.config.deliveryQueue, 'emails')
   })
 
   test('throw error when key is missing', async ({ assert }) => {
